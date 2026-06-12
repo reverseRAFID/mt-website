@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BRACU Mongol-Tori Website
+
+Production-grade team website for BRACU Mongol-Tori, BRAC University's Mars Rover Team.
+
+**Stack:** Next.js 15 · Sanity v3 CMS · Tailwind v4 · Neon Postgres · Vercel
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
+cp .env.local.example .env.local   # fill in Sanity + DB credentials
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- App: http://localhost:3000  
+- CMS Studio: http://localhost:3000/studio
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+See `.env.local.example`. Key variables:
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | From sanity.io/manage |
+| `NEXT_PUBLIC_SANITY_DATASET` | Usually `production` |
+| `SANITY_API_TOKEN` | Editor token from Sanity |
+| `DATABASE_URL` | Neon Postgres connection string |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Sanity CMS First-Time Setup
 
-## Deploy on Vercel
+1. Create a project at [sanity.io](https://sanity.io)
+2. Copy Project ID + Dataset into `.env.local`
+3. **API → CORS Origins** → add `http://localhost:3000` + production domain
+4. **API → Tokens** → create Editor token → add to `SANITY_API_TOKEN`
+5. Visit `/studio` to start adding content
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+Uses **GitHub Actions → Vercel CLI** (workaround for Vercel Hobby + GitHub Org repos).
+
+### One-time setup
+
+1. Run `npx vercel` locally to link the project and get Org ID + Project ID
+2. Add these as GitHub repository secrets:
+
+| Secret | Value |
+|---|---|
+| `VERCEL_TOKEN` | vercel.com/account/tokens |
+| `VERCEL_ORG_ID` | From `npx vercel` |
+| `VERCEL_PROJECT_ID` | From `npx vercel` |
+
+Push to `main` → auto-deploys. Push to `develop` → Vercel preview URL.
+
+---
+
+## Branching
+
+| Branch | Purpose |
+|---|---|
+| `main` | Production (auto-deploy) |
+| `develop` | Staging (preview URL) |
+| `feature/xxx` | Feature work — PR to `develop` |
+
+PRs require 1 review before merging to `main`.
+
+---
+
+## Yearly Handover
+
+- Hand over Vercel account tied to `mongoltori.web@g.bracu.ac.bd`
+- Add new team lead to Sanity project at sanity.io/manage
+- Copy `.env.local` secrets to the new machine

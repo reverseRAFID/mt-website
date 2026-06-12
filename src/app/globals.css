@@ -1,27 +1,147 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+/* ============================================
+   DESIGN TOKENS — LIGHT MODE
+   ============================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #ffffff;
+  --surface: #f7f7f7;
+  --surface-2: #f0f0f0;
+  --surface-offset: #e8e8e8;
+  --divider: #d4d4d4;
+  --border: #cccccc;
+  --text: #0a0a0a;
+  --text-muted: #4a4a4a;
+  --text-faint: #9a9a9a;
+  --primary: #f05a00;
+  --primary-hover: #d44f00;
+  --primary-active: #b34200;
+  --primary-highlight: #fde8d8;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================
+   DESIGN TOKENS — DARK MODE
+   ============================================ */
+.dark {
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --surface-2: #1a1a1a;
+  --surface-offset: #222222;
+  --divider: #2e2e2e;
+  --border: #383838;
+  --text: #f0f0f0;
+  --text-muted: #a0a0a0;
+  --text-faint: #555555;
+  --primary: #ff6b1a;
+  --primary-hover: #ff7d33;
+  --primary-active: #e55a00;
+  --primary-highlight: #2a1500;
+}
+
+/* ============================================
+   TAILWIND V4 THEME REGISTRATION
+   inline = CSS vars are resolved at runtime (theme-aware)
+   ============================================ */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-offset: var(--surface-offset);
+  --color-divider: var(--divider);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-highlight: var(--primary-highlight);
+
+  --font-display: 'Cabinet Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* Smooth theme color transitions */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+/* Disable transitions during initial page load & on motion-sensitive */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
   }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ============================================
+   TYPOGRAPHY HELPERS
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cabinet Grotesk', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+}
+
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .section-container {
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .section-container {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-container {
+      padding-inline: 2rem;
+    }
+  }
+
+  /* Orange accent line — left border accent used on section headers */
+  .accent-line {
+    border-left: 3px solid var(--primary);
+    padding-left: 0.75rem;
   }
 }
