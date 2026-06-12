@@ -17,13 +17,17 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          # Node 24 ships npm 11, matching the npm that authored package-lock.json.
-          # Node 20 (npm 10) reads this lockfile as out-of-sync and fails `npm ci`.
+          # Match local/Vercel (Node 24 / npm 11).
           node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        # `npm install`, not `npm ci`: the lockfile is generated on Windows, where
+        # npm omits the Linux-only wasm transitive optional deps (@emnapi/runtime,
+        # @emnapi/core via @tailwindcss/oxide-wasm32-wasi). `npm ci` rejects that as
+        # out-of-sync on the Linux runner; `npm install` reconciles it. Vercel's
+        # build uses `npm install` for the same reason.
+        run: npm install --no-audit --no-fund
 
       - name: Run type check
         run: npx tsc --noEmit
