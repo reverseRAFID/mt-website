@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
-import sql from '@/lib/db'
+import { getSql } from '@/lib/db'
 
 const SUBTEAMS = ['mechanical', 'electrical', 'software', 'science', 'drone', 'outreach', 'management']
 
 export async function POST(req: Request) {
   try {
+    const sql = getSql()
     const body = await req.json()
 
     const { name, email, studentId, department, year, subteam1, subteam2, whyJoin, experience } = body
