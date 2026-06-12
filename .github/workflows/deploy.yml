@@ -17,7 +17,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Node 24 ships npm 11, matching the npm that authored package-lock.json.
+          # Node 20 (npm 10) reads this lockfile as out-of-sync and fails `npm ci`.
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
