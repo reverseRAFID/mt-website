@@ -111,6 +111,5 @@ Workflow:
 
 - **Build needs the Sanity env vars** — pages prerender against the dataset. A missing `NEXT_PUBLIC_SANITY_PROJECT_ID` causes a 404/placeholder build failure.
 - **`/api/apply` needs `DATABASE_URL` at runtime** but **not at build time** (the Neon client is lazy via `getSql()`). Locally, the form 500s until you set a real connection string.
-- **`src/lib/sanity.ts` is dead code** — use `src/sanity/lib/client.ts`. Don't import the former.
+- **One Sanity client:** import from `src/sanity/lib/client.ts` (the single source). Don't reintroduce a duplicate client under `src/lib/`.
 - **Windows shells:** prefer git-bash for `vercel`/`gh` CLI work; PowerShell pipes append `\r` which corrupts piped values (see [DEPLOYMENT.md](DEPLOYMENT.md#adding-env-vars-via-cli--important-gotcha)).
-- **Known non-blocking warnings:** `react-hooks/exhaustive-deps` in `AnnouncementBar.tsx` and `Navbar.tsx`. Warnings, not errors — they don't fail the build.

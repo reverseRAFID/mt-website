@@ -51,8 +51,7 @@ src/
 │
 ├─ lib/
 │  ├─ db.ts                      # Lazy Neon client — getSql()
-│  ├─ utils.ts                   # cn(), formatDate(), estimateReadTime()
-│  └─ sanity.ts                  # ⚠️ legacy/unused duplicate client (not imported anywhere)
+│  └─ utils.ts                   # cn(), formatDate(), estimateReadTime()
 │
 └─ providers/
    └─ ThemeProvider.tsx          # Wraps next-themes
@@ -62,7 +61,7 @@ next.config.mjs                  # Image remote patterns + /studio iframe header
 vercel.json                      # { "framework": "nextjs" }
 ```
 
-> **Known cleanup item:** `src/lib/sanity.ts` is a second Sanity client that nothing imports — all 20 pages/components use `src/sanity/lib/client.ts`. Safe to delete; left in place to avoid an unrelated change.
+> All Sanity reads go through the single client in `src/sanity/lib/client.ts`.
 
 ---
 

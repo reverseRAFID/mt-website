@@ -13,6 +13,7 @@ export function AnnouncementBar({ announcements }: AnnouncementBarProps) {
   const [current, setCurrent] = useState(0)
   const [slideIn, setSlideIn] = useState(false)
   const barRef = useRef<HTMLDivElement | null>(null)
+  const heightKey = announcementHeightKey(announcements, current)
 
   useLayoutEffect(() => {
     const updateOffset = () => {
@@ -34,7 +35,7 @@ export function AnnouncementBar({ announcements }: AnnouncementBarProps) {
       resizeObserver?.disconnect()
       document.documentElement.style.setProperty('--announcement-bar-offset', '0px')
     }
-  }, [visible, announcementHeightKey(announcements, current)])
+  }, [visible, heightKey])
 
   useEffect(() => {
     if (announcements.length > 0) {

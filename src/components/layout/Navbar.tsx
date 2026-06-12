@@ -32,18 +32,16 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  function getNavbarSurfaceMode() {
-    if (!mounted) return 'transparent'
-    if (!scrolled) return 'transparent'
-    return resolvedTheme === 'dark' ? 'solid-dark' : 'solid-light'
-  }
-
   function getLogoSrc(surfaceMode: 'transparent' | 'solid-dark' | 'solid-light') {
     if (surfaceMode === 'solid-light') return '/logo.svg'
     return '/logo-dark.svg'
   }
 
-  const navbarSurfaceMode = useMemo(() => getNavbarSurfaceMode(), [mounted, scrolled, resolvedTheme])
+  const navbarSurfaceMode = useMemo<'transparent' | 'solid-dark' | 'solid-light'>(() => {
+    if (!mounted) return 'transparent'
+    if (!scrolled) return 'transparent'
+    return resolvedTheme === 'dark' ? 'solid-dark' : 'solid-light'
+  }, [mounted, scrolled, resolvedTheme])
   const logoSrc = getLogoSrc(navbarSurfaceMode)
   const navbarTop = 'var(--announcement-bar-offset, 0px)'
 
