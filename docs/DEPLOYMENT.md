@@ -41,8 +41,12 @@ adding/fixing an env var you must `--force` or it reuses the previous (failed) b
 - push to **`main`** → production deploy (`--prod`)
 - push to **`develop`** → preview deploy
 
-The workflow checks out, `npm ci`, runs `npx tsc --noEmit`, then deploys via
-`amondnet/vercel-action`. It needs three repo secrets (below).
+The workflow (`.github/workflows/deploy.yml`) runs on **Node 24**, then:
+`npm install` → `npx tsc --noEmit` → install `vercel@latest` → `vercel deploy`
+(`--prod` on `main`, preview on `develop`). It needs three repo secrets (below).
+
+> **Why `npm install`, not `npm ci`, and not the old `amondnet/vercel-action`** —
+> see the troubleshooting log below. Both were deliberate fixes, not oversights.
 
 ---
 
@@ -83,7 +87,10 @@ Set under **GitHub → repo → Settings → Secrets and variables → Actions**
 |---|---|---|
 | `VERCEL_ORG_ID` | `.vercel/project.json` → `orgId` | ✅ set |
 | `VERCEL_PROJECT_ID` | `.vercel/project.json` → `projectId` | ✅ set |
-| `VERCEL_TOKEN` | vercel.com/account/tokens | ❌ **must be added** |
+| `VERCEL_TOKEN` | vercel.com/account/tokens | ✅ set |
+
+All three are set and the Actions pipeline deploys green end-to-end. Re-issue
+`VERCEL_TOKEN` at handover (see checklist).
 
 ```bash
 # requires gh authenticated with repo scope:
@@ -92,7 +99,7 @@ printf '%s' 'prj_xxx'  | gh secret set VERCEL_PROJECT_ID
 printf '%s' 'vercel_token_here' | gh secret set VERCEL_TOKEN
 ```
 
-Until `VERCEL_TOKEN` exists, the Actions workflow will fail — but direct CLI deploys still work.
+If `VERCEL_TOKEN` is ever removed/expired, the Actions deploy step fails — but direct CLI deploys still work.
 
 ---
 
@@ -125,6 +132,8 @@ These were hit during initial deployment. If a build fails, check here first.
 | `projectId can only contain a-z, 0-9 and dashes` | Env value had a trailing `\r` from PowerShell piping | Re-add via git-bash `printf '%s\n'` |
 | `No Output Directory named "dist" found` after a successful build | Vercel project's framework preset was wrong | `vercel.json` pins `"framework": "nextjs"` |
 | Redeploy "succeeds" instantly with no build, still broken | Build cache reused after only env (not source) changed | Redeploy with `--force` |
+| **CI** `npm ci` fails: `Missing: @emnapi/runtime@1.11.0 from lock file` | `package-lock.json` is generated on Windows, where npm omits Linux-only wasm transitive optional deps (pulled by `@tailwindcss/oxide-wasm32-wasi`). `npm ci` is strict and rejects this on the Linux runner (any npm version). Local Windows npm won't add them, even with `--os=linux`. | Workflow uses `npm install --no-audit --no-fund` instead of `npm ci` (Vercel's build does the same) |
+| **CI** deploy step fails: `Your Vercel CLI version is outdated. This endpoint requires version 47.2.2 or later` | `amondnet/vercel-action@v25` bundles Vercel CLI 25.x, which Vercel's API now rejects | Workflow installs `vercel@latest` and runs `vercel deploy` directly instead of the action |
 | Build fails on `'X' is defined but never used` | ESLint errors are fatal in `next build` | Remove unused imports / fix before pushing |
 
 ---
