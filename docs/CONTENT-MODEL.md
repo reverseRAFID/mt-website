@@ -104,7 +104,7 @@ Queried by `COMPETITIONS_QUERY`, `COMPETITION_BY_SLUG_QUERY`, `LATEST_COMPETITIO
 | `slug` | slug *(required)* | from `name` → `team/[member-slug]` |
 | `photo` | image | |
 | `role` | string | e.g. "Team Lead, Software Engineer" |
-| `subTeam` | string (enum) | mechanical, electrical, software, science, drone, outreach, management |
+| `subTeam` | string (enum) | management, controls, mechanical, electronics, science, uav, network, autonomous, rnd (values must match `SUBTEAM_COLORS` in `team/page.tsx`) |
 | `yearOfStudy` | string | e.g. "3rd Year" |
 | `graduationYear` | number | |
 | `isAlumni` | boolean (default false) | |
