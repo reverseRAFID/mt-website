@@ -10,12 +10,14 @@ export const metadata: Metadata = { title: 'The Team' }
 
 const SUBTEAM_COLORS: Record<string, string> = {
   management: 'bg-purple-50 text-purple-700 dark:bg-purple-950/50 dark:text-purple-400',
-  software: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400',
+  controls: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400',
   mechanical: 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400',
-  electrical: 'bg-yellow-50 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-400',
+  electronics: 'bg-yellow-50 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-400',
   science: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400',
-  drone: 'bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-400',
-  outreach: 'bg-pink-50 text-pink-700 dark:bg-pink-950/50 dark:text-pink-400',
+  uav: 'bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-400',
+  network: 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-400',
+  autonomous: 'bg-green-50 text-green-700 dark:bg-green-950/50 dark:text-green-400',
+  rnd: 'bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-400',
 }
 
 function MemberCard({ member }: { member: MemberCard }) {
