@@ -5,6 +5,9 @@ import type { Metadata } from 'next'
 import { sanityFetch, urlFor } from '@/sanity/lib/client'
 import { POSTS_QUERY } from '@/sanity/lib/queries'
 import type { PostCard } from '@/sanity/lib/types'
+import { Reveal } from '@/components/motion/Reveal'
+import { SectionHeader } from '@/components/ui/SectionHeader'
+import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'News & Blog' }
 
@@ -29,67 +32,87 @@ export default async function NewsPage() {
 
   return (
     <PageLayout>
-      <div className="bg-surface border-b border-divider">
-        <div className="section-container py-14">
-          <div className="accent-line mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-faint">Updates</p>
-          </div>
-          <h1 className="font-display font-bold text-5xl text-text mb-3">News & Blog</h1>
-          <p className="text-text-muted text-lg max-w-xl">
-            Competition recaps, rover reveals, research updates, and team announcements.
-          </p>
+      {/* Page hero band */}
+      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
+        <div className="section-container relative">
+          <Reveal>
+            <SectionHeader
+              kicker="Dispatches"
+              title="News & Updates"
+              description="Competition recaps, rover reveals, research updates, and team announcements."
+            />
+          </Reveal>
         </div>
-      </div>
+      </section>
 
-      <div className="section-container py-14">
-        {!posts?.length ? (
-          <div className="py-20 text-center text-text-muted">
-            No posts yet — add them in Sanity CMS → News & Blog.
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <Link
-                key={post._id}
-                href={`/news/${post.slug.current}`}
-                className="group bg-surface rounded-xl border border-divider overflow-hidden hover:border-primary/40 hover:shadow-md transition-all duration-200"
-              >
-                {post.featuredImage && (
-                  <div className="aspect-[16/9] relative overflow-hidden bg-surface-2">
-                    <Image
-                      src={urlFor(post.featuredImage).width(600).height(338).url()}
-                      alt={post.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  </div>
-                )}
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    {post.category && (
-                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${CATEGORY_COLORS[post.category] ?? 'bg-surface-2 text-text-faint'}`}>
-                        {CATEGORY_LABELS[post.category] ?? post.category}
-                      </span>
+      <section className="relative py-16 lg:py-24">
+        <div className="section-container">
+          {!posts?.length ? (
+            <Reveal>
+              <div className="relative rounded-card border border-divider bg-surface-raised py-20 text-center">
+                <CornerTicks className="text-primary/30" />
+                <p className="text-text-muted">
+                  No posts yet — add them in Sanity CMS → News &amp; Blog.
+                </p>
+              </div>
+            </Reveal>
+          ) : (
+            <Reveal stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {posts.map((post) => (
+                <Link
+                  key={post._id}
+                  href={`/news/${post.slug.current}`}
+                  className="group relative flex flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                >
+                  <CornerTicks className="z-10 text-primary/0 group-hover:text-primary/40 transition-colors" />
+
+                  {post.featuredImage && (
+                    <div className="relative aspect-[16/9] overflow-hidden bg-surface-2">
+                      <Image
+                        src={urlFor(post.featuredImage).width(600).height(338).url()}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                      <div className="pointer-events-none absolute inset-0 border-b border-divider" />
+                    </div>
+                  )}
+
+                  <div className="flex flex-1 flex-col p-6">
+                    <div className="mb-4 flex items-center justify-between">
+                      {post.category && (
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${CATEGORY_COLORS[post.category] ?? 'bg-surface-2 text-text-faint'}`}
+                        >
+                          {CATEGORY_LABELS[post.category] ?? post.category}
+                        </span>
+                      )}
+                    </div>
+
+                    <h2 className="mb-2 font-display text-lg font-bold tracking-tight text-text transition-colors duration-150 group-hover:text-primary line-clamp-2">
+                      {post.title}
+                    </h2>
+
+                    {post.excerpt && (
+                      <p className="text-sm leading-relaxed text-text-muted line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                    )}
+
+                    {post.publishedAt && (
+                      <div className="mt-auto border-t border-divider pt-4 hud-label text-text-faint nums">
+                        {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                      </div>
                     )}
                   </div>
-                  <h2 className="font-display font-bold text-lg text-text group-hover:text-primary transition-colors mb-2 line-clamp-2">
-                    {post.title}
-                  </h2>
-                  {post.excerpt && (
-                    <p className="text-sm text-text-muted leading-relaxed line-clamp-3 mb-4">{post.excerpt}</p>
-                  )}
-                  {post.publishedAt && (
-                    <p className="text-xs text-text-faint">
-                      {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+                </Link>
+              ))}
+            </Reveal>
+          )}
+        </div>
+      </section>
     </PageLayout>
   )
 }

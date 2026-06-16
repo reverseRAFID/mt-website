@@ -11,6 +11,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bracumongoltori.com'),
   title: {
     default: 'BRACU Mongol-Tori | Mars Rover Team',
     template: '%s | BRACU Mongol-Tori',

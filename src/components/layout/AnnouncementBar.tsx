@@ -57,37 +57,40 @@ export function AnnouncementBar({ announcements }: AnnouncementBarProps) {
   return (
     <div
       ref={barRef}
-      className={`sticky top-0 z-50 overflow-hidden border-b border-orange-500 bg-[rgba(0,0,0,0.87)] text-orange-500 backdrop-blur-2xl shadow-[0_16px_50px_rgba(0,0,0,0.28)] transition-transform duration-500 ${
+      className={`sticky top-0 z-50 overflow-hidden border-b border-primary/40 bg-[#0a0a0a] text-primary transition-transform duration-500 ${
         slideIn ? 'translate-y-0' : '-translate-y-full'
       }`}
       role="banner"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(255, 255, 255, 0.08),transparent_28%),radial-gradient(circle_at_80%_50%,rgba(255,255,255,0.04),transparent_24%)]" />
-      <div className="section-container relative flex min-h-[48px] flex-nowrap items-center justify-between gap-2 py-3 sm:min-h-[64px] sm:gap-1">
-        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
-          <span className="hidden shrink-0 items-center rounded-full border border-orange-500 bg-orange-500/20 px-2 py-0.5 text-[8px] font-semibold uppercase tracking-[0.18em] text-orange-300 shadow-[0_0_0_1px_rgba(255,255,255,0.03)] sm:inline-flex sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-[0.24em]">
-            Announcement
+      {/* faint scanning sheen */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_50%,rgba(255,107,26,0.18),transparent_30%),radial-gradient(circle_at_85%_50%,rgba(255,107,26,0.10),transparent_26%)]" />
+      <div className="section-container relative flex min-h-[44px] flex-nowrap items-center justify-between gap-2 py-2.5 sm:min-h-[52px] sm:gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3.5">
+          <span className="hidden shrink-0 items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 sm:inline-flex">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow" />
+            <span className="hud-label text-[9px] text-primary sm:text-[10px]">Transmission</span>
           </span>
-          <div className="min-w-0 flex-1 overflow-hidden whitespace-nowrap text-center sm:text-left">
-            <span className="block truncate text-[10px] font-bold leading-[1.2] text-orange-300 drop-shadow-[0_1px_1px_rgba(255,146,73,0.08)] sm:text-sm sm:leading-normal">
+          {/* mobile-only pulse dot */}
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary animate-pulse-glow sm:hidden" />
+
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <span className="block truncate text-[11px] font-semibold leading-tight text-primary/90 sm:text-sm">
               {announcement.message}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-1.5 shrink-0 sm:gap-2">
-          {announcement.link && (
-            <Link
-              href={announcement.link}
-              className="inline-flex items-center gap-1 rounded-full border border-orange-500 bg-orange-500/20 px-2.5 py-1 text-[10px] font-semibold text-orange-300 shadow-[0_8px_24px_rgba(0,0,0,0.14)] backdrop-blur-md transition-colors hover:bg-orange-500/14 sm:gap-1.5 sm:px-4 sm:py-1.5 sm:text-sm"
-            >
-              {announcement.linkLabel ?? 'Learn more'}
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-[14px] sm:h-[14px]">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
-          )}
-        </div>
+        {announcement.link && (
+          <Link
+            href={announcement.link}
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary transition-colors hover:bg-primary/20 sm:gap-1.5 sm:px-4 sm:py-1.5 sm:text-sm"
+          >
+            {announcement.linkLabel ?? 'Learn more'}
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:h-3.5 sm:w-3.5">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Link>
+        )}
       </div>
     </div>
   )

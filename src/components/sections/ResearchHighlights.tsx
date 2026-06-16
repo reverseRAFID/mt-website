@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import type { ResearchCard } from '@/sanity/lib/types'
+import { Reveal } from '@/components/motion/Reveal'
+import { SectionHeader } from '@/components/ui/SectionHeader'
 
 interface ResearchHighlightsProps {
   papers: ResearchCard[]
@@ -21,69 +23,97 @@ export function ResearchHighlights({ papers }: ResearchHighlightsProps) {
   if (papers.length === 0) return null
 
   return (
-    <section className="py-20 bg-surface">
+    <section className="relative py-20 lg:py-28 bg-surface">
       <div className="section-container">
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <div className="accent-line mb-3">
-              <p className="text-xs font-semibold uppercase tracking-widest text-text-faint">Publications</p>
-            </div>
-            <h2 className="font-display font-bold text-3xl lg:text-4xl text-text">Research Highlights</h2>
-          </div>
-          <Link
-            href="/research"
-            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary transition-colors duration-150"
-          >
-            All papers
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </Link>
-        </div>
+        <SectionHeader
+          kicker="Publications"
+          title="Research Highlights"
+          action={
+            <Link
+              href="/research"
+              className="group inline-flex items-center gap-1.5 text-sm font-semibold text-text-muted hover:text-primary transition-colors duration-150"
+            >
+              All papers
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="transition-transform group-hover:translate-x-0.5"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </Link>
+          }
+        />
 
-        <div className="flex flex-col gap-4">
-          {papers.map((paper) => (
+        <Reveal
+          stagger
+          className="mt-12 flex flex-col border-t border-divider"
+        >
+          {papers.map((paper, i) => (
             <Link
               key={paper._id}
               href={`/research/${paper.slug.current}`}
-              className="group bg-bg rounded-xl border border-divider p-6 hover:border-primary/40 hover:shadow-md transition-all duration-200"
+              className="group relative flex flex-col gap-4 border-b border-divider py-6 transition-colors duration-200 hover:bg-bg sm:flex-row sm:items-start sm:gap-6"
             >
-              <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${STATUS_STYLE[paper.status] ?? ''}`}>
-                      {STATUS_LABEL[paper.status] ?? paper.status}
-                    </span>
-                    <span className="text-xs text-text-faint">
-                      {paper.conference ? `${paper.conference} · ` : ''}{paper.year}
-                    </span>
-                  </div>
-                  <h3 className="font-display font-bold text-base text-text group-hover:text-primary transition-colors duration-150 mb-1.5">
-                    {paper.title}
-                  </h3>
-                  {paper.authorNames && (
-                    <p className="text-sm text-text-muted">{paper.authorNames.join(', ')}</p>
-                  )}
+              {/* hover accent rail */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute left-0 top-0 h-full w-px origin-top scale-y-0 bg-primary transition-transform duration-300 group-hover:scale-y-100"
+              />
+
+              <div className="hud-label nums shrink-0 pt-0.5 text-text-faint transition-colors duration-200 group-hover:text-primary sm:w-12">
+                {String(i + 1).padStart(2, '0')}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="mb-2 flex flex-wrap items-center gap-2.5">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[paper.status] ?? ''}`}
+                  >
+                    {STATUS_LABEL[paper.status] ?? paper.status}
+                  </span>
+                  <span className="hud-label nums text-text-faint">
+                    {paper.conference ? `${paper.conference} · ` : ''}
+                    {paper.year}
+                  </span>
                 </div>
-                {paper.topics && paper.topics.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 sm:flex-col sm:items-end sm:gap-1">
-                    {paper.topics.slice(0, 3).map((topic) => (
-                      <span
-                        key={topic}
-                        className="text-xs bg-primary-highlight text-primary px-2 py-0.5 rounded-full font-medium whitespace-nowrap"
-                      >
-                        {topic}
-                      </span>
-                    ))}
-                  </div>
+                <h3 className="font-display text-lg font-bold text-text transition-colors duration-150 group-hover:text-primary text-balance">
+                  {paper.title}
+                </h3>
+                {paper.authorNames && (
+                  <p className="mt-1.5 text-sm text-text-muted">
+                    {paper.authorNames.join(', ')}
+                  </p>
                 )}
               </div>
+
+              {paper.topics && paper.topics.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 sm:max-w-[40%] sm:justify-end sm:pt-0.5">
+                  {paper.topics.slice(0, 3).map((topic) => (
+                    <span
+                      key={topic}
+                      className="inline-flex items-center whitespace-nowrap rounded-full border border-divider bg-bg px-2.5 py-0.5 font-mono text-[11px] text-text-muted transition-colors duration-200 group-hover:border-primary/40 group-hover:text-primary"
+                    >
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+              )}
             </Link>
           ))}
-        </div>
+        </Reveal>
 
-        <div className="mt-6 sm:hidden text-center">
-          <Link href="/research" className="text-sm font-medium text-primary hover:text-primary-hover">
+        <div className="mt-8 text-center sm:hidden">
+          <Link
+            href="/research"
+            className="text-sm font-semibold text-primary hover:text-primary-hover"
+          >
             View all research →
           </Link>
         </div>
