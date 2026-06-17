@@ -3,6 +3,7 @@ import Image from 'next/image'
 import type { RoverCard } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/client'
 import { Reveal } from '@/components/motion/Reveal'
+import { Parallax } from '@/components/motion/Parallax'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
@@ -32,7 +33,7 @@ export function RoverSpotlight({ rover }: RoverSpotlightProps) {
         <div className="mt-12 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
           {/* Hero image or placeholder — framed telemetry panel */}
           <Reveal y={32} blur={6} className="order-first lg:order-last">
-            <div className="relative">
+            <Parallax speed={0.12} className="relative">
               <div
                 aria-hidden
                 className="pointer-events-none absolute -inset-6 glow-orange opacity-60 mask-radial-fade"
@@ -73,7 +74,7 @@ export function RoverSpotlight({ rover }: RoverSpotlightProps) {
                   </span>
                 </div>
               )}
-            </div>
+            </Parallax>
           </Reveal>
 
           {/* Specs + actions */}

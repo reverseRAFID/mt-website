@@ -7,6 +7,7 @@ import { gsap, prefersReducedMotion } from '@/lib/gsap'
 import { Counter } from '@/components/motion/Counter'
 import { Magnetic } from '@/components/motion/Magnetic'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { MarsTerrain } from '@/components/fx/MarsTerrain'
 
 const STATS = [
   { value: 10, label: 'Years Active', suffix: '+' },
@@ -24,31 +25,10 @@ export function Hero() {
     () => {
       const root = rootRef.current
       if (!root) return
+
       if (prefersReducedMotion()) return
 
-      const q = gsap.utils.selector(root)
-
-      // Intro timeline — everything is hidden via JS only, so it stays
-      // visible with JS disabled or when reduced-motion is requested.
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-
-      tl.from(q('[data-hero-badge]'), { opacity: 0, y: 14, duration: 0.6 })
-        .from(
-          q('[data-hero-word]'),
-          { opacity: 0, yPercent: 120, filter: 'blur(6px)', duration: 0.9, stagger: 0.12 },
-          '-=0.2'
-        )
-        .from(q('[data-hero-sub]'), { opacity: 0, y: 18, duration: 0.7 }, '-=0.55')
-        .from(q('[data-hero-cta]'), { opacity: 0, y: 16, duration: 0.6, stagger: 0.12 }, '-=0.4')
-        .from(q('[data-hero-hud]'), { opacity: 0, duration: 0.6 }, '-=0.35')
-        .from(
-          q('[data-hero-stat]'),
-          { opacity: 0, y: 20, duration: 0.6, stagger: 0.1 },
-          '-=0.3'
-        )
-        .from(q('[data-hero-cue]'), { opacity: 0, duration: 0.6 }, '-=0.2')
-
-      // Scroll parallax on the technical grid + orange glow.
+      // Scroll parallax on the technical grid + orange glow (always on).
       gsap.to(gridRef.current, {
         yPercent: 14,
         ease: 'none',
@@ -59,6 +39,43 @@ export function Hero() {
         ease: 'none',
         scrollTrigger: { trigger: root, start: 'top top', end: 'bottom top', scrub: true },
       })
+
+      const q = gsap.utils.selector(root)
+      let played = false
+      const playIntro = () => {
+        if (played) return
+        played = true
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+        tl.from(q('[data-hero-badge]'), { opacity: 0, y: 14, duration: 0.6 })
+          .from(
+            q('[data-hero-word]'),
+            { opacity: 0, yPercent: 120, filter: 'blur(6px)', duration: 0.9, stagger: 0.12 },
+            '-=0.2'
+          )
+          .from(q('[data-hero-sub]'), { opacity: 0, y: 18, duration: 0.7 }, '-=0.55')
+          .from(q('[data-hero-cta]'), { opacity: 0, y: 16, duration: 0.6, stagger: 0.12 }, '-=0.4')
+          .from(q('[data-hero-hud]'), { opacity: 0, duration: 0.6 }, '-=0.35')
+          .from(q('[data-hero-stat]'), { opacity: 0, y: 20, duration: 0.6, stagger: 0.1 }, '-=0.3')
+          .from(q('[data-hero-cue]'), { opacity: 0, duration: 0.6 }, '-=0.2')
+      }
+
+      // Wait for the preloader's "boot gate" so the reveal isn't hidden behind it.
+      const booted = (window as unknown as { __mtBooted?: boolean }).__mtBooted
+      if (booted) {
+        playIntro()
+        return
+      }
+      const run = () => {
+        window.removeEventListener('mt:booted', run)
+        gate.kill()
+        playIntro()
+      }
+      window.addEventListener('mt:booted', run)
+      const gate = gsap.delayedCall(2.2, run) // safety: play even if the gate never opens
+      return () => {
+        window.removeEventListener('mt:booted', run)
+        gate.kill()
+      }
     },
     { scope: rootRef }
   )
@@ -68,25 +85,32 @@ export function Hero() {
       ref={rootRef}
       className="relative flex min-h-dvh flex-col justify-center overflow-hidden bg-[#050505]"
     >
-      {/* Technical grid (parallax) */}
+      {/* Technical grid (parallax / WebGL fallback) */}
       <div
         ref={gridRef}
         aria-hidden
-        className="pointer-events-none absolute inset-0 -top-[14%] h-[128%] opacity-[0.05]"
+        className="pointer-events-none absolute inset-0 -top-[14%] h-[128%] opacity-[0.04]"
         style={{
           backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
           backgroundSize: '48px 48px',
         }}
       />
 
+      {/* WebGL Martian terrain centerpiece */}
+      <MarsTerrain className="pointer-events-none absolute inset-0 h-full w-full" />
+
+      {/* Horizon glow where terrain meets sky */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 horizon-glow" />
+
       {/* Orange glow (parallax) */}
       <div
         ref={glowRef}
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/3 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[120px]"
+        className="pointer-events-none absolute left-1/2 top-[28%] h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[130px]"
       />
 
-      {/* Faint scanning sweep */}
+      {/* Vignette + faint scanning sweep */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 vignette" />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-60 motion-safe:animate-[mt-scan_7s_linear_infinite]"

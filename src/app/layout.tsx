@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/providers/ThemeProvider'
+import { SiteFx } from '@/components/fx/SiteFx'
 import './globals.css'
 
 const jetbrainsMono = JetBrains_Mono({
@@ -43,6 +44,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased" suppressHydrationWarning>
         <ThemeProvider>
+          <SiteFx />
           {children}
         </ThemeProvider>
       </body>

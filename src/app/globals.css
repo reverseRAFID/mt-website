@@ -343,3 +343,74 @@ code, pre, .font-mono {
 
 /* GSAP reveal safety: if JS fails to run, content must remain visible.
    Initial hidden state is applied via JS only (gsap.set), never CSS. */
+
+/* ============================================
+   LENIS SMOOTH SCROLL
+   ============================================ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ============================================
+   CUSTOM RETICLE CURSOR
+   Active only on fine pointers; native cursor hidden but kept on
+   text inputs so the caret position stays visible.
+   ============================================ */
+html.cursor-reticle,
+html.cursor-reticle * {
+  cursor: none !important;
+}
+html.cursor-reticle input,
+html.cursor-reticle textarea,
+html.cursor-reticle select,
+html.cursor-reticle [contenteditable='true'] {
+  cursor: auto !important;
+}
+
+/* ============================================
+   FILM GRAIN
+   ============================================ */
+@keyframes mt-grain {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-4%, -4%); }
+  20% { transform: translate(-8%, 2%); }
+  30% { transform: translate(2%, -10%); }
+  40% { transform: translate(-4%, 6%); }
+  50% { transform: translate(-8%, 4%); }
+  60% { transform: translate(6%, 0); }
+  70% { transform: translate(0, 8%); }
+  80% { transform: translate(2%, 12%); }
+  90% { transform: translate(-8%, 2%); }
+  100% { transform: translate(2%, -4%); }
+}
+
+@layer utilities {
+  /* Vignette + horizon helpers for the hero console */
+  .vignette {
+    box-shadow: inset 0 0 180px 40px rgba(0, 0, 0, 0.85);
+  }
+  .horizon-glow {
+    background: radial-gradient(
+      120% 60% at 50% 100%,
+      rgba(var(--primary-rgb), 0.22) 0%,
+      transparent 60%
+    );
+  }
+  /* Big kinetic display number */
+  .display-figure {
+    font-family: 'Cabinet Grotesk', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+  }
+}
