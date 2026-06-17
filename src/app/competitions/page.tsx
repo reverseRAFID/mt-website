@@ -4,6 +4,9 @@ import type { Metadata } from 'next'
 import { sanityFetch } from '@/sanity/lib/client'
 import { COMPETITIONS_QUERY } from '@/sanity/lib/queries'
 import type { CompetitionCard } from '@/sanity/lib/types'
+import { Reveal } from '@/components/motion/Reveal'
+import { SectionHeader } from '@/components/ui/SectionHeader'
+import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'Competitions' }
 
@@ -18,71 +21,99 @@ export default async function CompetitionsPage() {
 
   return (
     <PageLayout>
-      <div className="bg-surface border-b border-divider">
-        <div className="section-container py-14">
-          <div className="accent-line mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-faint">Track Record</p>
-          </div>
-          <h1 className="font-display font-bold text-5xl text-text mb-3">Competitions</h1>
-          <p className="text-text-muted text-lg max-w-xl">
-            Our history at URC, IRC, and ERC — rosters, results, and SAR videos from every year.
-          </p>
+      {/* Page hero band */}
+      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60"
+        />
+        <div className="section-container relative">
+          <SectionHeader
+            kicker="Track Record"
+            title="Competitions"
+            description="Our history at URC, IRC, and ERC — rosters, results, and SAR videos from every year."
+          />
         </div>
-      </div>
+      </section>
 
-      <div className="section-container py-14">
-        {!competitions?.length ? (
-          <div className="py-20 text-center text-text-muted">
-            No competitions yet — add them in Sanity CMS → Competitions.
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {competitions.map((comp) => (
-              <Link
-                key={comp._id}
-                href={`/competitions/${comp.slug.current}`}
-                className="group bg-surface rounded-xl border border-divider p-6 hover:border-primary/40 hover:shadow-md transition-all duration-200"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <section className="relative py-16 lg:py-24">
+        <div className="section-container">
+          {!competitions?.length ? (
+            <div className="relative rounded-card border border-divider bg-surface-raised py-20 text-center text-text-muted">
+              No competitions yet — add them in Sanity CMS → Competitions.
+            </div>
+          ) : (
+            <Reveal stagger className="flex flex-col gap-4">
+              {competitions.map((comp) => (
+                <Link
+                  key={comp._id}
+                  href={`/competitions/${comp.slug.current}`}
+                  className="group relative flex flex-col gap-4 rounded-card border border-divider bg-surface-raised p-6 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
+
                   <div className="flex items-center gap-4">
+                    {/* Rank badge with corner ticks */}
                     {comp.rank ? (
-                      <div className="shrink-0 w-14 h-14 rounded-lg bg-primary-highlight border border-primary/20 flex flex-col items-center justify-center">
-                        <span className="font-display font-bold text-xl text-primary leading-none">#{comp.rank}</span>
-                        <span className="text-[9px] text-text-faint uppercase tracking-wide">Rank</span>
+                      <div className="relative shrink-0 flex h-16 w-16 flex-col items-center justify-center rounded-lg border border-primary/20 bg-primary-highlight">
+                        <CornerTicks className="text-primary/30" />
+                        <span className="font-display font-bold text-2xl text-primary leading-none nums">
+                          #{comp.rank}
+                        </span>
+                        <span className="hud-label mt-1 text-text-faint">Rank</span>
                       </div>
                     ) : (
-                      <div className="shrink-0 w-14 h-14 rounded-lg bg-surface-2 border border-divider flex items-center justify-center">
-                        <span className="text-xs text-text-faint">TBD</span>
+                      <div className="relative shrink-0 flex h-16 w-16 items-center justify-center rounded-lg border border-divider bg-surface">
+                        <CornerTicks className="text-text-faint/30" />
+                        <span className="hud-label text-text-faint">TBD</span>
                       </div>
                     )}
+
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${COMPETITION_COLORS[comp.shortName] ?? 'bg-surface-2 text-text-faint'}`}>
+                      <div className="mb-1.5 flex items-center gap-2">
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${COMPETITION_COLORS[comp.shortName] ?? 'bg-surface-2 text-text-faint'}`}
+                        >
                           {comp.shortName}
                         </span>
-                        <span className="font-mono text-xs text-text-faint">{comp.year}</span>
+                        <span className="hud-label text-text-faint nums">{comp.year}</span>
                       </div>
-                      <h2 className="font-display font-bold text-xl text-text group-hover:text-primary transition-colors">
+                      <h2 className="font-display font-bold text-xl text-text tracking-tight transition-colors group-hover:text-primary">
                         {comp.name} {comp.year}
                       </h2>
-                      <p className="text-sm text-text-muted">
+                      <p className="mt-1 text-sm text-text-muted">
                         {comp.location}
-                        {comp.rank && comp.totalTeams && ` · Top ${Math.round((comp.rank / comp.totalTeams) * 100)}% of ${comp.totalTeams} teams`}
+                        {comp.rank && comp.totalTeams && (
+                          <span className="font-mono text-text-faint">
+                            {' · '}Top {Math.round((comp.rank / comp.totalTeams) * 100)}% of {comp.totalTeams} teams
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm font-medium text-text-muted group-hover:text-primary transition-colors shrink-0">
+
+                  <div className="flex shrink-0 items-center gap-2 text-sm font-semibold text-text-muted transition-colors group-hover:text-primary">
                     View Details
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="transition-transform group-hover:translate-x-0.5"
+                    >
                       <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+                </Link>
+              ))}
+            </Reveal>
+          )}
+        </div>
+      </section>
     </PageLayout>
   )
 }

@@ -1,82 +1,137 @@
 import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
+import { Reveal } from '@/components/motion/Reveal'
+import { SectionHeader } from '@/components/ui/SectionHeader'
+import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'STEM Outreach' }
 
-const PROGRAMS = [
+const PROGRAMS: { name: string; description: string; icon: ReactNode }[] = [
   {
     name: 'Rover Demo Days',
     description: 'We bring our rovers to schools and universities across Dhaka for live demonstrations — sparking interest in robotics and space exploration among young students.',
-    icon: '🤖',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 8V4H8" />
+        <rect width="16" height="12" x="4" y="8" rx="2" />
+        <path d="M2 14h2M20 14h2M15 13v2M9 13v2" />
+      </svg>
+    ),
   },
   {
     name: 'BRACU Open Day',
     description: 'Every semester, we host an open lab at BRAC University where prospective students and the public can interact with our rovers, try ROS demos, and meet the team.',
-    icon: '🏫',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
+        <path d="M22 10v6" />
+        <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" />
+      </svg>
+    ),
   },
   {
     name: 'RoboClub Workshops',
     description: 'Free workshops for BRACU students on ROS2, SolidWorks, PCB design, and embedded systems — skills that are core to our rover development pipeline.',
-    icon: '🔧',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+      </svg>
+    ),
   },
   {
     name: 'Space & Robotics Competition Guidance',
     description: 'We mentor student teams applying to FIRST, WRO, and local robotics competitions — sharing lessons learned from competing internationally.',
-    icon: '🚀',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+        <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+        <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+      </svg>
+    ),
   },
   {
     name: 'Social Media & Science Communication',
     description: 'Our outreach sub-team produces educational content about Mars exploration, astrobiology, and robotics for our 10,000+ social media followers.',
-    icon: '📡',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4 10a7.31 7.31 0 0 0 10 10Z" />
+        <path d="m9 15 3-3" />
+        <path d="M17 13a6 6 0 0 0-6-6" />
+        <path d="M21 13A10 10 0 0 0 11 3" />
+      </svg>
+    ),
   },
 ]
 
 export default function OutreachPage() {
   return (
     <PageLayout>
-      <div className="bg-surface border-b border-divider">
-        <div className="section-container py-14">
-          <div className="accent-line mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-faint">Community</p>
-          </div>
-          <h1 className="font-display font-bold text-5xl text-text mb-3">STEM Outreach</h1>
-          <p className="text-text-muted text-lg max-w-2xl">
-            Beyond competitions, we&apos;re committed to growing a culture of engineering and science in Bangladesh — one workshop, demo, and conversation at a time.
-          </p>
+      {/* Page hero band */}
+      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
+        <div className="section-container relative">
+          <SectionHeader
+            kicker="Community"
+            title="STEM Outreach"
+            description="Beyond competitions, we're committed to growing a culture of engineering and science in Bangladesh — one workshop, demo, and conversation at a time."
+          />
         </div>
-      </div>
+      </section>
 
-      <div className="section-container py-14">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16">
-          {PROGRAMS.map((program) => (
-            <div key={program.name} className="bg-surface rounded-xl border border-divider p-6">
-              <span className="text-3xl mb-4 block">{program.icon}</span>
-              <h2 className="font-display font-bold text-lg text-text mb-2">{program.name}</h2>
-              <p className="text-sm text-text-muted leading-relaxed">{program.description}</p>
+      <section className="relative py-20 lg:py-28">
+        <div className="section-container">
+          <Reveal stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {PROGRAMS.map((program) => (
+              <div
+                key={program.name}
+                className="group relative flex flex-col rounded-card border border-divider bg-surface-raised p-6 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+              >
+                <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
+
+                <span className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg border border-primary/20 bg-primary-highlight text-primary">
+                  {program.icon}
+                </span>
+
+                <h2 className="font-display font-bold text-lg lg:text-xl text-text tracking-tight group-hover:text-primary transition-colors duration-150 mb-2">
+                  {program.name}
+                </h2>
+                <p className="text-sm text-text-muted leading-relaxed">{program.description}</p>
+              </div>
+            ))}
+          </Reveal>
+
+          {/* CTA */}
+          <Reveal className="mt-12 lg:mt-16">
+            <div className="relative overflow-hidden rounded-card border border-primary/20 bg-primary-highlight p-8 lg:p-10">
+              <CornerTicks className="text-primary/40" />
+              <div className="relative max-w-2xl">
+                <div className="flex items-center gap-2.5 mb-4">
+                  <span className="h-1.5 w-1.5 rotate-45 bg-primary" aria-hidden />
+                  <span className="hud-label text-primary">Host an Event</span>
+                </div>
+                <h2 className="font-display font-bold text-2xl lg:text-3xl text-text tracking-tight mb-3 text-balance">
+                  Want us at your school or event?
+                </h2>
+                <p className="text-text-muted leading-relaxed mb-6 text-pretty">
+                  We love bringing our rovers out to inspire the next generation of engineers. If you&apos;d like to host a demo day, workshop, or talk — get in touch.
+                </p>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+                >
+                  Get in Touch
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
             </div>
-          ))}
+          </Reveal>
         </div>
-
-        {/* CTA */}
-        <div className="bg-primary-highlight border border-primary/20 rounded-2xl p-8">
-          <div className="max-w-2xl">
-            <h2 className="font-display font-bold text-2xl text-text mb-3">Want us at your school or event?</h2>
-            <p className="text-text-muted mb-6">
-              We love bringing our rovers out to inspire the next generation of engineers. If you&apos;d like to host a demo day, workshop, or talk — get in touch.
-            </p>
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-md font-semibold transition-colors"
-            >
-              Get in Touch
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
-        </div>
-      </div>
+      </section>
     </PageLayout>
   )
 }

@@ -19,6 +19,7 @@ import type {
 import { AnnouncementBarServer } from '@/components/layout/AnnouncementBarServer'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { Marquee } from '@/components/ui/Marquee'
 import { Hero } from '@/components/sections/Hero'
 import { AchievementCallout } from '@/components/sections/AchievementCallout'
 import { RoverSpotlight } from '@/components/sections/RoverSpotlight'
@@ -49,6 +50,18 @@ export default async function HomePage() {
       <main>
         <Hero />
         <AchievementCallout competition={competition} />
+        <Marquee
+          items={[
+            'Mars Rover',
+            'URC',
+            'IRC',
+            'ERC',
+            'Autonomy',
+            'Science',
+            'Robotics',
+            'BRAC University',
+          ]}
+        />
         <RoverSpotlight rover={rover} />
         {video && <VideoHighlight video={video} />}
         {posts?.length > 0 && <NewsStrip posts={posts} />}

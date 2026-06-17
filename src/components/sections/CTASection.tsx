@@ -1,4 +1,7 @@
 import Link from 'next/link'
+import { Reveal } from '@/components/motion/Reveal'
+import { SectionHeader } from '@/components/ui/SectionHeader'
+import { CornerTicks } from '@/components/ui/CornerTicks'
 
 const CTAS = [
   {
@@ -43,50 +46,74 @@ const CTAS = [
 
 export function CTASection() {
   return (
-    <section className="py-20 bg-bg">
+    <section className="relative py-20 lg:py-28 bg-bg">
       <div className="section-container">
-        <div className="text-center mb-12">
-          <div className="inline-block accent-line mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-faint">Get Involved</p>
-          </div>
-          <h2 className="font-display font-bold text-3xl lg:text-4xl text-text">
-            Be Part of the Mission
-          </h2>
-        </div>
+        <SectionHeader align="center" kicker="Get Involved" title="Be Part of the Mission" />
 
-        <div className="grid sm:grid-cols-3 gap-6">
+        <Reveal stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-fr">
           {CTAS.map((item) => (
             <div
               key={item.title}
-              className={`rounded-xl border p-7 flex flex-col ${
+              className={`group relative flex flex-col overflow-hidden rounded-card p-7 transition-all duration-300 ${
                 item.primary
-                  ? 'bg-primary-highlight border-primary/30'
-                  : 'bg-surface border-divider'
+                  ? 'sm:col-span-2 lg:col-span-2 lg:row-span-2 border border-primary/30 bg-primary-highlight hover:border-primary/50'
+                  : 'border border-divider bg-surface-raised hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]'
               }`}
             >
-              <div className={`mb-5 ${item.primary ? 'text-primary' : 'text-text-muted'}`}>
+              {item.primary ? (
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-40"
+                />
+              ) : (
+                <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />
+              )}
+
+              {item.primary && (
+                <span className="hud-label relative mb-6 text-primary">Primary Track</span>
+              )}
+
+              <div
+                className={`relative mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg ${
+                  item.primary
+                    ? 'bg-primary text-on-accent'
+                    : 'border border-divider bg-surface text-text-muted group-hover:text-primary transition-colors'
+                }`}
+              >
                 {item.icon}
               </div>
-              <h3 className="font-display font-bold text-xl text-text mb-2">{item.title}</h3>
-              <p className="text-sm text-text-muted leading-relaxed flex-1 mb-6">
+
+              <h3
+                className={`relative font-display font-bold text-text mb-2 ${
+                  item.primary ? 'text-2xl lg:text-3xl' : 'text-xl'
+                }`}
+              >
+                {item.title}
+              </h3>
+              <p
+                className={`relative leading-relaxed text-text-muted flex-1 mb-6 ${
+                  item.primary ? 'text-base max-w-md' : 'text-sm'
+                }`}
+              >
                 {item.description}
               </p>
+
               <Link
                 href={item.href}
-                className={`inline-flex items-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-md transition-colors duration-150 ${
+                className={`relative inline-flex items-center gap-2 rounded-md text-sm font-semibold transition-colors duration-150 ${
                   item.primary
-                    ? 'bg-primary hover:bg-primary-hover text-white'
-                    : 'border border-border hover:border-primary text-text-muted hover:text-primary'
+                    ? 'self-start bg-primary px-5 py-3 text-on-accent hover:bg-primary-hover'
+                    : 'self-start border border-border px-5 py-3 text-text-muted hover:border-primary hover:text-primary'
                 }`}
               >
                 {item.cta}
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </Link>
             </div>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   )

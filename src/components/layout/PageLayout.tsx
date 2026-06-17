@@ -6,28 +6,32 @@ interface PageLayoutProps {
   children: React.ReactNode
 }
 
+/**
+ * Shared chrome + signature "mission control" backdrop for inner pages:
+ * a masked technical grid and twin orange glows behind the content, both
+ * theme-aware (tokens drive the colors in light and dark).
+ */
 export function PageLayout({ children }: PageLayoutProps) {
   return (
     <>
       <AnnouncementBarServer />
       <Navbar />
-      <main className="relative isolate min-h-screen overflow-hidden bg-bg">
+      <main className="relative isolate min-h-dvh overflow-hidden bg-bg">
+        {/* technical grid, faded toward the edges */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.045]"
-          aria-hidden="true"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.45) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.45) 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
-          }}
+          aria-hidden
+          className="pointer-events-none absolute inset-0 tech-grid mask-radial-fade opacity-70"
+        />
+        {/* twin orange glows */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full glow-orange blur-[120px] opacity-80"
         />
         <div
-          className="pointer-events-none absolute top-0 left-1/2 h-[480px] w-[480px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]"
-          aria-hidden="true"
+          aria-hidden
+          className="pointer-events-none absolute top-[60vh] -right-24 h-[420px] w-[420px] rounded-full glow-orange blur-[130px] opacity-50"
         />
-        <div className="relative z-10">
-          {children}
-        </div>
+        <div className="relative z-10">{children}</div>
       </main>
       <Footer />
     </>

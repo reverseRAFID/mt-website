@@ -5,6 +5,9 @@ import { sanityFetch, urlFor } from '@/sanity/lib/client'
 import { ACTIVE_SPONSORS_QUERY } from '@/sanity/lib/queries'
 import type { Sponsor } from '@/sanity/lib/types'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
+import { Reveal } from '@/components/motion/Reveal'
+import { SectionHeader } from '@/components/ui/SectionHeader'
+import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'Sponsors' }
 
@@ -36,74 +39,108 @@ export default async function SponsorsPage() {
 
   return (
     <PageLayout>
-      <div className="bg-surface border-b border-divider">
-        <div className="section-container py-14">
-          <div className="accent-line mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-faint">Partners</p>
-          </div>
-          <h1 className="font-display font-bold text-5xl text-text mb-3">Sponsors</h1>
-          <p className="text-text-muted text-lg max-w-xl">
-            The organizations that make our mission possible — from competition entry fees to rover components.
-          </p>
+      {/* Page hero band */}
+      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
+        <div className="section-container relative">
+          <SectionHeader
+            kicker="Partners"
+            title="Sponsors"
+            description="The organizations that make our mission possible — from competition entry fees to rover components."
+          />
         </div>
-      </div>
+      </section>
 
-      <div className="section-container py-14">
-        {!sponsors?.length ? (
-          <div className="py-20 text-center text-text-muted">
-            No sponsors yet — add them in Sanity CMS → Sponsors.
-          </div>
-        ) : (
-          <div className="flex flex-col gap-14">
-            {TIER_ORDER.filter((tier) => grouped[tier]?.length > 0).map((tier) => {
-              const cfg = TIER_CONFIG[tier]
-              return (
-                <div key={tier}>
-                  <h2 className="font-display font-bold text-sm text-text-faint uppercase tracking-widest mb-6 accent-line">{cfg.label}</h2>
-                  <div className={`grid ${cfg.cols} gap-6 items-center`}>
-                    {grouped[tier].map((sponsor) => (
-                      <a
-                        key={sponsor._id}
-                        href={sponsor.website ?? '#'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-surface rounded-xl border border-divider p-6 flex items-center justify-center hover:border-primary/40 hover:shadow-md transition-all duration-200 group"
-                        aria-label={sponsor.name}
-                      >
-                        {sponsor.logo || sponsor.logoLight || sponsor.logoDark ? (
-                          <ThemeLogo
-                            {...getSponsorLogoSources(sponsor)}
-                            alt={sponsor.name}
-                            width={160}
-                            height={64}
-                            className={`object-contain ${cfg.size} group-hover:opacity-100 transition-all duration-200`}
-                          />
-                        ) : (
-                          <span className="font-display font-bold text-lg text-text-muted group-hover:text-primary transition-colors">{sponsor.name}</span>
-                        )}
-                      </a>
-                    ))}
+      <section className="relative py-20 lg:py-28">
+        <div className="section-container">
+          {!sponsors?.length ? (
+            <div className="rounded-card border border-divider bg-surface-raised py-20 text-center text-text-muted">
+              No sponsors yet — add them in Sanity CMS → Sponsors.
+            </div>
+          ) : (
+            <div className="flex flex-col gap-16">
+              {TIER_ORDER.filter((tier) => grouped[tier]?.length > 0).map((tier) => {
+                const cfg = TIER_CONFIG[tier]
+                return (
+                  <div key={tier}>
+                    <div className="mb-7 flex items-center gap-3">
+                      <span className="h-1.5 w-1.5 rotate-45 bg-primary" aria-hidden />
+                      <h2 className="hud-label text-text">{cfg.label}</h2>
+                      <span className="h-px flex-1 bg-divider" aria-hidden />
+                    </div>
+                    <Reveal stagger className={`grid ${cfg.cols} items-stretch gap-4 sm:gap-6`}>
+                      {grouped[tier].map((sponsor) => (
+                        <a
+                          key={sponsor._id}
+                          href={sponsor.website ?? '#'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group relative flex min-h-[88px] items-center justify-center rounded-card border border-divider bg-surface-raised p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                          aria-label={sponsor.name}
+                        >
+                          <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />
+                          {sponsor.logo || sponsor.logoLight || sponsor.logoDark ? (
+                            <ThemeLogo
+                              {...getSponsorLogoSources(sponsor)}
+                              alt={sponsor.name}
+                              width={160}
+                              height={64}
+                              className={`object-contain ${cfg.size} opacity-80 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0`}
+                            />
+                          ) : (
+                            <span className="font-display text-lg font-bold text-text-muted transition-colors group-hover:text-primary">
+                              {sponsor.name}
+                            </span>
+                          )}
+                        </a>
+                      ))}
+                    </Reveal>
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
+                )
+              })}
+            </div>
+          )}
 
-        {/* Become a sponsor CTA */}
-        <div className="mt-16 bg-primary-highlight border border-primary/20 rounded-2xl p-8 text-center">
-          <h2 className="font-display font-bold text-2xl text-text mb-3">Become a Sponsor</h2>
-          <p className="text-text-muted max-w-lg mx-auto mb-6">
-            Help Bangladesh&apos;s top Mars rover team compete on the world stage. We offer branding, demo days, and direct access to top engineering talent.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-md font-semibold transition-colors"
-          >
-            Get in Touch
-          </Link>
+          {/* Become a sponsor CTA */}
+          <Reveal className="mt-16">
+            <div className="relative overflow-hidden rounded-card border border-primary/30 bg-primary-highlight p-8 text-center lg:p-12">
+              <CornerTicks className="text-primary/40" />
+              <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-40" />
+              <div className="relative mx-auto max-w-lg">
+                <div className="mb-4 flex items-center justify-center gap-2.5">
+                  <span className="h-1.5 w-1.5 rotate-45 bg-primary" aria-hidden />
+                  <span className="hud-label text-primary">Join the mission</span>
+                </div>
+                <h2 className="mb-3 font-display text-2xl font-bold tracking-tight text-text sm:text-3xl">
+                  Become a Sponsor
+                </h2>
+                <p className="mb-7 text-text-muted leading-relaxed">
+                  Help Bangladesh&apos;s top Mars rover team compete on the world stage. We offer branding, demo days, and direct access to top engineering talent.
+                </p>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+                >
+                  Get in Touch
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </Reveal>
         </div>
-      </div>
+      </section>
     </PageLayout>
   )
 }

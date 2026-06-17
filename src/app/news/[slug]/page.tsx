@@ -7,6 +7,8 @@ import { sanityFetch, urlFor } from '@/sanity/lib/client'
 import { POST_BY_SLUG_QUERY } from '@/sanity/lib/queries'
 import type { PostFull } from '@/sanity/lib/types'
 import { PortableText } from '@portabletext/react'
+import { Reveal } from '@/components/motion/Reveal'
+import { CornerTicks } from '@/components/ui/CornerTicks'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -44,64 +46,106 @@ export default async function PostPage({ params }: Props) {
 
   return (
     <PageLayout>
-      <div className="section-container py-14 max-w-3xl mx-auto">
-        <nav className="flex items-center gap-2 text-sm text-text-faint mb-8">
-          <Link href="/news" className="hover:text-primary transition-colors">News</Link>
-          <span>/</span>
-          <span className="text-text line-clamp-1">{post.title}</span>
+      <article className="section-container py-14 lg:py-20 max-w-3xl mx-auto">
+        {/* Breadcrumb */}
+        <nav
+          aria-label="Breadcrumb"
+          className="flex items-center gap-2 hud-label text-text-faint mb-10"
+        >
+          <Link href="/news" className="hover:text-primary transition-colors">
+            News
+          </Link>
+          <span className="text-text-faint/60" aria-hidden>
+            /
+          </span>
+          <span className="text-text-muted line-clamp-1 normal-case tracking-normal font-sans text-xs">
+            {post.title}
+          </span>
         </nav>
 
-        <header className="mb-10">
+        {/* Header */}
+        <Reveal as="header" className="mb-10">
           {post.category && (
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full mb-4 inline-block ${CATEGORY_COLORS[post.category] ?? 'bg-surface-2 text-text-faint'}`}>
+            <span
+              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold mb-5 ${
+                CATEGORY_COLORS[post.category] ?? 'bg-surface-2 text-text-faint'
+              }`}
+            >
               {CATEGORY_LABELS[post.category] ?? post.category}
             </span>
           )}
-          <h1 className="font-display font-bold text-4xl lg:text-5xl text-text mb-4 leading-tight">{post.title}</h1>
-          {post.excerpt && <p className="text-lg text-text-muted leading-relaxed mb-6">{post.excerpt}</p>}
-          <div className="flex items-center gap-4 text-sm text-text-faint">
+          <h1 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-text tracking-tight text-balance leading-[1.08] mb-5">
+            {post.title}
+          </h1>
+          {post.excerpt && (
+            <p className="text-lg text-text-muted leading-relaxed text-pretty mb-6">
+              {post.excerpt}
+            </p>
+          )}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-3 pt-6 border-t border-divider">
             {post.author && (
-              <Link href={`/team/${post.author.slug.current}`} className="flex items-center gap-2 hover:text-primary transition-colors">
+              <Link
+                href={`/team/${post.author.slug.current}`}
+                className="group inline-flex items-center gap-2.5 text-sm font-medium text-text-muted hover:text-primary transition-colors"
+              >
                 {post.author.photo && (
-                  <div className="w-7 h-7 rounded-full overflow-hidden relative border border-divider">
+                  <span className="relative block w-8 h-8 rounded-full overflow-hidden border border-divider group-hover:border-primary/40 transition-colors">
                     <Image
-                      src={urlFor(post.author.photo).width(28).height(28).url()}
+                      src={urlFor(post.author.photo).width(32).height(32).url()}
                       alt={post.author.name}
                       fill
+                      sizes="32px"
                       className="object-cover"
                     />
-                  </div>
+                  </span>
                 )}
                 <span>{post.author.name}</span>
               </Link>
             )}
+            {post.author && post.publishedAt && (
+              <span className="h-1 w-1 rounded-full bg-text-faint/50" aria-hidden />
+            )}
             {post.publishedAt && (
-              <span>
-                {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </span>
+              <time
+                dateTime={post.publishedAt}
+                className="hud-label text-text-faint nums"
+              >
+                {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </time>
             )}
           </div>
-        </header>
+        </Reveal>
 
+        {/* Featured image — framed telemetry panel */}
         {post.featuredImage && (
-          <div className="aspect-[16/9] relative rounded-xl overflow-hidden mb-10 border border-divider">
-            <Image
-              src={urlFor(post.featuredImage).width(1200).height(675).url()}
-              alt={post.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 768px"
-              priority
-            />
+          <Reveal y={32} blur={6}>
+            <div className="relative rounded-card border border-divider bg-surface-raised p-2 mb-12 shadow-[0_24px_60px_-32px_rgba(var(--primary-rgb),0.45)]">
+              <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-surface-2">
+                <Image
+                  src={urlFor(post.featuredImage).width(1200).height(675).url()}
+                  alt={post.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 768px"
+                  priority
+                />
+                <CornerTicks className="text-primary/40" size="md" />
+              </div>
+            </div>
+          </Reveal>
+        )}
+
+        {/* Article body */}
+        {post.body && (
+          <div className="prose prose-neutral dark:prose-invert max-w-none text-text-muted prose-headings:font-display prose-headings:text-text prose-headings:tracking-tight prose-a:text-primary prose-strong:text-text prose-blockquote:border-l-primary prose-blockquote:text-text-muted prose-code:text-text">
+            <PortableText value={post.body} />
           </div>
         )}
-
-        {post.body && (
-          <article className="prose prose-neutral dark:prose-invert max-w-none text-text-muted [&_h2]:font-display [&_h2]:text-text [&_h3]:font-display [&_h3]:text-text">
-            <PortableText value={post.body} />
-          </article>
-        )}
-      </div>
+      </article>
     </PageLayout>
   )
 }

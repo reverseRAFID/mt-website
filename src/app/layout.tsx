@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/providers/ThemeProvider'
+import { SiteFx } from '@/components/fx/SiteFx'
 import './globals.css'
 
 const jetbrainsMono = JetBrains_Mono({
@@ -11,6 +12,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bracumongoltori.com'),
   title: {
     default: 'BRACU Mongol-Tori | Mars Rover Team',
     template: '%s | BRACU Mongol-Tori',
@@ -42,6 +44,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased" suppressHydrationWarning>
         <ThemeProvider>
+          <SiteFx />
           {children}
         </ThemeProvider>
       </body>

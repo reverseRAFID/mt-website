@@ -4,6 +4,9 @@ import type { Metadata } from 'next'
 import { sanityFetch } from '@/sanity/lib/client'
 import { RESEARCH_QUERY } from '@/sanity/lib/queries'
 import type { ResearchCard } from '@/sanity/lib/types'
+import { Reveal } from '@/components/motion/Reveal'
+import { SectionHeader } from '@/components/ui/SectionHeader'
+import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'Research & Publications' }
 
@@ -22,63 +25,102 @@ export default async function ResearchPage() {
 
   return (
     <PageLayout>
-      <div className="bg-surface border-b border-divider">
-        <div className="section-container py-14">
-          <div className="accent-line mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-faint">Publications</p>
-          </div>
-          <h1 className="font-display font-bold text-5xl text-text mb-3">Research & Publications</h1>
-          <p className="text-text-muted text-lg max-w-xl">
-            Peer-reviewed papers, conference proceedings, and technical white papers by our team.
-          </p>
+      {/* Page hero band */}
+      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
+        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
+        <div className="section-container relative">
+          <Reveal>
+            <SectionHeader
+              kicker="Publications"
+              title="Research"
+              description="Peer-reviewed papers, conference proceedings, and technical white papers by our team."
+            />
+          </Reveal>
         </div>
-      </div>
+      </section>
 
-      <div className="section-container py-14">
-        {!papers?.length ? (
-          <div className="py-20 text-center text-text-muted">
-            No papers yet — add them in Sanity CMS → Research.
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {papers.map((paper) => (
-              <Link
-                key={paper._id}
-                href={`/research/${paper.slug.current}`}
-                className="group bg-surface rounded-xl border border-divider p-6 hover:border-primary/40 hover:shadow-md transition-all duration-200"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${STATUS_STYLE[paper.status] ?? ''}`}>
+      <section className="relative py-16 lg:py-24">
+        <div className="section-container">
+          {!papers?.length ? (
+            <div className="rounded-card border border-divider bg-surface-raised py-20 text-center text-text-muted">
+              No papers yet — add them in Sanity CMS → Research.
+            </div>
+          ) : (
+            <Reveal stagger className="flex flex-col gap-3">
+              {papers.map((paper, i) => (
+                <Link
+                  key={paper._id}
+                  href={`/research/${paper.slug.current}`}
+                  className="group relative flex flex-col gap-4 rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] sm:flex-row sm:items-center sm:gap-6 sm:p-6"
+                >
+                  <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
+
+                  {/* Index */}
+                  <span className="hud-label nums shrink-0 text-text-faint group-hover:text-primary transition-colors">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+
+                  {/* Main */}
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[paper.status] ?? 'bg-surface-2 text-text-faint'}`}
+                      >
                         {STATUS_LABEL[paper.status] ?? paper.status}
                       </span>
                       {paper.conference && (
-                        <span className="text-xs text-text-faint">{paper.conference} · {paper.year}</span>
+                        <span className="hud-label nums text-text-faint">
+                          {paper.conference} · {paper.year}
+                        </span>
                       )}
                     </div>
-                    <h2 className="font-display font-bold text-lg text-text group-hover:text-primary transition-colors mb-1.5">
+
+                    <h2 className="font-display font-bold text-lg lg:text-xl text-text tracking-tight group-hover:text-primary transition-colors">
                       {paper.title}
                     </h2>
+
                     {paper.authorNames && paper.authorNames.length > 0 && (
-                      <p className="text-sm text-text-muted">{paper.authorNames.join(', ')}</p>
+                      <p className="mt-1.5 text-sm text-text-muted">{paper.authorNames.join(', ')}</p>
+                    )}
+
+                    {paper.topics && paper.topics.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {paper.topics.map((topic) => (
+                          <span
+                            key={topic}
+                            className="inline-flex items-center rounded-full bg-primary-highlight px-2 py-0.5 text-xs font-medium text-primary whitespace-nowrap"
+                          >
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </div>
-                  {paper.topics && paper.topics.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 sm:flex-col sm:items-end sm:gap-1 shrink-0">
-                      {paper.topics.map((topic) => (
-                        <span key={topic} className="text-xs bg-primary-highlight text-primary px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
-                          {topic}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+
+                  {/* Arrow */}
+                  <span
+                    aria-hidden
+                    className="hidden shrink-0 self-center text-text-faint transition-all group-hover:translate-x-0.5 group-hover:text-primary sm:block"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </Link>
+              ))}
+            </Reveal>
+          )}
+        </div>
+      </section>
     </PageLayout>
   )
 }
