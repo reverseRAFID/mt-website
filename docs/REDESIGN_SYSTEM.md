@@ -187,6 +187,43 @@ sub-teams — replace each with an inline stroke SVG (Lucide-style, `stroke-widt
 - Bento/feature grids welcome (`grid` + `sm:grid-cols-2 lg:grid-cols-3`, occasional
   `lg:col-span-2`/`row-span-2` for emphasis).
 
+## Award-layer primitives (ELEVATION PASS — use these to lift pages)
+
+The home + Team pages set the bar. Bring other pages up with these:
+
+```tsx
+import { PageHero } from '@/components/ui/PageHero'       // cinematic page header
+import { Parallax } from '@/components/motion/Parallax'   // scroll-scrubbed depth
+import { TiltCard } from '@/components/motion/TiltCard'   // pointer 3D tilt on cards
+import { Marquee } from '@/components/ui/Marquee'         // kinetic text band
+```
+
+- **`<PageHero>`** — REPLACE each page's old flat "header band + SectionHeader" with this.
+  It renders a kinetic word-by-word title reveal over a grid/glow backdrop + faded
+  watermark + optional corner ticks + optional stat counter. Props:
+  `index?`, `kicker`, `title` (string), `description?`, `stat?={value,suffix?,label}`,
+  `watermark?` (big faded word), `children?` (e.g. filter chips / actions).
+  Example:
+  ```tsx
+  <PageHero index="02" kicker="Fleet" title="Our Rovers"
+    description="…" watermark="FLEET"
+    stat={{ value: rovers.length, label: 'Built' }} />
+  ```
+  It's a client island; safe inside server pages. Map the page's existing
+  kicker/title/description into it — content stays identical.
+- **`<Parallax speed={0.15}>`** — wrap hero/detail/gallery media (put an over-sized
+  child inside an `overflow-hidden` frame) for scroll depth. No-ops on reduced-motion.
+- **`<TiltCard>`** — wrap grid cards (rovers, news, sponsors, sar-videos, gallery,
+  members) for a subtle hover tilt. Fine-pointer only; never changes layout.
+- **`<Marquee items={[…]} />`** — optional kinetic band between sections.
+- Pair with `<Reveal stagger>` for entrance and `hover:-translate-y-1` + hover
+  corner-tick reveal on cards. Add `<Counter>` for any stat figures.
+
+Elevation rules: ADD these on top of the existing redesign; do NOT change content,
+data, queries, links, `notFound`, `generateMetadata`, or PortableText. Keep
+`<PageLayout>`. The `Reveal`/`Parallax`/`TiltCard`/`PageHero` primitives all guard
+reduced-motion internally.
+
 ## Pre-delivery checklist (per file)
 - [ ] Same content/links/data as before; nothing dropped.
 - [ ] Looks correct in **light and dark** (tokens only).

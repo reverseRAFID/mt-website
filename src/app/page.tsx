@@ -28,6 +28,7 @@ import { NewsStrip } from '@/components/sections/NewsStrip'
 import { ResearchHighlights } from '@/components/sections/ResearchHighlights'
 import { CTASection } from '@/components/sections/CTASection'
 import { SponsorsStrip } from '@/components/sections/SponsorsStrip'
+import { MARQUEE_SUBTEAMS } from '@/lib/subteams'
 
 export default async function HomePage() {
   // Fetch all landing page data in parallel
@@ -50,18 +51,7 @@ export default async function HomePage() {
       <main>
         <Hero />
         <AchievementCallout competition={competition} />
-        <Marquee
-          items={[
-            'Mars Rover',
-            'URC',
-            'IRC',
-            'ERC',
-            'Autonomy',
-            'Science',
-            'Robotics',
-            'BRAC University',
-          ]}
-        />
+        <Marquee items={[...MARQUEE_SUBTEAMS]} />
         <RoverSpotlight rover={rover} />
         {video && <VideoHighlight video={video} />}
         {posts?.length > 0 && <NewsStrip posts={posts} />}

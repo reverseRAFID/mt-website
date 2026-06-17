@@ -12,6 +12,8 @@ interface SectionHeaderProps {
   action?: ReactNode
   className?: string
   titleClassName?: string
+  /** Heading element for the title. Use `h1` for a page's primary header. Defaults to `h2`. */
+  as?: 'h1' | 'h2'
 }
 
 /**
@@ -27,6 +29,7 @@ export function SectionHeader({
   action,
   className = '',
   titleClassName = '',
+  as: Heading = 'h2',
 }: SectionHeaderProps) {
   const centered = align === 'center'
 
@@ -48,11 +51,11 @@ export function SectionHeader({
             </span>
           </div>
         )}
-        <h2
+        <Heading
           className={`font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-text tracking-tight text-balance leading-[1.05] ${titleClassName}`}
         >
           {title}
-        </h2>
+        </Heading>
         {description && (
           <p
             className={`mt-4 text-base sm:text-lg text-text-muted leading-relaxed text-pretty ${
