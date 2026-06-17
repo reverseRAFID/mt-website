@@ -242,3 +242,23 @@ export interface RecruitmentConfig {
   closingDate?: string
   faqItems?: FaqItem[]
 }
+
+// ── Application (recruitment form submission) ─────────────────
+export interface Application {
+  _id: string
+  _type: 'application'
+  status: 'new' | 'shortlisted' | 'interview' | 'accepted' | 'rejected'
+  name: string
+  email: string
+  phone?: string
+  studentId: string
+  department: string
+  year: string
+  subteam1: string
+  subteam2?: string
+  whyJoin: string
+  experience?: string
+  portfolio?: string
+  reviewerNotes?: string
+  submittedAt: string
+}

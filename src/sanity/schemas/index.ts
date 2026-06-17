@@ -7,6 +7,7 @@ import { post } from './post'
 import { sponsor } from './sponsor'
 import { sarVideo } from './sarVideo'
 import { recruitmentConfig } from './recruitmentConfig'
+import { application } from './application'
 
 export const schemaTypes = [
   // Documents
@@ -20,4 +21,6 @@ export const schemaTypes = [
   sarVideo,
   // Singleton
   recruitmentConfig,
+  // Form submissions
+  application,
 ]

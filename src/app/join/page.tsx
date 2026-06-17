@@ -7,6 +7,7 @@ import type { RecruitmentConfig } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import type { ApplySubteam } from '@/lib/subteams'
 
 export const metadata: Metadata = { title: 'Join the Team' }
 
@@ -27,7 +28,9 @@ const iconProps = {
   strokeLinejoin: 'round' as const,
 }
 
-const SUBTEAMS: { name: string; icon: ReactNode; description: string }[] = [
+// `name` is typed against ApplySubteam so the cards here stay in lockstep with
+// the apply-form / API / Sanity sub-team list (src/lib/subteams.ts).
+const SUBTEAMS: { name: ApplySubteam; icon: ReactNode; description: string }[] = [
   {
     name: 'Mechanical & CAD',
     icon: (

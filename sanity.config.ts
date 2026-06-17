@@ -52,6 +52,15 @@ export default defineConfig({
               .icon(() => '🎥')
               .child(S.documentTypeList('sarVideo').title('SAR Videos')),
             S.divider(),
+            // Recruitment
+            S.listItem()
+              .title('Applications')
+              .icon(() => '📥')
+              .child(
+                S.documentTypeList('application')
+                  .title('Applications')
+                  .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }])
+              ),
             // Singleton document
             S.listItem()
               .title('Recruitment Config')
