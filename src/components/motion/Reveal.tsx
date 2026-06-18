@@ -24,6 +24,11 @@ interface RevealProps {
   start?: string
   /** Replay each time it scrolls into view. Default false (play once). */
   repeat?: boolean
+  /**
+   * Re-run the entrance when these values change (e.g. a filtered list). Omit
+   * for the default run-once-on-mount behaviour.
+   */
+  dependencies?: unknown[]
   style?: React.CSSProperties
 }
 
@@ -42,6 +47,7 @@ export function Reveal({
   stagger = false,
   start = 'top 85%',
   repeat = false,
+  dependencies,
   style,
 }: RevealProps) {
   const ref = useRef<HTMLElement>(null)
@@ -75,7 +81,7 @@ export function Reveal({
         },
       })
     },
-    { scope: ref }
+    { scope: ref, dependencies }
   )
 
   return (

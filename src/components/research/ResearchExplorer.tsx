@@ -35,7 +35,7 @@ function FilterChip({
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        'inline-flex min-h-[40px] items-center rounded-none border px-3 py-1.5 text-sm font-semibold transition-colors',
+        'inline-flex min-h-[44px] items-center rounded-none border px-3 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
         active
           ? 'border-primary bg-primary text-on-accent'
           : 'border-divider bg-surface-raised text-text-muted hover:border-primary/40 hover:text-primary'
@@ -125,7 +125,7 @@ export function ResearchExplorer({ papers }: { papers: ResearchCard[] }) {
           </button>
         </div>
       ) : (
-        <Reveal stagger className="flex flex-col gap-3">
+        <Reveal stagger dependencies={[status, topic]} className="flex flex-col gap-3">
           {filtered.map((paper, i) => (
             <Link
               key={paper._id}
@@ -150,9 +150,9 @@ export function ResearchExplorer({ papers }: { papers: ResearchCard[] }) {
                   )}
                 </div>
 
-                <h2 className="font-display text-lg font-bold tracking-tight text-text transition-colors group-hover:text-primary lg:text-xl">
+                <h3 className="font-display text-lg font-bold tracking-tight text-text transition-colors group-hover:text-primary lg:text-xl">
                   {paper.title}
-                </h2>
+                </h3>
 
                 {paper.authorNames && paper.authorNames.length > 0 && (
                   <p className="mt-1.5 text-sm text-text-muted">{paper.authorNames.join(', ')}</p>

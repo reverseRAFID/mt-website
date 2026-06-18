@@ -78,6 +78,7 @@ export function FeaturedPaper({ paper }: { paper: ResearchCard }) {
                 href={paper.doi}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="View DOI (opens in new window)"
                 className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-none border border-border bg-bg/40 px-6 py-3 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
               >
                 View DOI

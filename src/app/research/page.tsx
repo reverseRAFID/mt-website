@@ -48,7 +48,7 @@ export default async function ResearchPage() {
         <>
           <section className="relative py-20 lg:py-28">
             <div className="section-container">
-              <Reveal stagger className="mb-12 grid grid-cols-3 gap-4 lg:mb-16">
+              <Reveal stagger className="mb-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:mb-16">
                 {stats.map((s) => (
                   <div
                     key={s.label}
