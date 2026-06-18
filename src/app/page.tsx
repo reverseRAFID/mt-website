@@ -22,6 +22,8 @@ import { Footer } from '@/components/layout/Footer'
 import { Marquee } from '@/components/ui/Marquee'
 import { Hero } from '@/components/sections/Hero'
 import { AchievementCallout } from '@/components/sections/AchievementCallout'
+import { ImpactMetrics } from '@/components/sections/ImpactMetrics'
+import { IMPACT_METRICS } from '@/lib/sponsorship'
 import { RoverSpotlight } from '@/components/sections/RoverSpotlight'
 import { VideoHighlight } from '@/components/sections/VideoHighlight'
 import { NewsStrip } from '@/components/sections/NewsStrip'
@@ -51,6 +53,11 @@ export default async function HomePage() {
       <main>
         <Hero />
         <AchievementCallout competition={competition} />
+        <ImpactMetrics
+          kicker="Track record"
+          title="Built to compete, proven on the world stage"
+          metrics={IMPACT_METRICS.slice(0, 4)}
+        />
         <Marquee items={[...MARQUEE_SUBTEAMS]} />
         <RoverSpotlight rover={rover} />
         {video && <VideoHighlight video={video} />}
