@@ -5,7 +5,7 @@ import { sanityFetch } from '@/sanity/lib/client'
 import { SAR_VIDEOS_QUERY } from '@/sanity/lib/queries'
 import type { SarVideo } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'SAR Videos' }
@@ -20,17 +20,12 @@ export default async function SarVideosPage() {
 
   return (
     <PageLayout>
-      {/* Page hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
-        <div className="section-container relative">
-          <SectionHeader
-            kicker="Field Footage / SAR"
-            title="SAR Videos"
-            description="System Acceptance Review videos submitted for each competition — our technical presentations and rover demonstrations."
-          />
-        </div>
-      </section>
+      <PageHero
+        kicker="Field Footage / SAR"
+        title="SAR Videos"
+        description="System Acceptance Review videos submitted for each competition — our technical presentations and rover demonstrations."
+        watermark="SAR"
+      />
 
       <section className="relative py-20 lg:py-28">
         <div className="section-container">

@@ -1,6 +1,6 @@
 import { PageLayout } from '@/components/layout/PageLayout'
 import { Reveal } from '@/components/motion/Reveal'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import type { Metadata } from 'next'
 
@@ -52,19 +52,12 @@ const SOCIALS = [
 export default function ContactPage() {
   return (
     <PageLayout>
-      {/* Page hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
-        <div className="section-container relative">
-          <Reveal>
-            <SectionHeader
-              kicker="Get in Touch"
-              title="Contact"
-              description="Questions about sponsorship, media, collaborations, or just want to say hi?"
-            />
-          </Reveal>
-        </div>
-      </section>
+      <PageHero
+        kicker="Get in Touch"
+        title="Contact"
+        description="Questions about sponsorship, media, collaborations, or just want to say hi?"
+        watermark="CONTACT"
+      />
 
       <section className="relative py-20 lg:py-28">
         <div className="section-container">
@@ -219,7 +212,7 @@ export default function ContactPage() {
                       <circle cx="12" cy="12" r="10" />
                       <path d="M12 16v-4M12 8h.01" />
                     </svg>
-                    <span>Contact form coming soon — reach us directly at mongoltori@bracu.ac.bd for now.</span>
+                    <span>Contact form coming soon — reach us directly at mongol-tori@bracu.ac.bd for now.</span>
                   </p>
                 </div>
               </Reveal>

@@ -5,7 +5,7 @@ import { sanityFetch } from '@/sanity/lib/client'
 import { RECRUITMENT_CONFIG_QUERY } from '@/sanity/lib/queries'
 import type { RecruitmentConfig } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import type { ApplySubteam } from '@/lib/subteams'
 
@@ -147,39 +147,33 @@ export default async function JoinPage() {
   return (
     <PageLayout>
       {/* Page hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
-        <div className="section-container relative">
-          <Reveal>
-            <SectionHeader
-              kicker="Recruitment"
-              title="Join the Team"
-              description="We are a multidisciplinary engineering team where students build practical expertise across design, fabrication, electronics, software, autonomy, research, and outreach. Our recruitment process helps us find people who are curious, collaborative, and ready to learn through project-based work, mentorship, and technical evaluation."
-            />
-          </Reveal>
-
-          <Reveal delay={0.1}>
-            <div className="mt-7 flex flex-col gap-4">
-              <div
-                className={`inline-flex w-fit items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ${config.color}`}
-              >
-                <span className="h-2 w-2 rounded-full bg-current" aria-hidden />
-                {config.label}
-                {recruitment?.closingDate && status === 'open' && (
-                  <span className="font-normal opacity-75">
-                    · Deadline: {new Date(recruitment.closingDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
-                  </span>
-                )}
-              </div>
-              {recruitment?.openingMessage && (
-                <p className="max-w-2xl text-base text-text-muted leading-relaxed text-pretty">
-                  {recruitment.openingMessage}
-                </p>
+      <PageHero
+        kicker="Recruitment"
+        title="Join the Team"
+        description="We are a multidisciplinary engineering team where students build practical expertise across design, fabrication, electronics, software, autonomy, research, and outreach. Our recruitment process helps us find people who are curious, collaborative, and ready to learn through project-based work, mentorship, and technical evaluation."
+        watermark="JOIN"
+      >
+        <Reveal delay={0.1}>
+          <div className="flex flex-col gap-4">
+            <div
+              className={`inline-flex w-fit items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ${config.color}`}
+            >
+              <span className="h-2 w-2 rounded-full bg-current" aria-hidden />
+              {config.label}
+              {recruitment?.closingDate && status === 'open' && (
+                <span className="font-normal opacity-75">
+                  · Deadline: {new Date(recruitment.closingDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                </span>
               )}
             </div>
-          </Reveal>
-        </div>
-      </section>
+            {recruitment?.openingMessage && (
+              <p className="max-w-2xl text-base text-text-muted leading-relaxed text-pretty">
+                {recruitment.openingMessage}
+              </p>
+            )}
+          </div>
+        </Reveal>
+      </PageHero>
 
       {/* Sub-teams + FAQ */}
       <section className="relative py-16 lg:py-24">

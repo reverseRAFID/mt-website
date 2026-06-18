@@ -38,60 +38,66 @@ const labelFor = (s: string) => SUBTEAM_LABEL[s] ?? s.charAt(0).toUpperCase() + 
 
 function MemberCardView({ member, index }: { member: MemberCard; index: number }) {
   const idx = String(index + 1).padStart(2, '0')
+  const subtitle = member.isAlumni && member.currentOrg ? `Now @ ${member.currentOrg}` : member.role
   return (
     <TiltCard className="h-full">
       <Link
         href={`/team/${member.slug.current}`}
         data-member-card
-        className="group relative flex h-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-[0_22px_50px_-28px_rgba(var(--primary-rgb),0.6)]"
+        className="group relative flex h-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_22px_50px_-28px_rgba(var(--primary-rgb),0.6)]"
       >
-        <div className="relative aspect-square overflow-hidden bg-surface-2">
+        <div className="relative aspect-[4/5] overflow-hidden bg-surface-2 scanlines">
           {member.photo ? (
             <Image
-              src={urlFor(member.photo).width(440).height(440).url()}
+              src={urlFor(member.photo).width(440).height(550).url()}
               alt={member.name}
               fill
-              className="object-cover grayscale transition-all duration-500 group-hover:scale-[1.06] group-hover:grayscale-0"
+              className="object-cover grayscale transition-all duration-500 group-hover:scale-[1.05] group-hover:grayscale-0"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
             />
           ) : (
             <div className="absolute inset-0 tech-grid-sm flex items-center justify-center opacity-60">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" className="text-text-faint">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" className="text-text-faint" aria-hidden>
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
             </div>
           )}
-          {/* index + reticle */}
-          <span className="hud-label absolute left-3 top-3 text-white mix-blend-difference">{idx}</span>
-          <CornerTicks className="text-primary/0 transition-colors duration-300 group-hover:text-primary/55" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/30 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+          {/* Always-on scrims so the white HUD + name stay legible over any photo or the
+              near-white no-photo placeholder (light mode). */}
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/60 to-transparent" />
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+
+          {/* HUD: index (left) + status node (right) */}
+          <span className="hud-label nums absolute left-3 top-3 text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.85)]">{idx}</span>
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 [text-shadow:0_1px_3px_rgba(0,0,0,0.85)]">
+            <span className={`h-1.5 w-1.5 rounded-full ${member.isAlumni ? 'bg-white/70' : 'bg-primary'}`} aria-hidden />
+            <span className="hud-label text-[9px] text-white">{member.isAlumni ? 'ALUM' : 'ACTV'}</span>
+          </span>
+          <CornerTicks className="text-primary/0 transition-colors duration-300 group-hover:text-primary/60" />
+
+          {/* name block over image */}
+          <div className="absolute inset-x-0 bottom-0 p-3.5 [text-shadow:0_1px_3px_rgba(0,0,0,0.75)]">
+            <h3 className="font-display text-base font-bold leading-tight text-white line-clamp-1">{member.name}</h3>
+            {subtitle && <p className="mt-0.5 line-clamp-1 text-xs text-white/85">{subtitle}</p>}
+          </div>
         </div>
 
-        <div className="flex flex-1 flex-col p-4">
-          <h3 className="font-display text-base font-bold text-text transition-colors duration-200 line-clamp-1 group-hover:text-primary">
-            {member.name}
-          </h3>
-          {(member.isAlumni && member.currentOrg ? `Now @ ${member.currentOrg}` : member.role) && (
-            <p className="mt-0.5 line-clamp-1 text-xs text-text-muted">
-              {member.isAlumni && member.currentOrg ? `Now @ ${member.currentOrg}` : member.role}
-            </p>
-          )}
-          <div className="mt-3 flex items-center justify-between gap-2">
-            {member.subTeam ? (
-              <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${SUBTEAM_COLORS[member.subTeam] ?? 'bg-surface-2 text-text-faint'}`}>
-                {labelFor(member.subTeam)}
-              </span>
-            ) : (
-              <span />
-            )}
-            <span className="hud-label inline-flex items-center gap-1 text-text-faint opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              View
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+        <div className="flex items-center justify-between gap-2 px-3.5 py-3">
+          {member.subTeam ? (
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${SUBTEAM_COLORS[member.subTeam] ?? 'bg-surface-2 text-text-faint'}`}>
+              {labelFor(member.subTeam)}
             </span>
-          </div>
+          ) : (
+            <span className="hud-label text-text-faint">Member</span>
+          )}
+          <span className="hud-label inline-flex items-center gap-1 text-text-faint transition-colors group-hover:text-primary">
+            View
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5" aria-hidden>
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </span>
         </div>
       </Link>
     </TiltCard>

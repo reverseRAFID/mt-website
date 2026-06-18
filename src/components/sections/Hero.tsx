@@ -20,6 +20,7 @@ export function Hero() {
   const rootRef = useRef<HTMLElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const glowRef = useRef<HTMLDivElement>(null)
+  const markRef = useRef<HTMLDivElement>(null)
 
   useGSAP(
     () => {
@@ -36,6 +37,11 @@ export function Hero() {
       })
       gsap.to(glowRef.current, {
         yPercent: 28,
+        ease: 'none',
+        scrollTrigger: { trigger: root, start: 'top top', end: 'bottom top', scrub: true },
+      })
+      gsap.to(markRef.current, {
+        yPercent: -40,
         ease: 'none',
         scrollTrigger: { trigger: root, start: 'top top', end: 'bottom top', scrub: true },
       })
@@ -109,6 +115,17 @@ export function Hero() {
         className="pointer-events-none absolute left-1/2 top-[28%] h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[130px]"
       />
 
+      {/* Dimmed wordmark watermark (parallax) */}
+      <div
+        ref={markRef}
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-[6%] z-0 flex justify-center overflow-hidden"
+      >
+        <span className="select-none whitespace-nowrap font-display text-[17vw] font-bold leading-none tracking-tighter text-white/[0.035]">
+          MONGOL-TORI
+        </span>
+      </div>
+
       {/* Vignette + faint scanning sweep */}
       <div aria-hidden className="pointer-events-none absolute inset-0 vignette" />
       <div
@@ -120,9 +137,10 @@ export function Hero() {
       <CornerTicks className="hidden text-white/15 sm:block" size="md" />
 
       <div className="section-container relative z-10 pb-16 pt-28 lg:pt-32">
-        {/* HUD status line */}
+        {/* HUD status line (decorative) */}
         <div
           data-hero-hud
+          aria-hidden
           className="mb-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-white/45"
         >
           <span className="hud-label inline-flex items-center gap-2">

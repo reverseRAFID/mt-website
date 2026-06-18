@@ -126,13 +126,26 @@ export interface MemberCard {
   isActive?: boolean
 }
 
+export interface MemberAchievement {
+  title: string
+  year?: number
+  detail?: string
+}
+
 export interface MemberFull extends MemberCard {
+  tagline?: string
   yearOfStudy?: string
+  joinedYear?: number
   graduationYear?: number
+  bio?: string
+  quote?: string
+  focusAreas?: string[]
   skills?: string[]
+  achievements?: MemberAchievement[]
   personalProjects?: PortableTextBlock
   linkedin?: string
   github?: string
+  website?: string
   competitions?: Array<{
     _id: string
     name: string

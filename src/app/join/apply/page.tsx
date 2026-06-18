@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { PageLayout } from '@/components/layout/PageLayout'
 import { Reveal } from '@/components/motion/Reveal'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { ApplyForm } from '@/components/join/ApplyForm'
 import { sanityFetch } from '@/sanity/lib/client'
@@ -47,24 +47,19 @@ export default async function ApplyPage() {
   return (
     <PageLayout>
       {/* Page hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
-        <div className="section-container relative">
-          <SectionHeader
-            as="h1"
-            kicker="Recruitment"
-            title="Apply to Join"
-            description={
-              <>
-                Want to know the sub-teams first?{' '}
-                <Link href="/join" className="text-primary link-underline">
-                  Back to recruitment overview.
-                </Link>
-              </>
-            }
-          />
-        </div>
-      </section>
+      <PageHero
+        kicker="Recruitment"
+        title="Apply to Join"
+        watermark="APPLY"
+        description={
+          <>
+            Want to know the sub-teams first?{' '}
+            <Link href="/join" className="text-primary link-underline">
+              Back to recruitment overview.
+            </Link>
+          </>
+        }
+      />
 
       <section className="section-container py-16 lg:py-20">
         {isOpen ? (

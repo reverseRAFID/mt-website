@@ -73,8 +73,9 @@ export const MEMBERS_QUERY = groq`
 
 export const MEMBER_BY_SLUG_QUERY = groq`
   *[_type == "member" && slug.current == $slug][0] {
-    _id, name, slug, photo, role, subTeam, yearOfStudy, graduationYear,
-    isAlumni, currentOrg, skills, personalProjects, linkedin, github,
+    _id, name, slug, photo, role, tagline, subTeam, yearOfStudy, joinedYear, graduationYear,
+    isAlumni, currentOrg, bio, quote, focusAreas, skills, achievements, personalProjects,
+    linkedin, github, website,
     "competitions": *[_type == "competition" && references(^._id)] | order(year desc) {
       _id, name, shortName, year, slug, result, rank,
       "myRole": teamMembers[member._ref == ^.^._id][0].competitionRole

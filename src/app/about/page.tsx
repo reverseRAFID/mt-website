@@ -3,7 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
 import { Reveal } from '@/components/motion/Reveal'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'About Us' }
@@ -27,33 +27,26 @@ const TIMELINE = [
 export default function AboutPage() {
   return (
     <PageLayout>
-      {/* Hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60"
-        />
-        <div className="section-container relative">
-          <Reveal>
-            <SectionHeader
-              kicker="Who We Are"
-              title="About Us"
-              description="Mongol-Tori is BRAC University's competitive Mars rover team — a student-run engineering club that designs, builds, and races rovers at international competitions."
+      <PageHero
+        kicker="Who We Are"
+        title="About Us"
+        description="Mongol-Tori is BRAC University's competitive Mars rover team — a student-run engineering club that designs, builds, and races rovers at international competitions."
+        watermark="MISSION"
+      >
+        <Reveal>
+          <div className="mt-6 flex items-center gap-3">
+            <span className="hud-label text-text-faint">A team of</span>
+            <ThemeLogo
+              lightSrc="/bracu-logo.svg"
+              darkSrc="/bracu-logo-dark.svg"
+              alt="BRAC University"
+              width={100}
+              height={28}
+              className="h-7 w-auto"
             />
-            <div className="mt-6 flex items-center gap-3">
-              <span className="hud-label text-text-faint">A team of</span>
-              <ThemeLogo
-                lightSrc="/bracu-logo.svg"
-                darkSrc="/bracu-logo-dark.svg"
-                alt="BRAC University"
-                width={100}
-                height={28}
-                className="h-7 w-auto"
-              />
-            </div>
-          </Reveal>
-        </div>
-      </section>
+          </div>
+        </Reveal>
+      </PageHero>
 
       <div className="section-container py-16 lg:py-20">
         {/* Stats */}

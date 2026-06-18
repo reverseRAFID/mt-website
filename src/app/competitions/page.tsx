@@ -5,7 +5,7 @@ import { sanityFetch } from '@/sanity/lib/client'
 import { COMPETITIONS_QUERY } from '@/sanity/lib/queries'
 import type { CompetitionCard } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'Competitions' }
@@ -21,20 +21,12 @@ export default async function CompetitionsPage() {
 
   return (
     <PageLayout>
-      {/* Page hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60"
-        />
-        <div className="section-container relative">
-          <SectionHeader
-            kicker="Track Record"
-            title="Competitions"
-            description="Our history at URC, IRC, and ERC — rosters, results, and SAR videos from every year."
-          />
-        </div>
-      </section>
+      <PageHero
+        kicker="Track Record"
+        title="Competitions"
+        description="Our history at URC, IRC, and ERC — rosters, results, and SAR videos from every year."
+        watermark="ARENA"
+      />
 
       <section className="relative py-16 lg:py-24">
         <div className="section-container">

@@ -6,7 +6,7 @@ import { COMPETITIONS_QUERY } from '@/sanity/lib/queries'
 import type { CompetitionCard } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { Counter } from '@/components/motion/Counter'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'Achievements' }
@@ -27,17 +27,12 @@ export default async function AchievementsPage() {
 
   return (
     <PageLayout>
-      {/* Page hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
-        <div className="section-container relative">
-          <SectionHeader
-            kicker="Milestones"
-            title="Achievements"
-            description="Our track record on the international stage — rankings, milestones, and moments that define who we are."
-          />
-        </div>
-      </section>
+      <PageHero
+        kicker="Milestones"
+        title="Achievements"
+        description="Our track record on the international stage — rankings, milestones, and moments that define who we are."
+        watermark="PODIUM"
+      />
 
       <section className="relative py-20 lg:py-28">
         <div className="section-container">

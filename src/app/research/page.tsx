@@ -5,8 +5,8 @@ import { sanityFetch } from '@/sanity/lib/client'
 import { RESEARCH_QUERY } from '@/sanity/lib/queries'
 import type { ResearchCard } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
-import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { PageHero } from '@/components/ui/PageHero'
 
 export const metadata: Metadata = { title: 'Research & Publications' }
 
@@ -25,19 +25,12 @@ export default async function ResearchPage() {
 
   return (
     <PageLayout>
-      {/* Page hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
-        <div className="section-container relative">
-          <Reveal>
-            <SectionHeader
-              kicker="Publications"
-              title="Research"
-              description="Peer-reviewed papers, conference proceedings, and technical white papers by our team."
-            />
-          </Reveal>
-        </div>
-      </section>
+      <PageHero
+        kicker="Publications"
+        title="Research"
+        description="Peer-reviewed papers, conference proceedings, and technical white papers by our team."
+        watermark="RESEARCH"
+      />
 
       <section className="relative py-16 lg:py-24">
         <div className="section-container">

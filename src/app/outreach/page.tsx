@@ -3,7 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { Reveal } from '@/components/motion/Reveal'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'STEM Outreach' }
@@ -69,17 +69,12 @@ const PROGRAMS: { name: string; description: string; icon: ReactNode }[] = [
 export default function OutreachPage() {
   return (
     <PageLayout>
-      {/* Page hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
-        <div className="section-container relative">
-          <SectionHeader
-            kicker="Community"
-            title="STEM Outreach"
-            description="Beyond competitions, we're committed to growing a culture of engineering and science in Bangladesh — one workshop, demo, and conversation at a time."
-          />
-        </div>
-      </section>
+      <PageHero
+        kicker="Community"
+        title="STEM Outreach"
+        description="Beyond competitions, we're committed to growing a culture of engineering and science in Bangladesh — one workshop, demo, and conversation at a time."
+        watermark="OUTREACH"
+      />
 
       <section className="relative py-20 lg:py-28">
         <div className="section-container">

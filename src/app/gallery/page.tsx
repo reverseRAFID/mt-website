@@ -8,6 +8,7 @@ import type { SanityImage, SanitySlug } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { PageHero } from '@/components/ui/PageHero'
 
 export const metadata: Metadata = { title: 'Gallery' }
 
@@ -26,17 +27,12 @@ export default async function GalleryPage() {
 
   return (
     <PageLayout>
-      {/* Page hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
-        <div className="section-container relative">
-          <SectionHeader
-            kicker="Archive"
-            title="Gallery"
-            description="Photos from competitions, rover builds, and team events."
-          />
-        </div>
-      </section>
+      <PageHero
+        kicker="Archive"
+        title="Gallery"
+        description="Photos from competitions, rover builds, and team events."
+        watermark="GALLERY"
+      />
 
       <section className="relative py-20 lg:py-28">
         <div className="section-container">

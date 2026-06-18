@@ -6,7 +6,7 @@ import { ACTIVE_SPONSORS_QUERY } from '@/sanity/lib/queries'
 import type { Sponsor } from '@/sanity/lib/types'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
 import { Reveal } from '@/components/motion/Reveal'
-import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 export const metadata: Metadata = { title: 'Sponsors' }
@@ -40,16 +40,12 @@ export default async function SponsorsPage() {
   return (
     <PageLayout>
       {/* Page hero band */}
-      <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
-        <div className="section-container relative">
-          <SectionHeader
-            kicker="Partners"
-            title="Sponsors"
-            description="The organizations that make our mission possible — from competition entry fees to rover components."
-          />
-        </div>
-      </section>
+      <PageHero
+        kicker="Partners"
+        title="Sponsors"
+        description="The organizations that make our mission possible — from competition entry fees to rover components."
+        watermark="PARTNERS"
+      />
 
       <section className="relative py-20 lg:py-28">
         <div className="section-container">
