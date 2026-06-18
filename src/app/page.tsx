@@ -25,6 +25,7 @@ import { AchievementCallout } from '@/components/sections/AchievementCallout'
 import { ImpactMetrics } from '@/components/sections/ImpactMetrics'
 import { IMPACT_METRICS } from '@/lib/sponsorship'
 import { RoverSpotlight } from '@/components/sections/RoverSpotlight'
+import { Innovation } from '@/components/sections/Innovation'
 import { VideoHighlight } from '@/components/sections/VideoHighlight'
 import { NewsStrip } from '@/components/sections/NewsStrip'
 import { ResearchHighlights } from '@/components/sections/ResearchHighlights'
@@ -60,6 +61,7 @@ export default async function HomePage() {
         />
         <Marquee items={[...MARQUEE_SUBTEAMS]} />
         <RoverSpotlight rover={rover} />
+        <Innovation rover={rover} />
         {video && <VideoHighlight video={video} />}
         {posts?.length > 0 && <NewsStrip posts={posts} />}
         {papers.length > 0 && <ResearchHighlights papers={papers} />}
