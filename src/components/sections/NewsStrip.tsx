@@ -68,7 +68,7 @@ export function NewsStrip({ posts }: NewsStripProps) {
 
               <div className="flex items-center justify-between mb-4">
                 <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${CATEGORY_COLORS[post.category ?? ''] ?? 'text-text-faint bg-surface-2'}`}
+                  className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold ${CATEGORY_COLORS[post.category ?? ''] ?? 'text-text-faint bg-surface-2'}`}
                 >
                   {CATEGORY_LABELS[post.category ?? ''] ?? post.category}
                 </span>

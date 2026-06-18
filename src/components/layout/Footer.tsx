@@ -109,7 +109,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
-                  className="w-9 h-9 flex items-center justify-center rounded-md border border-divider text-text-faint hover:text-primary hover:border-primary/50 hover:bg-primary-highlight transition-colors duration-150"
+                  className="w-9 h-9 flex items-center justify-center rounded-none border border-divider text-text-faint hover:text-primary hover:border-primary/50 hover:bg-primary-highlight transition-colors duration-150"
                 >
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     {s.path}

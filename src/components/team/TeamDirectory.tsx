@@ -72,7 +72,7 @@ function MemberCardView({ member, index }: { member: MemberCard; index: number }
           {/* HUD: index (left) + status node (right) */}
           <span className="hud-label nums absolute left-3 top-3 text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.85)]">{idx}</span>
           <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 [text-shadow:0_1px_3px_rgba(0,0,0,0.85)]">
-            <span className={`h-1.5 w-1.5 rounded-full ${member.isAlumni ? 'bg-white/70' : 'bg-primary'}`} aria-hidden />
+            <span className={`h-1.5 w-1.5 rounded-none ${member.isAlumni ? 'bg-white/70' : 'bg-primary'}`} aria-hidden />
             <span className="hud-label text-[9px] text-white">{member.isAlumni ? 'ALUM' : 'ACTV'}</span>
           </span>
           <CornerTicks className="text-primary/0 transition-colors duration-300 group-hover:text-primary/60" />
@@ -86,7 +86,7 @@ function MemberCardView({ member, index }: { member: MemberCard; index: number }
 
         <div className="flex items-center justify-between gap-2 px-3.5 py-3">
           {member.subTeam ? (
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${SUBTEAM_COLORS[member.subTeam] ?? 'bg-surface-2 text-text-faint'}`}>
+            <span className={`rounded-none px-2 py-0.5 text-[10px] font-semibold ${SUBTEAM_COLORS[member.subTeam] ?? 'bg-surface-2 text-text-faint'}`}>
               {labelFor(member.subTeam)}
             </span>
           ) : (
@@ -217,7 +217,7 @@ function FilterChip({
     <button
       onClick={onClick}
       aria-pressed={active}
-      className={`group inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors duration-200 ${
+      className={`group inline-flex items-center gap-2 rounded-none border px-3.5 py-1.5 text-sm font-semibold transition-colors duration-200 ${
         active
           ? 'border-primary bg-primary text-on-accent'
           : 'border-divider text-text-muted hover:border-primary/50 hover:text-primary'

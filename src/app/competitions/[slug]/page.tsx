@@ -55,7 +55,7 @@ export default async function CompetitionPage({ params }: Props) {
             </nav>
 
             <div className="flex items-center gap-3 mb-5">
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${COMPETITION_COLORS[comp.shortName] ?? 'bg-surface-2 text-text-faint'}`}>
+              <span className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold ${COMPETITION_COLORS[comp.shortName] ?? 'bg-surface-2 text-text-faint'}`}>
                 {comp.shortName}
               </span>
               <span className="hud-label text-text-faint nums">{comp.year}</span>
@@ -110,7 +110,7 @@ export default async function CompetitionPage({ params }: Props) {
                       <span className="hud-label text-primary">SAR Video</span>
                     </div>
                     <div className="relative rounded-card border border-divider bg-surface-raised p-2 shadow-[0_24px_60px_-32px_rgba(var(--primary-rgb),0.55)]">
-                      <div className="relative aspect-video rounded-xl overflow-hidden bg-surface-2">
+                      <div className="relative aspect-video rounded-none overflow-hidden bg-surface-2">
                         <iframe
                           src={embedUrl}
                           title="SAR Video"
@@ -136,7 +136,7 @@ export default async function CompetitionPage({ params }: Props) {
                       {comp.gallery.map((img, i) => (
                         <div
                           key={i}
-                          className="group relative aspect-[4/3] rounded-lg overflow-hidden border border-divider bg-surface-2"
+                          className="group relative aspect-[4/3] rounded-none overflow-hidden border border-divider bg-surface-2"
                         >
                           <Image
                             src={urlFor(img).width(400).height(300).url()}
@@ -214,7 +214,7 @@ export default async function CompetitionPage({ params }: Props) {
                           href={`/team/${entry.member.slug.current}`}
                           className="group flex items-center gap-3"
                         >
-                          <div className="relative w-9 h-9 rounded-md overflow-hidden border border-divider bg-surface-2 shrink-0">
+                          <div className="relative w-9 h-9 rounded-none overflow-hidden border border-divider bg-surface-2 shrink-0">
                             {entry.member.photo ? (
                               <Image
                                 src={urlFor(entry.member.photo).width(36).height(36).url()}

@@ -103,7 +103,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 aria-current={active ? 'page' : undefined}
-                className={`relative px-3 py-2 rounded-md text-sm font-semibold transition-colors duration-150 ${
+                className={`relative px-3 py-2 rounded-none text-sm font-semibold transition-colors duration-150 ${
                   active ? 'text-primary' : 'text-text-muted hover:text-text'
                 }`}
               >
@@ -122,7 +122,7 @@ export function Navbar() {
         <div className="flex items-center gap-1.5">
           <Link
             href="/join"
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-primary hover:bg-primary-hover text-on-accent text-sm font-semibold transition-colors duration-150"
+            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-none bg-primary hover:bg-primary-hover text-on-accent text-sm font-semibold transition-colors duration-150"
           >
             Join Us
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -133,7 +133,7 @@ export function Navbar() {
           <ThemeToggle />
 
           <button
-            className="lg:hidden w-11 h-11 flex items-center justify-center rounded-md text-text-muted hover:text-text hover:bg-surface-offset transition-colors duration-150"
+            className="lg:hidden w-11 h-11 flex items-center justify-center rounded-none text-text-muted hover:text-text hover:bg-surface-offset transition-colors duration-150"
             onClick={() => setMenuOpen((prev) => !prev)}
             aria-label="Toggle navigation menu"
             aria-expanded={menuOpen}
@@ -168,7 +168,7 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               style={{ transitionDelay: menuOpen ? `${i * 30}ms` : '0ms' }}
-              className={`flex items-center gap-3 px-3 py-3 rounded-md text-base font-semibold transition-colors duration-150 ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-none text-base font-semibold transition-colors duration-150 ${
                 isActive(link.href)
                   ? 'text-primary bg-primary-highlight'
                   : 'text-text-muted hover:text-text hover:bg-surface-offset'
@@ -180,7 +180,7 @@ export function Navbar() {
           ))}
           <Link
             href="/join"
-            className="mt-3 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-md bg-primary hover:bg-primary-hover text-on-accent text-sm font-semibold transition-colors duration-150"
+            className="mt-3 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-none bg-primary hover:bg-primary-hover text-on-accent text-sm font-semibold transition-colors duration-150"
           >
             Join the Team
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

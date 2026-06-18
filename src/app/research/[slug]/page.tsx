@@ -49,7 +49,7 @@ export default async function ResearchPage({ params }: Props) {
         <Reveal>
           <header className="mb-12">
             <div className="flex flex-wrap items-center gap-3 mb-5">
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[paper.status] ?? 'text-text-faint bg-surface-2'}`}>
+              <span className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[paper.status] ?? 'text-text-faint bg-surface-2'}`}>
                 {STATUS_LABEL[paper.status] ?? paper.status}
               </span>
               {paper.conference && (
@@ -62,7 +62,7 @@ export default async function ResearchPage({ params }: Props) {
             {paper.topics && paper.topics.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-7">
                 {paper.topics.map((topic) => (
-                  <span key={topic} className="inline-flex items-center rounded-full bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary">{topic}</span>
+                  <span key={topic} className="inline-flex items-center rounded-none bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary">{topic}</span>
                 ))}
               </div>
             )}
@@ -74,9 +74,9 @@ export default async function ResearchPage({ params }: Props) {
                   <Link
                     key={author._id}
                     href={`/team/${author.slug.current}`}
-                    className="group inline-flex items-center gap-2 rounded-full border border-divider bg-surface-raised py-1 pl-1 pr-3 transition-colors hover:border-primary/40"
+                    className="group inline-flex items-center gap-2 rounded-none border border-divider bg-surface-raised py-1 pl-1 pr-3 transition-colors hover:border-primary/40"
                   >
-                    <span className="w-7 h-7 rounded-full overflow-hidden relative border border-divider bg-surface-2 shrink-0">
+                    <span className="w-7 h-7 rounded-none overflow-hidden relative border border-divider bg-surface-2 shrink-0">
                       {author.photo ? (
                         <Image
                           src={urlFor(author.photo).width(28).height(28).url()}
@@ -106,7 +106,7 @@ export default async function ResearchPage({ params }: Props) {
                   href={`https://doi.org/${paper.doi}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+                  className="inline-flex items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
                 >
                   View on DOI
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -119,7 +119,7 @@ export default async function ResearchPage({ params }: Props) {
                   href={getFileUrl(paper.pdfFile.asset._ref)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
+                  className="inline-flex items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 17V3M7 12l5 5 5-5M20 21H4" />

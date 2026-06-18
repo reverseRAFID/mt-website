@@ -77,7 +77,7 @@ export default async function NewsPage() {
                     <div className="mb-4 flex items-center justify-between">
                       {post.category && (
                         <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${CATEGORY_COLORS[post.category] ?? 'bg-surface-2 text-text-faint'}`}
+                          className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold ${CATEGORY_COLORS[post.category] ?? 'bg-surface-2 text-text-faint'}`}
                         >
                           {CATEGORY_LABELS[post.category] ?? post.category}
                         </span>

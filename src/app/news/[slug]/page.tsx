@@ -67,7 +67,7 @@ export default async function PostPage({ params }: Props) {
         <Reveal as="header" className="mb-10">
           {post.category && (
             <span
-              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold mb-5 ${
+              className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold mb-5 ${
                 CATEGORY_COLORS[post.category] ?? 'bg-surface-2 text-text-faint'
               }`}
             >
@@ -89,7 +89,7 @@ export default async function PostPage({ params }: Props) {
                 className="group inline-flex items-center gap-2.5 text-sm font-medium text-text-muted hover:text-primary transition-colors"
               >
                 {post.author.photo && (
-                  <span className="relative block w-8 h-8 rounded-full overflow-hidden border border-divider group-hover:border-primary/40 transition-colors">
+                  <span className="relative block w-8 h-8 rounded-none overflow-hidden border border-divider group-hover:border-primary/40 transition-colors">
                     <Image
                       src={urlFor(post.author.photo).width(32).height(32).url()}
                       alt={post.author.name}
@@ -103,7 +103,7 @@ export default async function PostPage({ params }: Props) {
               </Link>
             )}
             {post.author && post.publishedAt && (
-              <span className="h-1 w-1 rounded-full bg-text-faint/50" aria-hidden />
+              <span className="h-1 w-1 rounded-none bg-text-faint/50" aria-hidden />
             )}
             {post.publishedAt && (
               <time
@@ -124,7 +124,7 @@ export default async function PostPage({ params }: Props) {
         {post.featuredImage && (
           <Reveal y={32} blur={6}>
             <div className="relative rounded-card border border-divider bg-surface-raised p-2 mb-12 shadow-[0_24px_60px_-32px_rgba(var(--primary-rgb),0.45)]">
-              <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-surface-2">
+              <div className="relative aspect-[16/9] rounded-none overflow-hidden bg-surface-2">
                 <Image
                   src={urlFor(post.featuredImage).width(1200).height(675).url()}
                   alt={post.title}

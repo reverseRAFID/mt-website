@@ -100,7 +100,7 @@ export default function AboutPage() {
                 <li key={year} className="relative pb-6 pl-6 last:pb-0">
                   <span
                     aria-hidden
-                    className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-primary bg-bg"
+                    className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-none border-2 border-primary bg-bg"
                   />
                   <div className="hud-label nums mb-1 text-primary">{year}</div>
                   <p className="text-sm leading-relaxed text-text-muted">{event}</p>
@@ -114,7 +114,7 @@ export default function AboutPage() {
         <Reveal className="flex flex-wrap gap-4">
           <Link
             href="/team"
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
           >
             Meet the Team
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -123,7 +123,7 @@ export default function AboutPage() {
           </Link>
           <Link
             href="/rovers"
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
           >
             See Our Rovers
           </Link>

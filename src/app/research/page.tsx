@@ -57,7 +57,7 @@ export default async function ResearchPage() {
                   <div className="min-w-0 flex-1">
                     <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
                       <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[paper.status] ?? 'bg-surface-2 text-text-faint'}`}
+                        className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[paper.status] ?? 'bg-surface-2 text-text-faint'}`}
                       >
                         {STATUS_LABEL[paper.status] ?? paper.status}
                       </span>
@@ -81,7 +81,7 @@ export default async function ResearchPage() {
                         {paper.topics.map((topic) => (
                           <span
                             key={topic}
-                            className="inline-flex items-center rounded-full bg-primary-highlight px-2 py-0.5 text-xs font-medium text-primary whitespace-nowrap"
+                            className="inline-flex items-center rounded-none bg-primary-highlight px-2 py-0.5 text-xs font-medium text-primary whitespace-nowrap"
                           >
                             {topic}
                           </span>

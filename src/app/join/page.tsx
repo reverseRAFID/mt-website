@@ -156,9 +156,9 @@ export default async function JoinPage() {
         <Reveal delay={0.1}>
           <div className="flex flex-col gap-4">
             <div
-              className={`inline-flex w-fit items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ${config.color}`}
+              className={`inline-flex w-fit items-center gap-2 rounded-none border px-4 py-2 text-sm font-semibold ${config.color}`}
             >
-              <span className="h-2 w-2 rounded-full bg-current" aria-hidden />
+              <span className="h-2 w-2 rounded-none bg-current" aria-hidden />
               {config.label}
               {recruitment?.closingDate && status === 'open' && (
                 <span className="font-normal opacity-75">
@@ -199,7 +199,7 @@ export default async function JoinPage() {
                   >
                     <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-divider bg-primary-highlight text-primary transition-colors group-hover:border-primary/40">
+                      <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-primary-highlight text-primary transition-colors group-hover:border-primary/40">
                         {team.icon}
                       </span>
                       <h3 className="font-display font-bold text-base text-text tracking-tight">{team.name}</h3>
@@ -213,7 +213,7 @@ export default async function JoinPage() {
                 <Reveal delay={0.1}>
                   <a
                     href="/join/apply"
-                    className="mt-10 inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+                    className="mt-10 inline-flex items-center gap-2 rounded-none bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
                   >
                     Apply Now
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

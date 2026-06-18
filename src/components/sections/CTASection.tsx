@@ -74,7 +74,7 @@ export function CTASection() {
               )}
 
               <div
-                className={`relative mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg ${
+                className={`relative mb-5 inline-flex h-12 w-12 items-center justify-center rounded-none ${
                   item.primary
                     ? 'bg-primary text-on-accent'
                     : 'border border-divider bg-surface text-text-muted group-hover:text-primary transition-colors'
@@ -100,7 +100,7 @@ export function CTASection() {
 
               <Link
                 href={item.href}
-                className={`relative inline-flex items-center gap-2 rounded-md text-sm font-semibold transition-colors duration-150 ${
+                className={`relative inline-flex items-center gap-2 rounded-none text-sm font-semibold transition-colors duration-150 ${
                   item.primary
                     ? 'self-start bg-primary px-5 py-3 text-on-accent hover:bg-primary-hover'
                     : 'self-start border border-border px-5 py-3 text-text-muted hover:border-primary hover:text-primary'

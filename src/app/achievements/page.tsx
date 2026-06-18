@@ -88,18 +88,18 @@ export default async function AchievementsPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
                         {comp.rank ? (
-                          <div className="shrink-0 w-14 h-14 rounded-lg bg-primary-highlight border border-primary/20 flex flex-col items-center justify-center">
+                          <div className="shrink-0 w-14 h-14 rounded-none bg-primary-highlight border border-primary/20 flex flex-col items-center justify-center">
                             <span className="font-display font-bold text-xl text-primary leading-none nums">#{comp.rank}</span>
                             <span className="hud-label text-[9px] text-text-faint">Rank</span>
                           </div>
                         ) : (
-                          <div className="shrink-0 w-14 h-14 rounded-lg bg-surface-2 border border-divider flex items-center justify-center">
+                          <div className="shrink-0 w-14 h-14 rounded-none bg-surface-2 border border-divider flex items-center justify-center">
                             <span className="hud-label text-text-faint">TBD</span>
                           </div>
                         )}
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${COMPETITION_COLORS[comp.shortName] ?? 'bg-surface-2 text-text-faint'}`}>
+                            <span className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold ${COMPETITION_COLORS[comp.shortName] ?? 'bg-surface-2 text-text-faint'}`}>
                               {comp.shortName}
                             </span>
                             <span className="hud-label text-text-faint nums">{comp.year}</span>

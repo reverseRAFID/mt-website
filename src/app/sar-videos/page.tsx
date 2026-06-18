@@ -73,7 +73,7 @@ export default async function SarVideosPage() {
                         </div>
                       )}
                       <CornerTicks className="text-primary/40" />
-                      <span className="pointer-events-none absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-sm bg-bg/80 px-2 py-1 backdrop-blur-sm">
+                      <span className="pointer-events-none absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-none bg-bg/80 px-2 py-1 backdrop-blur-sm">
                         {video.competition ? (
                           <span className="hud-label text-primary nums">
                             {video.competition.shortName} {video.competition.year}
@@ -87,7 +87,7 @@ export default async function SarVideosPage() {
                     <div className="flex flex-1 flex-col p-6">
                       <div className="flex items-center gap-2 mb-3">
                         {video.competition && (
-                          <span className="inline-flex items-center rounded-full bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary">
+                          <span className="inline-flex items-center rounded-none bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary">
                             {video.competition.shortName} {video.competition.year}
                           </span>
                         )}

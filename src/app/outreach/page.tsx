@@ -86,7 +86,7 @@ export default function OutreachPage() {
               >
                 <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
 
-                <span className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg border border-primary/20 bg-primary-highlight text-primary">
+                <span className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-none border border-primary/20 bg-primary-highlight text-primary">
                   {program.icon}
                 </span>
 
@@ -115,7 +115,7 @@ export default function OutreachPage() {
                 </p>
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+                  className="inline-flex items-center gap-2 rounded-none bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
                 >
                   Get in Touch
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

@@ -143,7 +143,7 @@ export default async function MemberPage({ params }: Props) {
             {/* Framed avatar */}
             <div className="relative shrink-0 rounded-card border border-divider bg-surface-2 p-1.5">
               <CornerTicks className="text-primary/40" size="md" />
-              <div className="relative h-36 w-36 overflow-hidden rounded-xl bg-surface-2 sm:h-44 sm:w-44">
+              <div className="relative h-36 w-36 overflow-hidden rounded-none bg-surface-2 sm:h-44 sm:w-44">
                 {member.photo ? (
                   <Image
                     src={urlFor(member.photo).width(384).height(384).url()}
@@ -166,11 +166,11 @@ export default async function MemberPage({ params }: Props) {
             <div className="min-w-0">
               <div className="mb-3 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                 {subLabel && (
-                  <span className={`hud-label rounded-full px-2.5 py-1 ${SUBTEAM_COLORS[member.subTeam!] ?? 'bg-surface-2 text-text-faint'}`}>
+                  <span className={`hud-label rounded-none px-2.5 py-1 ${SUBTEAM_COLORS[member.subTeam!] ?? 'bg-surface-2 text-text-faint'}`}>
                     {subLabel}
                   </span>
                 )}
-                <span className={`hud-label rounded-full px-2.5 py-1 ${member.isAlumni ? 'bg-surface-2 text-text-faint' : 'bg-primary-highlight text-primary'}`}>
+                <span className={`hud-label rounded-none px-2.5 py-1 ${member.isAlumni ? 'bg-surface-2 text-text-faint' : 'bg-primary-highlight text-primary'}`}>
                   {member.isAlumni ? 'Alumni' : 'Active'}
                 </span>
               </div>
@@ -227,7 +227,7 @@ export default async function MemberPage({ params }: Props) {
                     <h2 className="hud-label mb-3 text-text-faint">Focus Areas</h2>
                     <div className="flex flex-wrap gap-2">
                       {member.focusAreas.map((fa) => (
-                        <span key={fa} className="inline-flex items-center gap-1.5 rounded-full border border-divider bg-surface px-2.5 py-1 text-xs font-medium text-text-muted">
+                        <span key={fa} className="inline-flex items-center gap-1.5 rounded-none border border-divider bg-surface px-2.5 py-1 text-xs font-medium text-text-muted">
                           <span className="h-1 w-1 rotate-45 bg-primary" aria-hidden />
                           {fa}
                         </span>
@@ -241,7 +241,7 @@ export default async function MemberPage({ params }: Props) {
                     <h2 className="hud-label mb-3 text-text-faint">Skills / Tools</h2>
                     <div className="flex flex-wrap gap-2">
                       {member.skills.map((skill) => (
-                        <span key={skill} className="inline-flex items-center rounded-full bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary">{skill}</span>
+                        <span key={skill} className="inline-flex items-center rounded-none bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary">{skill}</span>
                       ))}
                     </div>
                   </div>
@@ -407,7 +407,7 @@ function SocialLink({ href, label, children }: { href: string; label: string; ch
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="flex h-11 w-11 items-center justify-center rounded-md border border-divider text-text-faint transition-colors hover:border-primary hover:text-primary"
+      className="flex h-11 w-11 items-center justify-center rounded-none border border-divider text-text-faint transition-colors hover:border-primary hover:text-primary"
     >
       {/* Only the LinkedIn glyph is a closed/filled path; GitHub + Website are stroke outlines. */}
       <svg

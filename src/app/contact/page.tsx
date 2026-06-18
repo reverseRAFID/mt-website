@@ -76,7 +76,7 @@ export default function ContactPage() {
                 <div className="group relative rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5">
                   <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
                   <div className="flex items-start gap-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-divider bg-surface text-primary">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-primary">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         <rect x="2" y="4" width="20" height="16" rx="2" />
                         <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
@@ -95,7 +95,7 @@ export default function ContactPage() {
                 <div className="group relative rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5">
                   <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
                   <div className="flex items-start gap-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-divider bg-surface text-primary">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-primary">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
                       </svg>
@@ -113,7 +113,7 @@ export default function ContactPage() {
                 <div className="group relative rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5">
                   <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
                   <div className="flex items-start gap-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-divider bg-surface text-primary">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-primary">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
                         <circle cx="12" cy="10" r="3" />
@@ -144,7 +144,7 @@ export default function ContactPage() {
                     className="group relative flex items-center gap-3 rounded-card border border-divider bg-surface-raised p-4 transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5"
                   >
                     <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-divider bg-surface text-text-faint transition-colors group-hover:text-primary">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-text-faint transition-colors group-hover:text-primary">
                       {s.icon}
                     </span>
                     <span className="min-w-0">
@@ -169,8 +169,8 @@ export default function ContactPage() {
                 <div className="relative rounded-card border border-divider bg-surface-raised p-6 lg:p-7">
                   <CornerTicks className="text-primary/40" size="md" />
 
-                  <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-divider bg-surface px-3 py-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow" aria-hidden />
+                  <div className="mb-6 inline-flex items-center gap-2 rounded-none border border-divider bg-surface px-3 py-1">
+                    <span className="h-1.5 w-1.5 rounded-none bg-primary animate-pulse-glow" aria-hidden />
                     <span className="hud-label text-text-muted">Coming Soon</span>
                   </div>
 
@@ -181,7 +181,7 @@ export default function ContactPage() {
                         id="contact-name"
                         type="text"
                         placeholder="Your name"
-                        className="rounded-md border border-divider bg-surface px-3 py-2.5 text-sm text-text placeholder-text-faint cursor-not-allowed focus:outline-none focus:border-primary transition-colors"
+                        className="rounded-none border border-divider bg-surface px-3 py-2.5 text-sm text-text placeholder-text-faint cursor-not-allowed focus:outline-none focus:border-primary transition-colors"
                         disabled
                       />
                     </div>
@@ -191,7 +191,7 @@ export default function ContactPage() {
                         id="contact-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="rounded-md border border-divider bg-surface px-3 py-2.5 text-sm text-text placeholder-text-faint cursor-not-allowed focus:outline-none focus:border-primary transition-colors"
+                        className="rounded-none border border-divider bg-surface px-3 py-2.5 text-sm text-text placeholder-text-faint cursor-not-allowed focus:outline-none focus:border-primary transition-colors"
                         disabled
                       />
                     </div>
@@ -201,7 +201,7 @@ export default function ContactPage() {
                         id="contact-message"
                         rows={4}
                         placeholder="How can we help?"
-                        className="rounded-md border border-divider bg-surface px-3 py-2.5 text-sm text-text placeholder-text-faint cursor-not-allowed focus:outline-none focus:border-primary transition-colors resize-none"
+                        className="rounded-none border border-divider bg-surface px-3 py-2.5 text-sm text-text placeholder-text-faint cursor-not-allowed focus:outline-none focus:border-primary transition-colors resize-none"
                         disabled
                       />
                     </div>

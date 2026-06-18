@@ -144,7 +144,7 @@ export function Hero() {
           className="mb-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-white/45"
         >
           <span className="hud-label inline-flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-blink" aria-hidden />
+            <span className="h-1.5 w-1.5 rounded-none bg-primary animate-blink" aria-hidden />
             {'// SYS: NOMINAL'}
           </span>
           <span className="hud-label nums hidden sm:inline">LAT 23.78 N&nbsp;&nbsp;LON 90.41 E</span>
@@ -155,7 +155,7 @@ export function Hero() {
           {/* Badge */}
           <div
             data-hero-badge
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5"
+            className="mb-6 inline-flex items-center gap-2 rounded-none border border-white/10 bg-white/5 px-4 py-1.5"
           >
             <span className="hud-label text-white/70">Built by Dreamers and Problem Solvers</span>
           </div>
@@ -193,7 +193,7 @@ export function Hero() {
               <Link
                 data-hero-cta
                 href="/rovers"
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors duration-150 hover:bg-primary-hover"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors duration-150 hover:bg-primary-hover"
               >
                 Explore Our Rovers
                 <svg
@@ -214,7 +214,7 @@ export function Hero() {
             <Link
               data-hero-cta
               href="/join"
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-md border border-white/15 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:border-primary hover:bg-white/15"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-none border border-white/15 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:border-primary hover:bg-white/15"
             >
               Join the Team
             </Link>

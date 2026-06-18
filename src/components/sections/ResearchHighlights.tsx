@@ -74,7 +74,7 @@ export function ResearchHighlights({ papers }: ResearchHighlightsProps) {
               <div className="min-w-0 flex-1">
                 <div className="mb-2 flex flex-wrap items-center gap-2.5">
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[paper.status] ?? ''}`}
+                    className={`rounded-none px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[paper.status] ?? ''}`}
                   >
                     {STATUS_LABEL[paper.status] ?? paper.status}
                   </span>
@@ -98,7 +98,7 @@ export function ResearchHighlights({ papers }: ResearchHighlightsProps) {
                   {paper.topics.slice(0, 3).map((topic) => (
                     <span
                       key={topic}
-                      className="inline-flex items-center whitespace-nowrap rounded-full border border-divider bg-bg px-2.5 py-0.5 font-mono text-[11px] text-text-muted transition-colors duration-200 group-hover:border-primary/40 group-hover:text-primary"
+                      className="inline-flex items-center whitespace-nowrap rounded-none border border-divider bg-bg px-2.5 py-0.5 font-mono text-[11px] text-text-muted transition-colors duration-200 group-hover:border-primary/40 group-hover:text-primary"
                     >
                       {topic}
                     </span>

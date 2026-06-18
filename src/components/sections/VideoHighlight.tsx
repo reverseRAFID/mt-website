@@ -26,7 +26,7 @@ export function VideoHighlight({ video }: VideoHighlightProps) {
             <div className="flex items-center justify-between gap-3 px-1 pb-2 pt-1">
               <span className="flex items-center gap-2 hud-label text-primary">
                 <span
-                  className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow"
+                  className="h-1.5 w-1.5 rounded-none bg-primary animate-pulse-glow"
                   aria-hidden
                 />
                 Live Feed
@@ -34,7 +34,7 @@ export function VideoHighlight({ video }: VideoHighlightProps) {
               <span className="hud-label text-text-faint">SAR // VIDEO</span>
             </div>
 
-            <div className="relative aspect-video overflow-hidden rounded-lg border border-divider bg-surface-2">
+            <div className="relative aspect-video overflow-hidden rounded-none border border-divider bg-surface-2">
               <iframe
                 src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0`}
                 title={video.title}
@@ -53,7 +53,7 @@ export function VideoHighlight({ video }: VideoHighlightProps) {
             </div>
 
             {video.competition && (
-              <span className="inline-flex items-center rounded-full bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary mb-4">
+              <span className="inline-flex items-center rounded-none bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary mb-4">
                 {video.competition.shortName} {video.competition.year}
               </span>
             )}
@@ -70,7 +70,7 @@ export function VideoHighlight({ video }: VideoHighlightProps) {
 
             <Link
               href="/sar-videos"
-              className="group inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
+              className="group inline-flex items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
             >
               All SAR Videos
               <svg

@@ -112,7 +112,7 @@ export function PageHero({
           className="mb-6 flex items-center justify-between gap-4 border-b border-divider/70 pb-4 text-text-faint"
         >
           <span className="hud-label inline-flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-blink" aria-hidden />
+            <span className="h-1.5 w-1.5 rounded-none bg-primary animate-blink" aria-hidden />
             {index ? `${index} //` : '// LIVE'}
           </span>
           <span className="hud-label nums hidden sm:inline">{coords}</span>

@@ -24,7 +24,7 @@ const initialForm = {
 }
 
 const inputCls =
-  'w-full min-h-[44px] rounded-md border border-divider bg-surface px-3.5 py-2.5 text-sm text-text placeholder-text-faint transition-colors focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30'
+  'w-full min-h-[44px] rounded-none border border-divider bg-surface px-3.5 py-2.5 text-sm text-text placeholder-text-faint transition-colors focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30'
 const textareaCls = `${inputCls} resize-none leading-relaxed`
 const selectCls = `${inputCls} appearance-none cursor-pointer pr-10`
 
@@ -133,7 +133,7 @@ export function ApplyForm() {
         className="relative overflow-hidden rounded-card border border-divider bg-surface-raised p-8 text-center sm:p-10"
       >
         <CornerTicks className="text-primary/40" size="md" />
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/40">
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-none bg-emerald-100 dark:bg-emerald-950/40">
           <svg
             aria-hidden
             width="28"
@@ -164,7 +164,7 @@ export function ApplyForm() {
         </p>
         <Link
           href="/"
-          className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
         >
           Back to Home
           <svg
@@ -300,7 +300,7 @@ export function ApplyForm() {
             ref={errorRef}
             tabIndex={-1}
             role="alert"
-            className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 outline-none dark:border-red-800 dark:bg-red-950/30 dark:text-red-400"
+            className="rounded-none border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 outline-none dark:border-red-800 dark:bg-red-950/30 dark:text-red-400"
           >
             {error}
           </p>
@@ -310,7 +310,7 @@ export function ApplyForm() {
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status === 'loading' ? (
               <>

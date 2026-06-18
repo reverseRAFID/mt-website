@@ -47,7 +47,7 @@ export default async function CompetitionsPage() {
                   <div className="flex items-center gap-4">
                     {/* Rank badge with corner ticks */}
                     {comp.rank ? (
-                      <div className="relative shrink-0 flex h-16 w-16 flex-col items-center justify-center rounded-lg border border-primary/20 bg-primary-highlight">
+                      <div className="relative shrink-0 flex h-16 w-16 flex-col items-center justify-center rounded-none border border-primary/20 bg-primary-highlight">
                         <CornerTicks className="text-primary/30" />
                         <span className="font-display font-bold text-2xl text-primary leading-none nums">
                           #{comp.rank}
@@ -55,7 +55,7 @@ export default async function CompetitionsPage() {
                         <span className="hud-label mt-1 text-text-faint">Rank</span>
                       </div>
                     ) : (
-                      <div className="relative shrink-0 flex h-16 w-16 items-center justify-center rounded-lg border border-divider bg-surface">
+                      <div className="relative shrink-0 flex h-16 w-16 items-center justify-center rounded-none border border-divider bg-surface">
                         <CornerTicks className="text-text-faint/30" />
                         <span className="hud-label text-text-faint">TBD</span>
                       </div>
@@ -64,7 +64,7 @@ export default async function CompetitionsPage() {
                     <div>
                       <div className="mb-1.5 flex items-center gap-2">
                         <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${COMPETITION_COLORS[comp.shortName] ?? 'bg-surface-2 text-text-faint'}`}
+                          className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold ${COMPETITION_COLORS[comp.shortName] ?? 'bg-surface-2 text-text-faint'}`}
                         >
                           {comp.shortName}
                         </span>

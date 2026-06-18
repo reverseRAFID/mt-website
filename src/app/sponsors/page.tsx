@@ -115,7 +115,7 @@ export default async function SponsorsPage() {
                 </p>
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+                  className="inline-flex items-center gap-2 rounded-none bg-primary px-6 py-3 font-semibold text-on-accent transition-colors hover:bg-primary-hover"
                 >
                   Get in Touch
                   <svg

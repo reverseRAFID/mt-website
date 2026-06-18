@@ -70,9 +70,9 @@ export default async function ApplyPage() {
                 {/* Status + deadline */}
                 <div className="flex flex-col gap-3">
                   <div
-                    className={`inline-flex w-fit max-w-full flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl border px-4 py-2 text-sm font-semibold ${config.color}`}
+                    className={`inline-flex w-fit max-w-full flex-wrap items-center gap-x-2 gap-y-1 rounded-none border px-4 py-2 text-sm font-semibold ${config.color}`}
                   >
-                    <span className="h-2 w-2 rounded-full bg-current" aria-hidden />
+                    <span className="h-2 w-2 rounded-none bg-current" aria-hidden />
                     {config.label}
                     {deadline && <span className="font-normal opacity-75">· Deadline: {deadline}</span>}
                   </div>
@@ -112,7 +112,7 @@ export default async function ApplyPage() {
                     {APPLY_SUBTEAMS.map((s) => (
                       <li
                         key={s}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-divider bg-surface px-3 py-1 text-xs font-medium text-text-muted"
+                        className="inline-flex items-center gap-1.5 rounded-none border border-divider bg-surface px-3 py-1 text-xs font-medium text-text-muted"
                       >
                         <span className="h-1 w-1 rotate-45 bg-primary" aria-hidden />
                         {s}
@@ -141,9 +141,9 @@ export default async function ApplyPage() {
               <div className="relative rounded-card border border-divider bg-surface-raised p-8 text-center sm:p-10">
                 <CornerTicks className="text-primary/30" size="md" />
                 <div
-                  className={`mx-auto mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ${config.color}`}
+                  className={`mx-auto mb-6 inline-flex items-center gap-2 rounded-none border px-4 py-2 text-sm font-semibold ${config.color}`}
                 >
-                  <span className="h-2 w-2 rounded-full bg-current" aria-hidden />
+                  <span className="h-2 w-2 rounded-none bg-current" aria-hidden />
                   {config.label}
                 </div>
                 <h2 className="font-display text-2xl font-bold tracking-tight text-text">
@@ -155,7 +155,7 @@ export default async function ApplyPage() {
                 </p>
                 <Link
                   href="/join"
-                  className="mt-7 inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
+                  className="mt-7 inline-flex items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
                 >
                   Recruitment overview
                   <svg

@@ -51,7 +51,7 @@ export function AchievementCallout({ competition }: AchievementCalloutProps) {
 
           <Link
             href={`/competitions/${competition.slug.current}`}
-            className="group inline-flex shrink-0 items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
+            className="group inline-flex shrink-0 items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
           >
             View Details
             <svg
