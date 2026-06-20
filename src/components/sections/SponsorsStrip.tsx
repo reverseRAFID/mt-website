@@ -49,7 +49,7 @@ export function SponsorsStrip({ sponsors }: SponsorsStripProps) {
       rel="noopener noreferrer"
       aria-label={sponsor.name}
       tabIndex={duplicate ? -1 : undefined}
-      className="flex h-11 shrink-0 items-center px-2 opacity-60 grayscale transition-all duration-200 hover:opacity-100 hover:grayscale-0"
+      className="flex h-11 shrink-0 items-center px-2"
     >
       {sponsor.logo || sponsor.logoLight || sponsor.logoDark ? (
         <ThemeLogo

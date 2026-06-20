@@ -45,9 +45,33 @@ export const member = defineType({
     }),
     defineField({ name: 'yearOfStudy', title: 'Year of Study', type: 'string', placeholder: 'e.g. 3rd Year', group: 'profile' }),
     defineField({ name: 'joinedYear', title: 'Year Joined the Team', type: 'number', group: 'profile' }),
-    defineField({ name: 'graduationYear', title: 'Graduation Year', type: 'number', group: 'profile' }),
+    defineField({
+      name: 'graduationYear',
+      title: 'Graduation Year',
+      type: 'number',
+      group: 'profile',
+      validation: (R) =>
+        R.custom((grad, ctx) => {
+          const joined = (ctx.document as { joinedYear?: number } | undefined)?.joinedYear
+          if (typeof grad === 'number' && typeof joined === 'number' && grad < joined) {
+            return 'Graduation year must be on or after the year joined.'
+          }
+          return true
+        }),
+    }),
+    defineField({
+      name: 'yearsContributed',
+      title: 'Years Contributed',
+      type: 'array',
+      of: [defineArrayMember({ type: 'number' })],
+      options: { layout: 'tags', sortable: false },
+      description:
+        'Every year this member was active on the team, e.g. 2021, 2022, 2023. Drives the contribution timeline on their profile.',
+      group: 'profile',
+      validation: (R) => R.unique(),
+    }),
     defineField({ name: 'isAlumni', title: 'Is Alumni?', type: 'boolean', initialValue: false, group: 'profile' }),
-    defineField({ name: 'currentOrg', title: 'Current Organization (alumni only)', type: 'string', group: 'profile' }),
+    defineField({ name: 'currentOrg', title: 'Current Organization', type: 'string', description: 'Where they work / study now (shown for alumni and current members).', group: 'profile' }),
 
     // ── Story & Work ─────────────────────────────────────────
     defineField({
@@ -85,21 +109,28 @@ export const member = defineType({
     }),
     defineField({
       name: 'achievements',
-      title: 'Achievements & Milestones',
+      title: 'Key Achievements',
       type: 'array',
       of: [
         defineArrayMember({
           type: 'object',
           name: 'achievement',
           fields: [
-            defineField({ name: 'title', title: 'Title', type: 'string', validation: (R) => R.required() }),
+            defineField({ name: 'title', title: 'Title', type: 'string', description: 'The award, role or milestone. e.g. "URC 2023 — 5th Worldwide".', validation: (R) => R.required() }),
             defineField({ name: 'year', title: 'Year', type: 'number' }),
-            defineField({ name: 'detail', title: 'Detail', type: 'text', rows: 2 }),
+            defineField({ name: 'achievement', title: 'Achievement', type: 'string', description: 'One-line summary of what they achieved.' }),
+            defineField({
+              name: 'details',
+              title: 'Details',
+              type: 'array',
+              of: [defineArrayMember({ type: 'string' })],
+              description: 'Optional bullet points elaborating on the achievement.',
+            }),
           ],
           preview: {
-            select: { title: 'title', year: 'year' },
-            prepare({ title, year }) {
-              return { title, subtitle: year ? String(year) : undefined }
+            select: { title: 'title', year: 'year', subtitle: 'achievement' },
+            prepare({ title, year, subtitle }) {
+              return { title: year ? `${title} · ${year}` : title, subtitle }
             },
           },
         }),
@@ -107,12 +138,22 @@ export const member = defineType({
       group: 'story',
     }),
     defineField({
-      name: 'personalProjects',
+      name: 'works',
       title: 'Works & Projects',
       type: 'array',
+      description: 'Notable projects, repos or publications — each with a name and a link.',
       of: [
-        defineArrayMember({ type: 'block' }),
-        defineArrayMember({ type: 'image', options: { hotspot: true } }),
+        defineArrayMember({
+          type: 'object',
+          name: 'work',
+          fields: [
+            defineField({ name: 'name', title: 'Name', type: 'string', validation: (R) => R.required() }),
+            defineField({ name: 'url', title: 'URL', type: 'url', validation: (R) => R.uri({ scheme: ['http', 'https'] }) }),
+          ],
+          preview: {
+            select: { title: 'name', subtitle: 'url' },
+          },
+        }),
       ],
       group: 'story',
     }),

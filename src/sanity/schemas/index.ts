@@ -5,6 +5,7 @@ import { member } from './member'
 import { research } from './research'
 import { post } from './post'
 import { sponsor } from './sponsor'
+import { testimonial } from './testimonial'
 import { sarVideo } from './sarVideo'
 import { recruitmentConfig } from './recruitmentConfig'
 import { application } from './application'
@@ -18,6 +19,7 @@ export const schemaTypes = [
   research,
   post,
   sponsor,
+  testimonial,
   sarVideo,
   // Singleton
   recruitmentConfig,

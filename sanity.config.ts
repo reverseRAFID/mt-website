@@ -35,6 +35,14 @@ export default defineConfig({
               .icon(() => '👤')
               .child(S.documentTypeList('member').title('Team Members')),
             S.listItem()
+              .title('Advisor Testimonials')
+              .icon(() => '💬')
+              .child(
+                S.documentTypeList('testimonial')
+                  .title('Advisor Testimonials')
+                  .defaultOrdering([{ field: 'order', direction: 'asc' }])
+              ),
+            S.listItem()
               .title('Research Papers')
               .icon(() => '📄')
               .child(S.documentTypeList('research').title('Research Papers')),

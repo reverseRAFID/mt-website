@@ -74,7 +74,9 @@ export const MEMBERS_QUERY = groq`
 export const MEMBER_BY_SLUG_QUERY = groq`
   *[_type == "member" && slug.current == $slug][0] {
     _id, name, slug, photo, role, tagline, subTeam, yearOfStudy, joinedYear, graduationYear,
-    isAlumni, currentOrg, bio, quote, focusAreas, skills, achievements, personalProjects,
+    yearsContributed, isAlumni, currentOrg, bio, quote, focusAreas, skills,
+    achievements[]{ title, year, achievement, details },
+    works[]{ name, url },
     linkedin, github, website,
     "competitions": *[_type == "competition" && references(^._id)] | order(year desc) {
       _id, name, shortName, year, slug, result, rank,
@@ -130,6 +132,13 @@ export const LATEST_POSTS_QUERY = groq`
 export const ACTIVE_SPONSORS_QUERY = groq`
   *[_type == "sponsor" && isActive == true] | order(tier asc, name asc) {
     _id, name, logo, logoLight, logoDark, website, tier
+  }
+`
+
+// ── Testimonials ──────────────────────────────────────────────
+export const FEATURED_TESTIMONIALS_QUERY = groq`
+  *[_type == "testimonial" && featured == true] | order(order asc, name asc) {
+    _id, name, role, organization, quote, link, photo
   }
 `
 

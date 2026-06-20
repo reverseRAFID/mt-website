@@ -6,6 +6,7 @@ import {
   LATEST_POSTS_QUERY,
   RESEARCH_QUERY,
   ACTIVE_SPONSORS_QUERY,
+  FEATURED_TESTIMONIALS_QUERY,
 } from '@/sanity/lib/queries'
 import type {
   CompetitionCard,
@@ -14,6 +15,7 @@ import type {
   PostCard,
   ResearchCard,
   Sponsor,
+  Testimonial,
 } from '@/sanity/lib/types'
 
 import { AnnouncementBarServer } from '@/components/layout/AnnouncementBarServer'
@@ -30,18 +32,20 @@ import { VideoHighlight } from '@/components/sections/VideoHighlight'
 import { NewsStrip } from '@/components/sections/NewsStrip'
 import { ResearchHighlights } from '@/components/sections/ResearchHighlights'
 import { CTASection } from '@/components/sections/CTASection'
+import { Testimonials } from '@/components/sections/Testimonials'
 import { SponsorsStrip } from '@/components/sections/SponsorsStrip'
 import { MARQUEE_SUBTEAMS } from '@/lib/subteams'
 
 export default async function HomePage() {
   // Fetch all landing page data in parallel
-  const [competition, rover, video, posts, allResearch, sponsors] = await Promise.all([
+  const [competition, rover, video, posts, allResearch, sponsors, testimonials] = await Promise.all([
     sanityFetch<CompetitionCard | null>(LATEST_COMPETITION_QUERY),
     sanityFetch<RoverCard | null>(FEATURED_ROVER_QUERY),
     sanityFetch<SarVideo | null>(LATEST_SAR_VIDEO_QUERY),
     sanityFetch<PostCard[]>(LATEST_POSTS_QUERY),
     sanityFetch<ResearchCard[]>(RESEARCH_QUERY),
     sanityFetch<Sponsor[]>(ACTIVE_SPONSORS_QUERY),
+    sanityFetch<Testimonial[]>(FEATURED_TESTIMONIALS_QUERY),
   ])
 
   // Show only the 3 most recent research papers on the landing page
@@ -65,6 +69,7 @@ export default async function HomePage() {
         {video && <VideoHighlight video={video} />}
         {posts?.length > 0 && <NewsStrip posts={posts} />}
         {papers.length > 0 && <ResearchHighlights papers={papers} />}
+        {testimonials?.length > 0 && <Testimonials testimonials={testimonials} />}
         <CTASection />
         <SponsorsStrip sponsors={sponsors ?? []} />
       </main>

@@ -5,6 +5,10 @@ import { ThemeLogo } from '@/components/ui/ThemeLogo'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { Testimonials } from '@/components/sections/Testimonials'
+import { sanityFetch } from '@/sanity/lib/client'
+import { FEATURED_TESTIMONIALS_QUERY } from '@/sanity/lib/queries'
+import type { Testimonial } from '@/sanity/lib/types'
 
 export const metadata: Metadata = { title: 'About Us' }
 
@@ -24,7 +28,9 @@ const TIMELINE = [
   { year: '2024', event: 'URC 11th place — best result to date' },
 ]
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const testimonials = await sanityFetch<Testimonial[]>(FEATURED_TESTIMONIALS_QUERY)
+
   return (
     <PageLayout>
       <PageHero
@@ -129,6 +135,15 @@ export default function AboutPage() {
           </Link>
         </Reveal>
       </div>
+
+      {testimonials?.length > 0 && (
+        <Testimonials
+          testimonials={testimonials}
+          index="03"
+          title="What our advisors say"
+          description="The faculty and mentors who back Mongol-Tori on what the team is building and where it's headed."
+        />
+      )}
     </PageLayout>
   )
 }

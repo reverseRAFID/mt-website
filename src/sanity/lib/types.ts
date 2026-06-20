@@ -129,7 +129,15 @@ export interface MemberCard {
 export interface MemberAchievement {
   title: string
   year?: number
-  detail?: string
+  /** One-line summary of what was achieved. */
+  achievement?: string
+  /** Optional bullet points elaborating on the achievement. */
+  details?: string[]
+}
+
+export interface MemberWork {
+  name: string
+  url?: string
 }
 
 export interface MemberFull extends MemberCard {
@@ -137,12 +145,14 @@ export interface MemberFull extends MemberCard {
   yearOfStudy?: string
   joinedYear?: number
   graduationYear?: number
+  /** Every year the member was active — drives the contribution timeline. */
+  yearsContributed?: number[]
   bio?: string
   quote?: string
   focusAreas?: string[]
   skills?: string[]
   achievements?: MemberAchievement[]
-  personalProjects?: PortableTextBlock
+  works?: MemberWork[]
   linkedin?: string
   github?: string
   website?: string
@@ -224,6 +234,17 @@ export interface Sponsor {
   logoDark?: SanityImage
   website?: string
   tier: 'title' | 'gold' | 'silver' | 'bronze' | 'in-kind'
+}
+
+// ── Testimonial ───────────────────────────────────────────────
+export interface Testimonial {
+  _id: string
+  name: string
+  role?: string
+  organization?: string
+  quote: string
+  link?: string
+  photo?: SanityImage
 }
 
 // ── SAR Video ─────────────────────────────────────────────────

@@ -1,5 +1,9 @@
 import Link from 'next/link'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
+import { SponsorMarquee } from '@/components/sponsors/SponsorMarquee'
+import { sanityFetch } from '@/sanity/lib/client'
+import { ACTIVE_SPONSORS_QUERY } from '@/sanity/lib/queries'
+import type { Sponsor } from '@/sanity/lib/types'
 
 const footerLinks = {
   Team: [
@@ -61,9 +65,14 @@ const socials = [
   },
 ]
 
-export function Footer() {
+export async function Footer() {
+  const sponsors = await sanityFetch<Sponsor[]>(ACTIVE_SPONSORS_QUERY)
+
   return (
     <footer className="relative overflow-hidden bg-surface border-t border-divider">
+      {/* full-color partner marquee — rides along on every page */}
+      <SponsorMarquee sponsors={sponsors ?? []} />
+
       {/* telemetry status row */}
       <div className="border-b border-divider">
         <div className="section-container flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3">

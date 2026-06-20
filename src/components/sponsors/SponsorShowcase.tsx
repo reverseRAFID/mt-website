@@ -83,7 +83,7 @@ export function SponsorShowcase({ sponsors }: { sponsors: Sponsor[] }) {
                               alt={sponsor.name}
                               width={160}
                               height={64}
-                              className={`${cfg.logo} object-contain opacity-80 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0`}
+                              className={`${cfg.logo} object-contain`}
                             />
                           ) : (
                             <span className="text-center font-display text-lg font-bold text-text-muted transition-colors group-hover:text-primary">
