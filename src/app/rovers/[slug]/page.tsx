@@ -24,7 +24,7 @@ interface Props {
 
 export async function generateStaticParams() {
   const rovers = await sanityFetch<RoverCard[]>(ROVERS_QUERY)
-  return rovers?.map((r) => ({ slug: r.slug.current })) ?? []
+  return rovers?.filter((r) => r?.slug?.current).map((r) => ({ slug: r.slug.current })) ?? []
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

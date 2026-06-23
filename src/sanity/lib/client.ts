@@ -1,14 +1,32 @@
 import { createClient } from 'next-sanity'
 import imageUrlBuilder from '@sanity/image-url'
 
-// ── Client ─────────────────────────────────────────────────────
-// Uses next-sanity's createClient for built-in Next.js ISR cache support
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? 'replace-me'
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'production'
+
+// ── Client (token-less) ────────────────────────────────────────
+// Safe to import from client components — backs urlFor() (which only needs
+// projectId/dataset to build CDN URLs, never a token).
 export const sanityClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? 'replace-me',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'production',
+  projectId,
+  dataset,
   apiVersion: '2024-01-01',
   useCdn: false,
 })
+
+// ── Server read client (token) ─────────────────────────────────
+// Reads work even when the dataset is private / role-restricted. The token is
+// read from a server-only env var (NOT prefixed NEXT_PUBLIC), so Next replaces
+// it with `undefined` in client bundles — it never reaches the browser. Used
+// only by sanityFetch(), which runs in Server Components / route handlers.
+// Prefer a dedicated read-only token (SANITY_API_READ_TOKEN); falls back to the
+// write token so a single-token setup keeps working.
+// `perspective: 'published'` makes a tokened read behave like an anonymous one
+// — only published documents, never drafts — which is what a public site wants.
+const readToken = process.env.SANITY_API_READ_TOKEN ?? process.env.SANITY_API_TOKEN
+const readClient = readToken
+  ? createClient({ projectId, dataset, apiVersion: '2024-01-01', useCdn: false, token: readToken, perspective: 'published' })
+  : sanityClient
 
 // ── Image URL builder ──────────────────────────────────────────
 const builder = imageUrlBuilder(sanityClient)
@@ -39,7 +57,7 @@ export async function sanityFetch<T>(
   params: Record<string, unknown> = {},
   revalidate = 60
 ): Promise<T> {
-  return sanityClient.fetch<T>(query, params, {
+  return readClient.fetch<T>(query, params, {
     next: { revalidate },
   })
 }

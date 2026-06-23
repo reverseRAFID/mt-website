@@ -35,7 +35,8 @@ function loadEnv() {
     const t = line.trim()
     if (!t || t.startsWith('#') || !t.includes('=')) continue
     const i = t.indexOf('=')
-    out[t.slice(0, i).trim()] = t.slice(i + 1).trim()
+    // strip surrounding single/double quotes if present
+    out[t.slice(0, i).trim()] = t.slice(i + 1).trim().replace(/^['"]|['"]$/g, '')
   }
   return out
 }
@@ -133,7 +134,8 @@ async function main() {
 
   let members = []
   if (!SKIP_CREW) {
-    members = DRY ? [] : await client.fetch('*[_type=="member"]{_id,name,subTeam}')
+    // Only published members — a draft-only ref would dereference to null on the site.
+    members = DRY ? [] : await client.fetch('*[_type=="member" && !(_id in path("drafts.**"))]{_id,name,subTeam}')
   }
 
   console.log(`\n▶ Seeding ${records.length} rovers into ${projectId}/${dataset}${DRY ? '  (DRY RUN)' : ''}\n`)
@@ -236,7 +238,20 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error('\n✗ Seed failed:', err.message)
+  const msg = String(err.message || '')
+  if (/Insufficient permissions|permission "create"|create.*required/i.test(msg)) {
+    console.error(`
+✗ The token authenticated, but it is READ-ONLY (Viewer role) — it can't create documents.
+
+  Fix: create a token with the "Editor" role (not Viewer):
+    https://www.sanity.io/manage  →  project "${projectId}"  →  API  →  Tokens  →  Add API token
+    Name: "seed",  Permissions: Editor
+  Replace SANITY_API_TOKEN in .env.local with the new token, then re-run:
+    node scripts/seed-rovers.mjs
+`)
+    process.exit(1)
+  }
+  console.error('\n✗ Seed failed:', msg)
   if (err.responseBody) console.error(err.responseBody)
   process.exit(1)
 })

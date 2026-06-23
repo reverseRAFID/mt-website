@@ -104,18 +104,25 @@ export function RoverCrew({
 }) {
   const [filter, setFilter] = useState('all')
 
+  // Drop entries whose member reference didn't resolve (e.g. a draft-only or
+  // deleted member) so the grid never renders a broken card.
+  const valid = useMemo(
+    () => (crew ?? []).filter((c) => c?.member?.slug?.current),
+    [crew]
+  )
+
   const teams = useMemo(() => {
     const counts = new Map<string, number>()
-    for (const c of crew) {
+    for (const c of valid) {
       const t = effectiveTeam(c)
       if (t !== 'other') counts.set(t, (counts.get(t) ?? 0) + 1)
     }
     return Array.from(counts.entries()).sort((a, b) => b[1] - a[1])
-  }, [crew])
+  }, [valid])
 
-  if (!crew || crew.length === 0) return null
+  if (valid.length === 0) return null
 
-  const shown = filter === 'all' ? crew : crew.filter((c) => effectiveTeam(c) === filter)
+  const shown = filter === 'all' ? valid : valid.filter((c) => effectiveTeam(c) === filter)
 
   return (
     <section className="relative border-t border-divider bg-surface py-16 lg:py-24">
@@ -131,7 +138,7 @@ export function RoverCrew({
             The minds behind {roverName}
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-text-muted text-pretty">
-            {crew.length} engineers across every sub-team. Filter by discipline to see who built what.
+            {valid.length} engineers across every sub-team. Filter by discipline to see who built what.
           </p>
         </Reveal>
 
@@ -139,7 +146,7 @@ export function RoverCrew({
         {teams.length > 0 && (
           <div className="mb-9 mt-8 flex flex-wrap items-center gap-2">
             <span className="hud-label mr-1 text-text-faint">Sub-team //</span>
-            <FilterChip label="All" count={crew.length} active={filter === 'all'} onClick={() => setFilter('all')} />
+            <FilterChip label="All" count={valid.length} active={filter === 'all'} onClick={() => setFilter('all')} />
             {teams.map(([key, n]) => (
               <FilterChip key={key} label={labelFor(key)} count={n} active={filter === key} onClick={() => setFilter(key)} />
             ))}
