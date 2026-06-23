@@ -13,8 +13,9 @@ export const ACTIVE_ANNOUNCEMENTS_QUERY = groq`
 // ── Rovers ────────────────────────────────────────────────────
 export const ROVERS_QUERY = groq`
   *[_type == "rover"] | order(year desc) {
-    _id, name, slug, year, tagline,
+    _id, name, slug, year, tagline, isFlagship,
     specs { weight, driveSystem, dof, autonomy },
+    "heroImage": coalesce(featuredImage, gallery[0]),
     "galleryCount": count(gallery),
     competition-> { shortName, year }
   }
@@ -22,17 +23,27 @@ export const ROVERS_QUERY = groq`
 
 export const ROVER_BY_SLUG_QUERY = groq`
   *[_type == "rover" && slug.current == $slug][0] {
-    _id, name, slug, year, tagline, description,
-    specs, cadModel, diagrams, diagramAnnotations, technicalPdf, gallery,
-    competition-> { _id, name, shortName, year, slug, result, rank }
+    _id, name, slug, year, tagline, overview, description, isFlagship, teamLead, sarVideoUrl,
+    specs, keySpecs, namedComponents,
+    featuredImage, gallery, diagrams, diagramAnnotations, cadModel, technicalPdf,
+    keyInnovations, missions,
+    subsystems[]{ name, subTeam, summary, highlights, image },
+    crew[]{
+      contribution, subTeamOverride,
+      member-> { _id, name, slug, photo, role, subTeam, isAlumni }
+    },
+    competition-> { _id, name, shortName, year, slug, location, result, rank, totalTeams },
+    "siblings": *[_type == "rover" && _id != ^._id] | order(year desc) {
+      _id, name, slug, year, tagline, "heroImage": coalesce(featuredImage, gallery[0])
+    }
   }
 `
 
 export const FEATURED_ROVER_QUERY = groq`
-  *[_type == "rover"] | order(year desc)[0] {
+  *[_type == "rover"] | order(isFlagship desc, year desc)[0] {
     _id, name, slug, year, tagline,
     specs { weight, driveSystem, dof, autonomy },
-    "heroImage": gallery[0],
+    "heroImage": coalesce(featuredImage, gallery[0]),
     competition-> { shortName, year }
   }
 `

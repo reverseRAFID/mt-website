@@ -2,10 +2,9 @@
   "version": 1,
   "skills": {
     "ui-ux-pro-max": {
-      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
-      "sourceType": "github",
-      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
-      "computedHash": "0a413bf988d06481f69bb81df2070741c3ba12dd9f1be2706d57f259c905992d"
+      "source": "skills.volces.com",
+      "sourceType": "well-known",
+      "computedHash": "3086febf11d75770819f96f720bfe03b0042860a5ede29895a41f606305cdfa0"
     }
   }
 }

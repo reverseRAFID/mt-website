@@ -47,34 +47,94 @@ export interface DiagramAnnotation {
   yPercent: number
 }
 
+export interface KeySpec {
+  label: string
+  value: string
+}
+
+export interface RoverInnovation {
+  title: string
+  description: string
+}
+
+export interface RoverMission {
+  name: string
+  summary: string
+}
+
+export interface RoverSubsystem {
+  name: string
+  subTeam?: string
+  summary: string
+  highlights?: string[]
+  image?: SanityImage
+}
+
+export interface RoverCrewMember {
+  contribution?: string
+  subTeamOverride?: string
+  member: {
+    _id: string
+    name: string
+    slug: SanitySlug
+    photo?: SanityImage
+    role?: string
+    subTeam?: string
+    isAlumni?: boolean
+  }
+}
+
+export interface RoverSibling {
+  _id: string
+  name: string
+  slug: SanitySlug
+  year: number
+  tagline?: string
+  heroImage?: SanityImage
+}
+
 export interface RoverCard {
   _id: string
   name: string
   slug: SanitySlug
   year: number
   tagline?: string
-  specs?: Pick<RoverSpecs, 'weight' | 'driveSystem' | 'dof'>
+  isFlagship?: boolean
+  specs?: Pick<RoverSpecs, 'weight' | 'driveSystem' | 'dof' | 'autonomy'>
   galleryCount?: number
   heroImage?: SanityImage
   competition?: { shortName: string; year: number }
 }
 
 export interface RoverFull extends RoverCard {
+  overview?: string
   description?: PortableTextBlock
+  teamLead?: string
+  sarVideoUrl?: string
   specs?: RoverSpecs
+  keySpecs?: KeySpec[]
+  namedComponents?: string[]
+  featuredImage?: SanityImage
   cadModel?: SanityFile
   diagrams?: SanityImage[]
   diagramAnnotations?: DiagramAnnotation[]
   technicalPdf?: SanityFile
   gallery?: SanityImage[]
+  keyInnovations?: RoverInnovation[]
+  missions?: RoverMission[]
+  subsystems?: RoverSubsystem[]
+  crew?: RoverCrewMember[]
+  siblings?: RoverSibling[]
   competition?: {
     _id: string
     name: string
     shortName: string
     year: number
     slug: SanitySlug
+    location?: string
     result?: string
     rank?: number
+    totalTeams?: number
   }
 }
 
