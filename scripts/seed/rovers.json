@@ -1,0 +1,1718 @@
+[
+  {
+    "year": 2018,
+    "roverName": "Revolution",
+    "nameConfidence": "explicit",
+    "tagline": "Four wheels, expandable bogies, and a rebuilt 6-DOF arm",
+    "overview": "Revolution is BRACU Mongol Tori's 2018 University Rover Challenge entry and the third major iteration of the Mongol Tori lineup. This year the team moved from a six-wheel to a four-wheel platform, introduced an expanding rocker-bogie suspension, completely reconstructed the robotic arm, and packed the controls into a portable three-laptop command station while cutting overall size and weight. It is a stand-alone mobile platform built to assist astronauts across servicing, retrieval, autonomous traversal, and scientific research tasks.",
+    "teamLead": "Mohammad Zahirul Islam",
+    "teamLeadEmail": "md.zahir25@gmail.com",
+    "competition": {
+      "shortName": "URC",
+      "fullName": "University Rover Challenge",
+      "year": 2018,
+      "location": "",
+      "result": ""
+    },
+    "specs": [
+      {
+        "label": "Drive System",
+        "value": "4-wheel modified rocker-bogie"
+      },
+      {
+        "label": "Chassis",
+        "value": "0.7 m x 0.55 m ladder + space frame (K-shape)"
+      },
+      {
+        "label": "Suspension",
+        "value": "Expandable bogies, 0.76 m to 1.2 m via two linear actuators"
+      },
+      {
+        "label": "Wheels",
+        "value": "0.30 m dia x 0.10 m molded aluminum, rubber grip"
+      },
+      {
+        "label": "Arm DOF",
+        "value": "6-DOF, 1.5 m reach"
+      },
+      {
+        "label": "Payload",
+        "value": ">5 kg lift / hold"
+      },
+      {
+        "label": "Speed",
+        "value": "~4 km/h"
+      },
+      {
+        "label": "Operating Range",
+        "value": "Travels up to 1 km from base station"
+      },
+      {
+        "label": "Power",
+        "value": "12V 30A lead-acid (motors) + 2x 12V 4.5A Li-Po (comms)"
+      },
+      {
+        "label": "Compute",
+        "value": "Onboard NUC PC + ATmega2560 Arduino"
+      }
+    ],
+    "subsystems": [
+      {
+        "name": "Mechanical",
+        "subTeamKey": "mechanical",
+        "summary": "A ground-up mechanical redesign moving to four wheels with an expandable rocker-bogie suspension, a rebuilt 6-DOF arm, and dual sample collectors. The chassis combines ladder and space-frame structures with triangulation for rigidity against rocky-terrain shock.",
+        "highlights": [
+          "Ladder + space frame K-shaped chassis, 0.7 m long x 0.55 m wide, with triangulation against shape distortion",
+          "Four-wheel modified rocker-bogie with two bogies on a U-shaped rear differential bar and universal joints",
+          "Expandable bogies extending from 0.76 m to 1.2 m via two heavy-duty linear actuators for stability on drops and slopes",
+          "Molded aluminum wheels 0.30 m diameter x 0.10 m wide with fixed-orientation rubber grip for 360-degree rotation and climbing",
+          "6-DOF arm using four linear actuators and two DC motors, bevel gear assembly at the tip, cable-driven claw, lifts >5 kg",
+          "Multiple task-specific end effectors: 3-finger rubber-grip claw and an excavator-claw heavy-duty effector"
+        ]
+      },
+      {
+        "name": "Controls & Software",
+        "subTeamKey": "controls",
+        "summary": "Control software is split across dedicated GUIs for control, science, and mapping, served from a portable base station that acts as TCP client to the rover server. A mapping GUI tracks the rover in real time on a preloaded map via GPS.",
+        "highlights": [
+          "Control GUI written in JAVA, platform-independent, base station as TCP client and rover as server",
+          "Science GUI built in C# rendering sensor readings into custom gauges",
+          "Mapping GUI tracks rover live on a preloaded map using GPS latitude/longitude",
+          "Autonomy stack in Python 3.6 with OpenCV 3.0 image processing",
+          "Portable command station running 3 laptops for control and rover cameras"
+        ]
+      },
+      {
+        "name": "Electronics",
+        "subTeamKey": "electronics",
+        "summary": "An ATmega2560-based Arduino drives the motors through 43A BTS7960 modules and connects directly to the onboard NUC PC. The electrical system was designed in Proteus 8.0 and manufactured on a plug-and-play PCB, with power split between motor and communication streams.",
+        "highlights": [
+          "ATmega2560 Arduino Mega controlling motors via 43A BTS7960 modules",
+          "Plug-and-play PCB with six Cytron drivers, four BTS drivers, and a four-channel relay module",
+          "Electrical system designed in Proteus 8.0",
+          "Dual power streams: 12V 30A lead-acid for motors, two 12V 4.5A Li-Po for comms",
+          "Comms branch sub-divided via voltage converters to power network switch, router, IP camera, FPV camera and NUC PC",
+          "Safety: kill switch for force shutdown and a 30A fuse box"
+        ]
+      },
+      {
+        "name": "Communication",
+        "subTeamKey": "network",
+        "summary": "A 2.4 GHz dual-router link connects the onboard NUC PC to the base station, with omni-directional coverage on the rover and a high-gain tracked directional antenna at the base. Vision is delivered through IP and FPV camera feeds.",
+        "highlights": [
+          "Two 2.4 GHz routers (Rocket M2 and Bullet M2) with channel switching; dual-band 2.4/5.8 GHz planned",
+          "Omni-directional TL-ANT2412D antenna on rover for 360-degree horizontal coverage",
+          "High-gain directional sector antenna ANT2327D15T-120DP with Rocket M2 at base station",
+          "G-5500 rotator with elevation-azimuth controller to manually track the rover",
+          "Two IP cameras and two FPV cameras with 5.8 GHz 600 mW transmitter, switchable from control software"
+        ]
+      },
+      {
+        "name": "Autonomy",
+        "subTeamKey": "autonomous",
+        "summary": "Autonomous traversal fuses GPS and magnetometer data with computer vision. The rover navigates by GPS to within 3.5 m of a target gate, then hands off to an OpenCV image-processing routine for final approach.",
+        "highlights": [
+          "U-blox 6 based NEO-6 series GPS module with ~5 m error margin",
+          "HMC5883L three-axis magnetometer for heading determination",
+          "Target-gate path planning computing distance and angle between waypoints",
+          "GPS-to-vision handoff once within a 3.5 m radius of the destination",
+          "Image-processing routine built with OpenCV and Python"
+        ]
+      },
+      {
+        "name": "Science",
+        "subTeamKey": "science",
+        "summary": "The science plan searches for signs of life and characterizes the Martian environment through onboard atmospheric/soil sensing and follow-up lab analysis. Samples are drilled into airtight containers, and a panorama with GPS data documents the site.",
+        "highlights": [
+          "Onboard gas sensing: MQ7 (CO), MQ135 (CO2), MQ8 (H2), GROVE O2 sensor",
+          "Environmental sensors: LDR light, ML8511 UV, DHT22 air temp/humidity, DS18B20 soil temp, soil moisture",
+          "Lab tests: microbial biomass, water flow capillary, pH, amino acid, soil microscopy, soil bulk density",
+          "Drill-based sample collector deposits soil into a separate airtight box; claw collector also available",
+          "High-resolution panorama and close-up stratigraphic imaging with GPS location data",
+          "Reagents and equipment: Ninhydrin, ethanol, digital microscope, centrifugal tubes, spirit burner"
+        ]
+      }
+    ],
+    "missions": [
+      {
+        "name": "Extreme Retrieval and Delivery",
+        "summary": "Designed to travel up to 1 km from base at roughly 4 km/h, the rover uses its modified rocker-bogie and rubber-gripped aluminum wheels to traverse rocks, slopes, stairs, and vertical drops over 0.75 m while delivering aid to astronauts."
+      },
+      {
+        "name": "Equipment Servicing",
+        "summary": "The 6-DOF arm reaches 1.5 m from the ground with a strong three-finger claw and 360-degree rotational wrist for wire-free manipulation, performing tasks like plugging cords, turning knobs, and undoing latches; a claw-mounted camera aids vision and an onboard box stores retrieved tools."
+      },
+      {
+        "name": "Autonomous Traversal",
+        "summary": "Combining U-blox NEO-6 GPS, an HMC5883L magnetometer, and OpenCV vision, the rover navigates through target gates by GPS to within 3.5 m of each destination, then switches to image processing for the final autonomous approach."
+      },
+      {
+        "name": "Science",
+        "summary": "The rover drills and collects soil into airtight containers, runs onboard gas and environmental sensing for subsurface data, and returns samples for lab tests (microbial biomass, capillary, pH, amino acid, microscopy) to assess the likelihood of life on Mars."
+      }
+    ],
+    "keyInnovations": [
+      {
+        "title": "Expandable rocker-bogie suspension",
+        "description": "Two heavy-duty linear actuators extend the bogies from 0.76 m to 1.2 m on demand, widening the stance for added stability on vertical drops and steep slopes."
+      },
+      {
+        "title": "Six-to-four wheel redesign",
+        "description": "The platform dropped from six wheels to a four-wheel modified rocker-bogie, cutting size and weight while keeping the ability to climb rocks and rotate 360 degrees."
+      },
+      {
+        "title": "Reconstructed 6-DOF arm",
+        "description": "An entirely rebuilt arm with four linear actuators, two DC motors, a tip bevel-gear assembly for wire-free wrist rotation, and a cable-driven claw that lifts more than 5 kg."
+      },
+      {
+        "title": "Portable command station",
+        "description": "A self-contained base station running three laptops consolidates control, science, and camera feeds into a deployable remote command post."
+      },
+      {
+        "title": "Dual sample collectors",
+        "description": "A claw-based digging module and a custom drill-bit housing (which forces soil upward into a separate box) give two contamination-aware ways to gather Martian-analog samples."
+      }
+    ],
+    "namedComponents": [
+      "ATmega2560 Arduino Mega",
+      "BTS7960 43A module",
+      "Cytron motor driver",
+      "Intel NUC PC",
+      "Proteus 8.0",
+      "U-blox NEO-6 GPS",
+      "HMC5883L magnetometer",
+      "OpenCV 3.0",
+      "Python 3.6",
+      "Rocket M2",
+      "Bullet M2",
+      "TL-ANT2412D omni antenna",
+      "ANT2327D15T-120DP sector antenna",
+      "G-5500 rotator",
+      "MQ7 / MQ135 / MQ8 gas sensors",
+      "ML8511 UV sensor",
+      "DHT22",
+      "DS18B20"
+    ],
+    "changesFromPrev": [
+      "Switched from a six-wheel to a four-wheel design",
+      "Added a rover expansion system with expandable bogies (0.76 m to 1.2 m)",
+      "Completely reconstructed the robotic arm",
+      "Introduced a portable command station running three laptops",
+      "Significant reduction in overall size and weight",
+      "New excavator-claw sample collector alongside a modified drill mechanism"
+    ],
+    "_groundedness": "high",
+    "_corrections": [
+      "Relabeled the 'Comms Range' spec to 'Operating Range' and reworded the value to 'Travels up to 1 km from base station'. The document (line 125) states the rover is designed to travel up to 1 km from the base station — this is an operational/travel range, not a communications range, which the document never specifies.",
+      "Clarified the Electronics highlight wording from 'power switch' to 'power network switch' to match the document's intent (line 89 lists 'Switch, Router, IP camera, FPV camera and the on board NUC pc' as devices powered by the comms branch — the network switch, not a power on/off switch)."
+    ]
+  },
+  {
+    "year": 2019,
+    "roverName": "",
+    "nameConfidence": "none",
+    "tagline": "Fourth-generation Mars rover, rebuilt for retrieval, servicing, autonomy and science",
+    "overview": "The 2019 BRACU Mongol-Tori rover marks the fourth iteration in the team's URC lineup, a four-wheeled rover built to assist astronauts and run autonomous science research on Mars-analog terrain. This year's build focuses its major upgrades on the software system, electronics, and a fully automatic on-board science laboratory, with supporting refinements to the chassis, arm, and wheels. It pairs an expandable modified rocker-bogie suspension and a 6-DOF arm with three interchangeable claws against a feedback-driven control GUI and a computer-vision autonomy stack.",
+    "teamLead": "Razin Bin Issa",
+    "teamLeadEmail": "raz.issa00@gmail.com",
+    "competition": {
+      "shortName": "URC",
+      "fullName": "University Rover Challenge",
+      "year": 2019,
+      "location": "",
+      "result": ""
+    },
+    "specs": [
+      {
+        "label": "Chassis",
+        "value": "0.7 m long x 0.55 m wide K-shape space frame"
+      },
+      {
+        "label": "Drive System",
+        "value": "Four-wheel modified rocker-bogie suspension"
+      },
+      {
+        "label": "Suspension",
+        "value": "Expandable bogies, 0.76 m to 1.2 m via 2 linear actuators"
+      },
+      {
+        "label": "Wheels",
+        "value": "0.3 m dia x 0.10 m width, stainless steel, rubber-padded"
+      },
+      {
+        "label": "Arm DOF",
+        "value": "6-DOF with 3 interchangeable claws"
+      },
+      {
+        "label": "Payload",
+        "value": "Heavy claw lifts more than 5 kg"
+      },
+      {
+        "label": "Power",
+        "value": "10,000 mAh Li-Po, approx. 42 min runtime"
+      },
+      {
+        "label": "Compute",
+        "value": "NUC mini PC + ATMega 2560"
+      },
+      {
+        "label": "Range",
+        "value": "Designed to travel up to 1 km"
+      },
+      {
+        "label": "Autonomy",
+        "value": "GPS + magnetometer + YOLOv2 vision (81% accuracy)"
+      }
+    ],
+    "subsystems": [
+      {
+        "name": "Mechanical",
+        "subTeamKey": "mechanical",
+        "summary": "A reworked mechanical platform lowers the rover's center of gravity for stability while keeping the four-wheel layout. The K-shape space-frame chassis, expandable rocker-bogie suspension, and redesigned stainless-steel wheels are tuned for rough terrain, vertical drops, and slopes.",
+        "highlights": [
+          "K-shape chassis 0.7 m x 0.55 m with triangulation to resist shock-induced distortion",
+          "Modified four-wheel rocker-bogie with two bogies and a U-shaped differential bar",
+          "Universal joints in the differential bar maximize bogie rotation angle",
+          "Bogies expand from 0.76 m to 1.2 m via two heavy-duty linear actuators for drop stability",
+          "0.3 m x 0.10 m stainless-steel wheels with U-shaped rim, drilled holes, and rubber grip pads",
+          "6-DOF arm: 4 linear actuators, 2 DC motors, motor-and-pulley base, gear mechanism to avoid wire twisting"
+        ]
+      },
+      {
+        "name": "Communication",
+        "subTeamKey": "network",
+        "summary": "A dual-router link carries video and control between rover and a portable base station, with antenna tracking to maintain coverage. Multiple camera feeds and frequency separation keep video and control reliable.",
+        "highlights": [
+          "Rocket M2 at base station and Bullet M2 on the rover",
+          "Omnidirectional TL-ANT2412D on rover; high-gain directional ANT232D15T-120DP at base",
+          "G-5500 rotator with elevation-azimuth controller tracks the rover by signal strength",
+          "3 IP cameras + 6 FPV cameras, viewed on 3 monitors and 1 VR set",
+          "UDP for fast video, TCP for reliable control signals",
+          "5.8 GHz band for FPV video; 2.4 GHz for control signals and IP cameras"
+        ]
+      },
+      {
+        "name": "Electronics",
+        "subTeamKey": "electronics",
+        "summary": "The electronics sector received a major upgrade with new components selected from prior testing. High-torque geared motors, multiple Cytron drivers, and a layered battery scheme power drive, arm, science, and comms, with kill-switch and fuse safety.",
+        "highlights": [
+          "High-torque DC geared motors; rated/avg/stall current 10/14/20 A",
+          "Four 30 A Cytron MD30C drivers for wheels, six 10 A Cytron MD10C drivers for arm",
+          "ATMega 2560 controls wheels and arm; PCBs designed in Proteus and Eagle",
+          "10,000 mAh Li-Po (~42 min); 2 Li-Po packs for wheels; 24 V Li-Po for router/NUC/switch",
+          "Science power: two (1p2s) Li-ion and one (2p3s) Li-ion packs",
+          "High-ampere kill switch plus a 30 A fuse box for the main circuit board"
+        ]
+      },
+      {
+        "name": "Controls & Software",
+        "subTeamKey": "controls",
+        "summary": "Multiple GUIs handle control, science, and mapping over a TCP client-server framework. A new feedback system is a key upgrade, letting feedback end effectors drive arm precision.",
+        "highlights": [
+          "Java control GUI; base station is client, rover is server over TCP",
+          "Feedback-receiving system in the control GUI for feedback end effectors",
+          "C# science GUI translates sensor readings into custom measures with graphical recognition",
+          "Mapping GUI tracks the rover on a pre-loaded offline map via GPS lat/long",
+          "Platform-independent control GUI compatible with any system and rover"
+        ]
+      },
+      {
+        "name": "Autonomy",
+        "subTeamKey": "autonomous",
+        "summary": "The autonomous stack fuses GPS, magnetometer, and camera vision to traverse to a target. GPS guides the rover to a radius of the goal, then an image-processing routine detects the marker and homes in.",
+        "highlights": [
+          "Sparkfun Venus GPS (Venus638FLPx) and HMC6343 three-axis magneto-resistive module",
+          "GPS gives lat/long with ~5 m error against a preloaded map",
+          "Custom offline map built in Python with geo-referencing from OpenStreetMap",
+          "Within 3.5 m of destination the image-processing sub-routine takes over",
+          "Vision built on darkflow, TensorFlow, OpenCV, and YOLO v2 at 81% accuracy to detect the tennis ball",
+          "C++ autonomy software combines GPS, compass, and camera for full autonomy"
+        ]
+      },
+      {
+        "name": "Science",
+        "subTeamKey": "science",
+        "summary": "The science module turns the rover into an automatic planet analyzer across three segments: a digging sample collector, an environmental sensor box, and an automatic on-board laboratory. It runs five precise tests across two boxes to search for biosignatures and characterize soil.",
+        "highlights": [
+          "Excavator claw on the 6-DOF arm digs hard soil up to 20 cm, supplying up to 80 g per collection",
+          "Sensor box: DHT22 (air temp/humidity), DS18B20 (soil temp/moisture), MQ7 CO, MQ135 CO2, MQ8 H2, Grove O2",
+          "More sensors: LDR light, ML8511 UV/radiation, Hall effect, compass, barometric, anemometer, pH probe, endoscopic camera",
+          "Box 1 runs Biomass (load cell + nichrome heater), Amino Acid (ninhydrin reagent), and Water Flow Capillary (syringe + servo) tests",
+          "Box 2 runs Spectroscopy (N, P, K quantitative analysis) and Microscopy (digital microscope up to 800x)",
+          "Fully 3D-printed central soil distribution system feeds each box automatically"
+        ]
+      }
+    ],
+    "missions": [
+      {
+        "name": "Extreme Retrieval and Delivery Mission",
+        "summary": "The rover is designed to travel up to 1 km, with the modified rocker-bogie suspension absorbing sudden shock on rough terrain and the expandable body landing firmly through vertical drops. The heavy claw lifts heavy items such as tool boxes or water bottles."
+      },
+      {
+        "name": "Equipment Servicing Mission",
+        "summary": "A 3-finger claw and feedback end effectors deliver the precise, strong movement needed to operate switches and keyboards. The team shifted from camera-based arm decisions to angle calculation, determining both the movement that occurred and the movement still required."
+      },
+      {
+        "name": "Autonomous Traversal Mission",
+        "summary": "Fusing Venus GPS, an HMC6343 magnetometer, and camera vision, the rover navigates a preloaded map to within 3.5 m of the target, then a YOLO v2 / OpenCV sub-routine detects the tennis ball and computes the path. The magnetometer keeps the rover aligned to the determined heading."
+      },
+      {
+        "name": "Science Mission",
+        "summary": "An excavator claw digs and collects soil for an automatic on-board laboratory that runs five tests (biomass, amino acid, water flow capillary, spectroscopy, microscopy) alongside a multi-sensor environmental box to assess biosignatures, climate, and soil composition."
+      }
+    ],
+    "keyInnovations": [
+      {
+        "title": "Expandable rocker-bogie suspension",
+        "description": "A four-wheel modified rocker-bogie whose bogies extend from 0.76 m to 1.2 m via two heavy-duty linear actuators, giving the rover added stability through vertical drops and steep slopes."
+      },
+      {
+        "title": "Feedback-driven arm control",
+        "description": "A new feedback system integrates feedback end effectors into the Java control GUI and replaces camera-based arm decisions with angle calculation, improving precision for equipment servicing."
+      },
+      {
+        "title": "Automatic on-board science laboratory",
+        "description": "A two-box, five-test lab (biomass, amino acid, water flow capillary, spectroscopy, microscopy up to 800x) fed by a fully 3D-printed central soil distribution system, turning the rover into an automatic planet analyzer."
+      },
+      {
+        "title": "Computer-vision autonomy stack",
+        "description": "GPS and magnetometer fused with darkflow/TensorFlow/OpenCV and YOLO v2 vision (81% accuracy) on a custom OpenStreetMap-referenced offline map to autonomously detect and reach targets."
+      },
+      {
+        "title": "Tracking communication link",
+        "description": "Dual Rocket M2 / Bullet M2 routers with a G-5500 rotator and elevation-azimuth controller that auto-tracks the rover by signal strength, plus separated 5.8 GHz video and 2.4 GHz control bands."
+      }
+    ],
+    "namedComponents": [
+      "NUC mini PC",
+      "ATMega 2560",
+      "Cytron MD30C",
+      "Cytron MD10C",
+      "Rocket M2",
+      "Bullet M2",
+      "TL-ANT2412D antenna",
+      "ANT232D15T-120DP antenna",
+      "G-5500 rotator",
+      "Sparkfun Venus GPS (Venus638FLPx)",
+      "HMC6343 magnetometer",
+      "YOLO v2",
+      "TensorFlow",
+      "OpenCV",
+      "darkflow",
+      "DHT22",
+      "DS18B20",
+      "MQ7 / MQ135 / MQ8",
+      "ML8511 UV sensor",
+      "Proteus / Eagle"
+    ],
+    "changesFromPrev": [
+      "Major upgrades to the software system, electronics, and science module",
+      "Minor changes: modified chassis, improved arm, updated wheel",
+      "Reduced rover height for a lower center of gravity",
+      "Redesigned wheel with U-shaped rim, drilled holes, and rubber grip pads",
+      "Shifted equipment-servicing arm control from camera-based to angle calculation",
+      "Added a feedback-receiving system and feedback end effectors to the control GUI",
+      "Reused the well-performing URC-2018 communication and electronics systems as a base",
+      "New excavator claw sample-collection mechanism alongside a modified drill mechanism"
+    ],
+    "_groundedness": "high",
+    "_corrections": []
+  },
+  {
+    "year": 2020,
+    "roverName": "",
+    "nameConfidence": "none",
+    "tagline": "Centralized power, autonomous traversal, and an onboard Mars-soil laboratory",
+    "overview": "BRACU Mongol-Tori's URC 2020 rover is a four-wheeled, rocker-bogie Mars rover built by BRAC University to assist astronauts and run planetary science research. Building on the 2019 platform, this iteration keeps the proven mechanical base but introduces major upgrades to electronics, autonomy, and science: a centralized power system, a Pixhawk-driven autonomous navigation stack, and an automated onboard laboratory now featuring Raman spectroscopy. A standout mechanical feature is an extendable rocker-bogie suspension that grows the bogie length from 0.76 m to 1.2 m to prevent flipping during vertical drops.",
+    "teamLead": "Md. Firoz Wadud",
+    "teamLeadEmail": "mdfirozwadud.adm@gmail.com",
+    "competition": {
+      "shortName": "URC",
+      "fullName": "University Rover Challenge",
+      "year": 2020,
+      "location": "",
+      "result": ""
+    },
+    "specs": [
+      {
+        "label": "Chassis",
+        "value": "H-shape, 0.7 m long x 0.55 m wide"
+      },
+      {
+        "label": "Drive System",
+        "value": "4-wheel modified rocker-bogie suspension"
+      },
+      {
+        "label": "Wheels",
+        "value": "0.3 m diameter, 0.10 m width, stainless steel"
+      },
+      {
+        "label": "Suspension Extension",
+        "value": "Bogie length 0.76 m to 1.2 m"
+      },
+      {
+        "label": "Arm DOF",
+        "value": "6-DOF arm + 2-DOF end effector"
+      },
+      {
+        "label": "Power",
+        "value": "Six 10,000 mAh batteries, centralized"
+      },
+      {
+        "label": "Run Time",
+        "value": "~45 minutes average"
+      },
+      {
+        "label": "Comms Range",
+        "value": "Over 1 km peer-to-peer 2.4 GHz"
+      },
+      {
+        "label": "Autonomy Accuracy",
+        "value": "50 cm GPS positioning; 80% AR-tag detection"
+      },
+      {
+        "label": "Compute",
+        "value": "Intel NUC + ATmega2560 + Pixhawk 4.0"
+      }
+    ],
+    "subsystems": [
+      {
+        "name": "Mechanical",
+        "subTeamKey": "mechanical",
+        "summary": "A stiff H-shaped space-frame chassis with internal triangulation carries the circuit box and arm, paired with a modified four-wheel rocker-bogie suspension. The headline feature is an extendable suspension using two heavy-duty feedback actuators that grows the base to resist flipping during vertical drops.",
+        "highlights": [
+          "H-shape chassis 0.7 m x 0.55 m with triangulation to reduce shape distortion on rocky terrain",
+          "Modified rocker-bogie with two bogies and a U-shaped differential bar using universal joints at the rear",
+          "Extendable bogies grow from 0.76 m to 1.2 m via two heavy-duty feedback actuators for vertical-drop stability",
+          "Stainless-steel wheels 0.3 m dia x 0.10 m wide, drilled for lightness, with rubber pads for grip",
+          "6-DOF arm with worm-gear base for 360-degree rotation and self-locking on motor failure",
+          "Cartesian arm under development"
+        ]
+      },
+      {
+        "name": "Communication",
+        "subTeamKey": "network",
+        "summary": "A peer-to-peer network over two high-end 2.4 GHz routers links a portable base station to the rover, with a separate 5.8 GHz FPV system for long-range vision. Static IP configuration and a dedicated DC-DC supply keep the link stable beyond one kilometer.",
+        "highlights": [
+          "Base station: Ubiquiti Rocket M2 with 15dBi sector antenna (ANT232D15T-120DB) on a G-5500 rotator for 360-degree horizontal beam",
+          "Rover: Ubiquiti Bullet M2 with 12dBi omnidirectional antenna (TL-ANT2412D) feeding an Intel NUC",
+          "Static IP peer-to-peer 2.4 GHz control over 1 km",
+          "Two IP cameras on the 2.4 GHz network; four FPV cameras (2.5 mm lens) on 5.8 GHz",
+          "FPV system with two 800 mW transmitters, two receivers, and 3dBi mushroom antennas, with an FPV-switcher",
+          "Dedicated DC-DC power supply for the comms system"
+        ]
+      },
+      {
+        "name": "Electronics",
+        "subTeamKey": "electronics",
+        "summary": "An ATmega2560 processes all commands, driving the wheels and arm through dedicated motor drivers and relays. A new centralized power system, reverse-polarity protection, and a high-ampere kill switch make this year's electronics safer and easier to debug.",
+        "highlights": [
+          "ATmega2560 central processor with easy-install, debuggable circuit boards",
+          "Back-EMF-protected 30A motor drivers for wheel PWM; 13A drivers and 10A relays for the arm",
+          "Reverse-polarity protection via Schottky diode on the power distribution board",
+          "Centralized power from six 10,000 mAh batteries, ~45 min runtime",
+          "Customized high-ampere kill switch and overcurrent protection system"
+        ]
+      },
+      {
+        "name": "Controls & Software",
+        "subTeamKey": "controls",
+        "summary": "A portable base station with one laptop, three monitors, joystick, gamepad and keyboard controls the rover. Custom Java GUIs handle control, science, and offline GPS mapping over a TCP/IP link where the base is client and the rover is server.",
+        "highlights": [
+          "Control GUI built in Java over TCP/IP (base station = client, rover = server)",
+          "Mapping GUI tracks the rover on a pre-loaded offline map via GPS lat/long",
+          "Feedback-receiving environment in the GUI for feedback end effectors and mechanisms",
+          "Science GUI in Java converts sensor readings into custom measures and graphical patterns"
+        ]
+      },
+      {
+        "name": "Autonomy",
+        "subTeamKey": "autonomous",
+        "summary": "Rather than building from scratch, the team capitalizes on a Pixhawk 4.0 running ArduRover with a Radiolink SE100 GPS-Compass for waypoint navigation, using Mission Planner as the interface. Vision and obstacle avoidance combine OpenCV AR-tag detection with a 360-degree RPLidar.",
+        "highlights": [
+          "Pixhawk 4.0 with ArduRover firmware and Radiolink SE100 GPS-Compass, 50 cm positioning accuracy",
+          "Mission Planner base-station UI with waypoint, hold, and loiter (search-pattern) modes",
+          "Skid-steering outputs mapped by an ATmega2560 to motor drivers and status LEDs",
+          "AR-tag detection via OpenCV contour detection and homography at 80% accuracy",
+          "RPLidar firing ~150,000 pulses/sec for 360-degree obstacle detection and avoidance"
+        ]
+      },
+      {
+        "name": "Science",
+        "subTeamKey": "science",
+        "summary": "The science setup was rebuilt this year, introducing Raman spectroscopy and the ability to test samples from multiple sites. It splits into a digging/sample-collector module, an environmental sensor box, and an automated onboard laboratory running biomass, water-flow, spectroscopic, and amino-acid tests.",
+        "highlights": [
+          "Excavator claw digs 20 cm+ into compact soil and extracts ~80 g per grab",
+          "Sensor box: DHT22 (air temp/humidity), DS18B20 (soil temp/moisture), MQ7 (CO), MQ135 (CO2), MQ8 (H2), LDR, ML8511 (UV), Hall-effect, compass, barometric, pH probe, endoscopic camera",
+          "Biomass test via load cell and nichrome-wire heater: Biomass = (weight difference / previous weight) * 100",
+          "Water-flow capillary test using a centrifugal tube and servo-pushed syringe",
+          "Spectroscopic quantitative analysis for Nitrogen, Potassium, Phosphorous; Raman spectroscopy introduced",
+          "Amino-acid test with ninhydrin reagent and nichrome heater; digital microscope for rock/soil microscopy"
+        ]
+      }
+    ],
+    "missions": [
+      {
+        "name": "Extreme Retrieval and Delivery Mission",
+        "summary": "The modified rocker-bogie suspension and upgraded chassis let the rover travel up to a kilometer over rough terrain while absorbing sudden shocks. Custom stainless-steel wheels grip rocky and sandy areas, the expanded body lands firmly on vertical drops, and the strong arm lifts heavy objects like toolboxes and water bottles."
+      },
+      {
+        "name": "Equipment Servicing Mission",
+        "summary": "A separate, rotatable two-finger claw handles precise switch and keyboard operation. A feedback end effector enables precise movements and angle measurement using a trigonometric angle-calculation formula instead of camera-based motion detection."
+      },
+      {
+        "name": "Autonomous Traversal Mission",
+        "summary": "Pixhawk 4.0 with ArduRover and a Radiolink SE100 GPS-Compass drives waypoint navigation at 50 cm accuracy via Mission Planner, using skid steering mapped by an ATmega2560. OpenCV (contour detection + homography) deciphers AR tags at 80% accuracy, while a 360-degree RPLidar handles obstacle detection and avoidance."
+      },
+      {
+        "name": "Science Mission",
+        "summary": "An excavator claw collects ~80 g soil samples from multiple sites for an automated onboard lab that runs biomass (load cell + nichrome heater), water-flow capillary, spectroscopic (N/P/K), and amino-acid (ninhydrin) tests, newly augmented with Raman spectroscopy and an environmental sensor box for planetary climate and soil data."
+      }
+    ],
+    "keyInnovations": [
+      {
+        "title": "Extendable rocker-bogie suspension",
+        "description": "Two heavy-duty feedback actuators expand the bogie length from 0.76 m to 1.2 m, widening the rover's base to prevent it from flipping over during vertical drops and steep slopes."
+      },
+      {
+        "title": "Centralized power system",
+        "description": "Replacing the previous uneven power consumption, six 10,000 mAh batteries feed a centralized power distribution circuit that delivers equal runtime across the whole rover, averaging about 45 minutes."
+      },
+      {
+        "title": "Pixhawk-based autonomous navigation",
+        "description": "Capitalizing on Pixhawk 4.0 with ArduRover and a Radiolink SE100 GPS-Compass, the rover reaches 50 cm waypoint accuracy, fusing OpenCV AR-tag detection (80%) and a 360-degree RPLidar for obstacle avoidance."
+      },
+      {
+        "title": "Automated onboard science laboratory with Raman spectroscopy",
+        "description": "A rebuilt science suite tests samples from multiple sites, introducing Raman spectroscopy alongside biomass, water-flow capillary, spectroscopic NPK, and amino-acid tests in a fully onboard lab."
+      },
+      {
+        "title": "Robust electronics protection",
+        "description": "Reverse-polarity protection via low-drop Schottky diodes, back-EMF-protected motor drivers, overcurrent protection, and a high-ampere kill switch guard the rover against electrical faults and human error."
+      }
+    ],
+    "namedComponents": [
+      "Intel NUC",
+      "ATmega2560",
+      "Pixhawk 4.0",
+      "ArduRover",
+      "Radiolink SE100 GPS-Compass",
+      "Mission Planner",
+      "OpenCV",
+      "RPLidar",
+      "Ubiquiti Rocket M2",
+      "Ubiquiti Bullet M2",
+      "G-5500 rotator",
+      "ANT232D15T-120DB sector antenna",
+      "TL-ANT2412D omnidirectional antenna",
+      "DHT22",
+      "DS18B20",
+      "MQ7",
+      "MQ135",
+      "MQ8",
+      "ML8511",
+      "Java"
+    ],
+    "changesFromPrev": [
+      "Major upgrades to autonomous systems, electronics, and science setup; minor changes to chassis, arm, claw, communication, and control GUI",
+      "Worm-gear arm base added for 360-degree rotation; new cartesian arm under development",
+      "Switched from uneven power consumption to a centralized power system for equal runtime",
+      "Retained the proven four-wheeler drive and previous wheel design from URC 2019",
+      "Comms and electronics carried over from URC 2019 and IRC 2020 after good performance",
+      "New science setup introducing Raman spectroscopy and multi-site sample testing"
+    ],
+    "_groundedness": "high",
+    "_corrections": [
+      "Overview: changed 'grows the wheelbase from 0.76 m to 1.2 m' to 'grows the bogie length from 0.76 m to 1.2 m' to match the document's wording (the doc specifies bogie length, line 49), removing the imprecise 'wheelbase' term."
+    ]
+  },
+  {
+    "year": 2022,
+    "roverName": "Encephalon",
+    "nameConfidence": "explicit",
+    "tagline": "An AI-first Mars rover that thinks before it traverses",
+    "overview": "BRACU Mongol-Tori's 2022 entry, \"Mongol-Tori Encephalon,\" is a next-generation Mars rover built to assist astronauts and conduct scientific research at URC 2022. This iteration is defined by an AI-emphasized redesign across the autonomous, network, control and mechanical systems, with the science and electrical systems rebuilt entirely from scratch. A four-wheel modified rocker-bogie platform carries a six-DOF arm, dual-band vision, and an onboard science laboratory for atmospheric and soil analysis.",
+    "teamLead": "Suhail Haque Rafi",
+    "teamLeadEmail": "suhailrafi9@gmail.com",
+    "competition": {
+      "shortName": "URC",
+      "fullName": "University Rover Challenge",
+      "year": 2022,
+      "location": "",
+      "result": ""
+    },
+    "specs": [
+      {
+        "label": "Dimensions",
+        "value": "0.7 m long x 0.55 m wide"
+      },
+      {
+        "label": "Chassis",
+        "value": "H-shaped ladder space frame with triangulation"
+      },
+      {
+        "label": "Drive System",
+        "value": "4-wheel modified rocker-bogie suspension"
+      },
+      {
+        "label": "Wheels",
+        "value": "0.3 m diameter, 0.10 m width stainless steel with jute-fiber rope"
+      },
+      {
+        "label": "Arm DOF",
+        "value": "6-DOF (incl. 2-DOF end effector)"
+      },
+      {
+        "label": "Power",
+        "value": "18 V, 10 Ah rechargeable Li-Ion (BL1845)"
+      },
+      {
+        "label": "Comms Range",
+        "value": ">1 km, 360-degree coverage"
+      },
+      {
+        "label": "Comms Bands",
+        "value": "Dual 2.4 GHz and 5.8 GHz systems"
+      },
+      {
+        "label": "Compute",
+        "value": "Jetson Nano, Raspberry Pi 4, Arduino, ESP32"
+      },
+      {
+        "label": "Bogie Length",
+        "value": "Adjustable 1.2 m to 0.76 m"
+      }
+    ],
+    "subsystems": [
+      {
+        "name": "Mechanical",
+        "subTeamKey": "mechanical",
+        "summary": "A modified four-wheeler platform with an H-shaped ladder space-frame chassis and a modified rocker-bogie suspension. Major updates this year focused on a custom double-sided linear actuator extender, a redesigned wheel, and an upgraded six-DOF arm and three-finger claw.",
+        "highlights": [
+          "H-shaped ladder chassis with triangulation to reduce deformation on rocky terrain",
+          "Modified rocker-bogie suspension with U-shaped differential bar and two universal joints",
+          "Custom double-sided linear actuator extender with custom planetary gearbox to reduce weight and prevent flipping on vertical drops",
+          "Bending mechanism to adjust rover height",
+          "Stainless steel U-rim wheels (0.3 m dia) with jute-fiber ropes added for traction and climbing",
+          "Six-DOF arm with chain-and-sprocket wrist, worm-gear base lock, three-finger claw and under-wrist custom drill",
+          "SCARA arm being developed for the science project"
+        ]
+      },
+      {
+        "name": "Network & Vision",
+        "subTeamKey": "network",
+        "summary": "Two independent communication sub-systems on 2.4 GHz and 5.8 GHz, each with detached power distribution. A peer-to-peer 2.4 GHz link handles control and IP-camera data, while a 5.8 GHz analog vision system overcomes long-range lag.",
+        "highlights": [
+          "Peer-to-peer 2.4 GHz network with two Ubiquiti Rocket M2 routers",
+          "Base station directional sector antenna on a height-adjustable stand (under 3 m) with elevation-azimuth rotator for 360-degree rotation",
+          "Rover-side TL-ANT2410MO 2.4 GHz 10dBi 2x2 MIMO omnidirectional antenna for >1 km control",
+          "PoE network switch linking compute unit, Rocket M2 router and two IP cameras",
+          "5.8 GHz analog system: four adjustable 2.5 mm-lens cameras, two 800mW transmitter/receiver pairs, polarized 3dBi mushroom antennas",
+          "Dual-channel analog switcher and adjustable pan-tilt mechanism for camera views"
+        ]
+      },
+      {
+        "name": "Electronics",
+        "subTeamKey": "electronics",
+        "summary": "The electronics subsystem was redesigned entirely, split into purpose-specific boards: power management, divider, manual/debug, and controller boards. Power flows from the Li-Ion battery through a kill-switch and MOSFET protection.",
+        "highlights": [
+          "Power management board distributing from 18 V 10 Ah Li-Ion battery (BL1845)",
+          "Kill-switch mechanism and MOSFET protection on the powerline",
+          "Onboard and GUI current/voltage monitoring",
+          "Arm actuators driven by Dual Monster Moto Shield VNH3ASP30; wheels by Cytron 30A Bi-Directional driver",
+          "Manual & debug board for onboard manual control and driver debugging",
+          "Controller board hosting Arduino, ESP32, Raspberry Pi and Jetson Nano",
+          "Custom PCB for this year's electronics system"
+        ]
+      },
+      {
+        "name": "Controls & Software",
+        "subTeamKey": "controls",
+        "summary": "The rover runs ROS Melodic on Ubuntu 18.04 with the master node on a portable base station. A publisher/subscriber model with an MQTT bridge handles commands, and PyQt5 GUIs drive control, arm IK and science data analysis.",
+        "highlights": [
+          "ROS Melodic on Ubuntu 18.04 LTS, Raspberry Pi 4 as main control architecture",
+          "Base-station master node with publisher/subscriber ROS configuration, full Gamepad control",
+          "MQTT as primary channel with bidirectional ROS-MQTT bridge",
+          "Inverse kinematics via MoveIt; arm visualized in Rviz and Gazebo",
+          "PyQt5 control GUI for speed, joint angles, voltage, 3D orientation and circuit inspection",
+          "Supplementary control via Python socket programming sharing the same GUI",
+          "Feedback-receiving environment for feedback actuators and end effectors",
+          "Separate PyQt5 science GUI logging sensor data to CSV with graphical plots"
+        ]
+      },
+      {
+        "name": "Autonomy",
+        "subTeamKey": "autonomous",
+        "summary": "The Autonomous Navigation System runs on an NVIDIA Jetson Nano linked to an Arduino Mega over serial. It fuses IMU, GPS, and LiDAR for waypoint navigation, with OpenCV/YOLO-based detection of AR tags and street signs.",
+        "highlights": [
+          "Jetson Nano processing navigation, Arduino Mega for peripherals over serial",
+          "MPU9250 IMU for compass/heading toward waypoints",
+          "Sparkfun GPS-RTK2 ZED-F9P GNSS; custom DGPS with differential algorithms on standard GPS in the interim",
+          "2D RPLiDar A1 for mapping, obstacle localization and shortest-path planning",
+          "AR tag detection via OpenCV ARUCO 4x4_50 dictionary; distance estimation via calibrated 3rd-degree polynomial",
+          "YOLO v5 for street-sign identification; Logitech C505 USB for vision",
+          "LED-blink signaling at waypoints and gates"
+        ]
+      },
+      {
+        "name": "Science",
+        "subTeamKey": "science",
+        "summary": "A from-scratch science module split into atmospheric and soil analysis to search for past or future signs of life. An onboard sensor box acts as a laboratory, and a pyramid-shaped soil box runs biomass, capillary, amino-acid and starch tests, now augmented with AI rock classification and weather forecasting.",
+        "highlights": [
+          "Sensor box with DHT22, MQ135, MQ8 (H2), LDR, ML8511 UV/radiation, groove oxygen sensor, BMP-280 and pH sensor",
+          "Servo pan-tilt IP camera with homography-matrix algorithm for 1:3 panoramic shots",
+          "Microscopic-camera rock classification using YOLOv5 (PyTorch/CNN)",
+          "Weather forecasting using REMS data from the Curiosity Rover with an LSTM (gated recurrent neural network) for the regression problem",
+          "Soil NPK, moisture and temperature probes read via Modbus over RS-485",
+          "Circular pyramid soil box: load cell + nichrome heater for biomass, custom test tube + moisture sensor for water capillary, ninhydrin reagent for amino acids, iodine solution for starch"
+        ]
+      }
+    ],
+    "missions": [
+      {
+        "name": "Extreme Retrieval and Delivery Mission",
+        "summary": "The modified rocker-bogie suspension, strong chassis and jute-rope wheels let the rover traverse up to 1 km of rocky, sandy terrain while absorbing jolts and staying stable on vertical drops. The durable arm lifts heavy toolboxes and equipment, with a TensorFlow object-detection AI (CNN + SVM regression on bounding boxes) classifying tools and an OpenCV + Sharp distance sensor estimating range."
+      },
+      {
+        "name": "Equipment Servicing Mission",
+        "summary": "A new three-finger claw with a feedback end effector provides precise, IK-measured manipulation for switches, knobs, latches and cache boxes. Light AI models on the Jetson Nano detect elements like toggle switches, joysticks, keyboards and first-aid boxes to instruct the driver."
+      },
+      {
+        "name": "Autonomous Traversal Mission",
+        "summary": "Jetson Nano + Arduino Mega drive autonomous waypoint navigation using IMU heading, custom DGPS localization and RPLiDar A1 mapping/path planning. The rover scans plus/minus 90 degrees for AR tags (OpenCV ARUCO 4x4_50), estimates distance via a calibrated polynomial, and identifies street signs with YOLO v5."
+      },
+      {
+        "name": "Science Mission",
+        "summary": "A two-part module performs atmospheric analysis via an onboard sensor-box laboratory and soil analysis via probes and a pyramid test box, testing for biomass, water capillary action, amino acids and starch to assess past and future life and environmental change on Mars."
+      }
+    ],
+    "keyInnovations": [
+      {
+        "title": "Mongol-Tori Encephalon: AI-first redesign",
+        "description": "This year's headline is an Artificial-Intelligence-emphasized overhaul branded 'Encephalon,' adding autonomy across tool classification, equipment detection, navigation, and science with the electrical and science systems rebuilt from scratch."
+      },
+      {
+        "title": "Custom double-sided linear actuator extender",
+        "description": "A custom-made double-sided linear actuator with a custom planetary gearbox replaces the old extender, cutting rover weight while widening the base to prevent flipping during vertical drops."
+      },
+      {
+        "title": "Dual-band independent comms (2.4 + 5.8 GHz)",
+        "description": "Two power-independent communication systems pair a peer-to-peer 2.4 GHz control/IP-camera link for >1 km range with a 5.8 GHz analog vision system to eliminate long-range lag."
+      },
+      {
+        "title": "Custom DGPS navigation stack",
+        "description": "With the RTK GPS unavailable due to the pandemic, the team built a custom differential-GPS algorithm on standard modules, fused with MPU9250 IMU and RPLiDar A1 mapping on a Jetson Nano for accurate waypoint navigation."
+      },
+      {
+        "title": "AI-driven science laboratory",
+        "description": "The science module adds YOLOv5 microscopic rock classification and an LSTM weather-forecasting model trained on Curiosity Rover REMS data, alongside a pyramid soil box running biomass, capillary, amino-acid and starch chemical tests."
+      }
+    ],
+    "namedComponents": [
+      "NVIDIA Jetson Nano",
+      "Raspberry Pi 4",
+      "Arduino Mega",
+      "ESP32",
+      "Ubiquiti Rocket M2",
+      "TL-ANT2410MO antenna",
+      "Cytron 30A Bi-Directional DC Motor Driver",
+      "Dual Monster Moto Shield VNH3ASP30",
+      "ROS Melodic",
+      "MoveIt",
+      "PyQt5",
+      "MQTT",
+      "YOLO v5",
+      "TensorFlow Object Detection API",
+      "RPLiDar A1",
+      "Sparkfun GPS-RTK2 ZED-F9P",
+      "MPU9250 IMU",
+      "Logitech C505 USB",
+      "Li-Ion Battery BL1845",
+      "DHT22",
+      "MQ135",
+      "ML8511",
+      "BMP-280",
+      "RS-485 Modbus"
+    ],
+    "changesFromPrev": [
+      "AI-emphasized redesign of autonomous, network, control and mechanical systems",
+      "Science setup and electrical systems fully redesigned from scratch",
+      "Custom double-sided linear actuator extender replacing previous extender to reduce weight",
+      "Jute-fiber ropes added to wheels for traction and climbing",
+      "Upgraded six-DOF arm and new three-finger claw",
+      "Migrated to ROS Melodic with MoveIt inverse kinematics and full Gamepad control",
+      "Added MQTT bidirectional bridge as primary communication channel",
+      "Continued and expanded the feedback actuator/end-effector system from last year"
+    ],
+    "_groundedness": "high",
+    "_corrections": [
+      "Science subsystem highlight: changed 'LSTM/GRU regression' to 'LSTM (gated recurrent neural network) for the regression problem' to match the document, which states only an LSTM ('a Gated Recurrent Neural Network') and does not mention a separate GRU model.",
+      "Key innovation 'AI-driven science laboratory': changed 'LSTM/GRU weather-forecasting model' to 'LSTM weather-forecasting model' for the same reason."
+    ]
+  },
+  {
+    "year": 2023,
+    "roverName": "Encephalon",
+    "nameConfidence": "explicit",
+    "tagline": "AI-powered Mars rover with an autonomous onboard planet analyser",
+    "overview": "Mongol-Tori Encephalon is BRAC University's 2023 University Rover Challenge entry, a new-generation Mars rover built to work alongside astronauts and conduct scientific research. This iteration is notable for a fully redesigned science and electrical system, AI-powered subsystems, and significant upgrades across autonomous, network, control, and mechanical systems. The redesigned science module has evolved into an autonomous planet analyser, while a YOLOv5-based AI pipeline classifies tools, equipment, and rocks.",
+    "teamLead": "Md. Shaeak Ibna Salim",
+    "teamLeadEmail": "md.shaeak.ibna.salim@g.bracu.ac.bd",
+    "competition": {
+      "shortName": "URC",
+      "fullName": "University Rover Challenge",
+      "year": 2023,
+      "location": "",
+      "result": ""
+    },
+    "changesFromPrev": [
+      "Completely redesigned science and electrical systems",
+      "Significant modifications to autonomous, network, control, and mechanical systems",
+      "Minor updates to the claw, wheel, chassis, and EPS system",
+      "Both FPV and IP camera systems moved to a 5.8 GHz architecture, powered separately from the main rover",
+      "Science module evolved into an autonomous planet analyser with a redesigned, more compact science box",
+      "Added AI to the science curriculum for rock classification via microscopic camera"
+    ],
+    "specs": [
+      {
+        "label": "Drive System",
+        "value": "Four-wheeler with custom rocker-bogie suspension"
+      },
+      {
+        "label": "Chassis",
+        "value": "H-shaped ladder chassis, 0.7m x 0.55m"
+      },
+      {
+        "label": "Wheels",
+        "value": "Stainless steel, 0.29m dia x 0.112m wide, 2.5mm rubber grippers"
+      },
+      {
+        "label": "Arm DOF",
+        "value": "6-DOF arm (360-degree) + 2-DOF end effector"
+      },
+      {
+        "label": "Power",
+        "value": "4P4S Li-ion (14.6V, 10Ah) for router; Lead Acid (24V, 9Ah) for rest"
+      },
+      {
+        "label": "Runtime",
+        "value": "~1 hour"
+      },
+      {
+        "label": "Comms Range",
+        "value": "Over 1 km (5.8 GHz peer-to-peer)"
+      },
+      {
+        "label": "Compute",
+        "value": "Raspberry Pi 4, NVIDIA Jetson Nano, Arduino Mega/Nano"
+      },
+      {
+        "label": "Software Stack",
+        "value": "ROS Noetic on Ubuntu 20.04 LTS"
+      }
+    ],
+    "subsystems": [
+      {
+        "name": "Mechanical",
+        "subTeamKey": "mechanical",
+        "summary": "A four-wheeler platform on a triangulated H-shaped ladder chassis with a custom rocker-bogie suspension. New lightweight extender suspension and a tilted-wheel mechanism improve stability during steep vertical drops, while a robust 6-DOF manipulator arm handles retrieval and servicing.",
+        "highlights": [
+          "H-shaped ladder chassis 0.7m x 0.55m with triangulation to prevent deformation",
+          "Custom rocker-bogie with U-shaped differential bar and two universal joints; bogies turn from 1.2m to 0.76m",
+          "New extender suspension powered by a 65 RPM power window motor; tilted-wheel mechanism gives a 60-degree angle for slow descents",
+          "Stainless steel wheels (0.29m dia, 0.112m wide) with steel plate rim and 2.5mm rubber grippers",
+          "6-DOF arm with chain-and-sprocket wrist, worm gear base lock to prevent backlash, potentiometer feedback per joint, and inverse kinematics",
+          "Three-finger claw, an in-development two-finger adaptive claw, and an excavator claw for breaking down rocks and soil",
+          "Gazebo for 3D arm simulation and Rviz for arm visualization"
+        ]
+      },
+      {
+        "name": "Network & Vision",
+        "subTeamKey": "network",
+        "summary": "A redesigned dual-subsystem network using a 5.8 GHz peer-to-peer architecture for both IP and analog FPV cameras, powered separately from the main rover. High-gain antennas provide coverage of over 1 km between rover and base station.",
+        "highlights": [
+          "Two high-end 5.8 GHz routers in peer-to-peer architecture",
+          "Rover: 13 dBi omnidirectional antenna (AMO-5G13) with Rocket 5ac Lite router",
+          "Base: 19 dBi 120-degree directional sector antenna (AM-5G19-120) rotating up to 360 degrees, coverage over 1 km",
+          "PoE network switch powers two strategically positioned IP cameras",
+          "5.8 GHz analog FPV system with 2.1mm adjustable lenses; four analog cameras with 600 mW transmitters/receivers and circular-polarized mushroom antennas",
+          "Two FPV cameras accessible simultaneously, others switched via digital switcher with pan mechanism",
+          "FPV powered by 12V DC-DC; PoE switch/routers powered by 48V DC-DC and PoE converter"
+        ]
+      },
+      {
+        "name": "Electronics",
+        "subTeamKey": "electronics",
+        "summary": "A redesigned electronics and power distribution system built on custom PCBs, with a dedicated Electric Protection System (EPS) slot. Cytron motor drivers, a relay-based kill switch, and reverse-polarity protection ensure clean power delivery and safety.",
+        "highlights": [
+          "Power: 4P4S Li-ion BL18650 (14.6V, 10Ah) for router; Lead Acid (24V, 9Ah) for rest; ~1 hour runtime",
+          "Custom PCB with stacked Cytron motor drivers; separate EPS slot",
+          "EPS uses ACS758LCB current sensor and B25 voltage sensor, relaying data to base via Arduino Nano",
+          "Custom 12V relay kill switch with MOSFET reverse-polarity protection",
+          "Dual Channel Cytron 10A DC Motor Driver for arm actuators; Single Channel Cytron 30A Bi-Directional driver for wheels",
+          "Manual & debug board for troubleshooting and onboard manual control",
+          "Controller board interconnecting Arduino, Raspberry Pi, and Jetson Nano"
+        ]
+      },
+      {
+        "name": "Controls & Software",
+        "subTeamKey": "controls",
+        "summary": "The rover is driven from a portable two-laptop base station running ROS Noetic on Ubuntu 20.04, with Raspberry Pi 4 as the main control architecture. A website-based GUI accessible from any local-network device handles mission control, telemetry, and visualization.",
+        "highlights": [
+          "ROS Noetic master node on base station; publisher/subscriber nodes between base and rover",
+          "Gamepad and Microsoft Flight Controller for ergonomic maneuvering",
+          "ROS bridge plus a robust messaging format with error checking and correction",
+          "Website-based GUI with per-mission tabs, joint-angle calculation, speed regulation, voltage and orientation monitoring, 3D rover view, and camera feeds",
+          "Lightweight offline map for bird's-eye overview; real-time subsystem dashboard in development",
+          "A/B testing of the UI for accessibility",
+          "Python socket programming as a supplementary control system independent of ROS",
+          "ROS-Gazebo 3D simulation built with exact measurements for testing algorithms"
+        ]
+      },
+      {
+        "name": "Autonomy",
+        "subTeamKey": "autonomous",
+        "summary": "Autonomous navigation runs on an NVIDIA Jetson Nano connected to an Arduino Mega over serial, built on ROS. The navigation node fuses GNSS, IMU, and ArUco tag data to traverse waypoints and detect AR tags, with LiDAR and depth-camera obstacle avoidance.",
+        "highlights": [
+          "NVIDIA Jetson Nano processing, Arduino Mega for peripherals via serial",
+          "Main navigation node subscribes to GNSS, IMU, and ArUco topics",
+          "Military-grade WitMotion HWT905 IMU for heading and compass data",
+          "Two SparkFun GPS-RTK2 units (base and rover) for centimeter-level accuracy",
+          "RPLiDar A1 for short-range mapping; Intel RealSense D435i depth camera for larger-area path planning",
+          "AR-tag detection via OpenCV ArUco library, tag center measured with RealSense depth camera",
+          "Custom checkpoint-crossing algorithm; rover rotates 90-degrees per side to find tags; red LED for autonomous start, green LED blink at checkpoints",
+          "Future: tactical-grade dual GNSS INS (SBG Ellipse-D) with drones"
+        ]
+      },
+      {
+        "name": "Science",
+        "subTeamKey": "science",
+        "summary": "A fully redesigned, more compact science module functioning as an autonomous planet analyser. It performs four tests across atmospheric and soil analysis, plus AI-based rock classification, with a dedicated science PCB and science-specific GUI.",
+        "highlights": [
+          "Redesigned compact science box with distinct compartments and a dedicated science PCB for simultaneous tests",
+          "Chemical tests: Ninhydrin (amino acid/protein detection via nichrome-heated tubes) and Iodine (starch/plant cells)",
+          "Physical soil analysis: Biomass test (load cell weight difference, (weight difference/previous weight)*100) and water flow capillary test (moisture sensor)",
+          "Probe-based NPK test for nitrogen, phosphorus, potassium, plotted in the GUI",
+          "Atmospheric sensor module: UV (GUVA-S12SD), DHT22 temp/humidity, MQ2, MQ135, MQ8 (H2), LDR, BMP-280",
+          "AI rock classification using YOLOv5 on PyTorch/CNN via microscopic camera texture analysis",
+          "Excavator claw and sample collector for soil gathering"
+        ]
+      }
+    ],
+    "missions": [
+      {
+        "name": "Extreme Retrieval and Delivery Mission",
+        "summary": "The modified rocker-bogie suspension, expandable body, and rubber-gripper wheels let the rover traverse rocky terrain and travel up to 1 km. A 360-degree three-finger claw lifts heavy equipment with precision, while a YOLOv5 model classifies tools (hammers, toolboxes, screwdrivers) and OpenCV with a sharp distance sensor measures tool distance for efficient pickup."
+      },
+      {
+        "name": "Equipment Servicing Mission",
+        "summary": "A three-finger claw with inverse-kinematics feedback and a strategically mounted laser pointer give precise control for servicing tasks like toggle switches, joysticks, keyboards, and first aid boxes. Light AI models run on the Jetson Nano for equipment classification and detection."
+      },
+      {
+        "name": "Autonomous Traversal Mission",
+        "summary": "The rover autonomously navigates between GNSS waypoints using a Jetson Nano fusing dual GPS-RTK2, WitMotion HWT905 IMU, and ArUco tag data. RPLiDar A1 and Intel RealSense D435i provide obstacle detection and shortest-path planning, with a custom checkpoint algorithm and LED status indicators."
+      },
+      {
+        "name": "Science Mission",
+        "summary": "An autonomous planet analyser runs four tests across atmospheric and soil analysis: Ninhydrin and Iodine chemical tests, Biomass and water-flow physical tests, and a probe-based NPK test, plus AI rock classification. A science-specific GUI and PCB enable simultaneous experiments and data transmission to base."
+      }
+    ],
+    "keyInnovations": [
+      {
+        "title": "Mongol-Tori Encephalon AI subsystems",
+        "description": "An upgraded, AI-powered iteration deploying YOLOv5 models for tool, equipment, and rock classification across retrieval, servicing, and science missions."
+      },
+      {
+        "title": "Autonomous planet analyser science module",
+        "description": "The fully redesigned, compact science box evolved into an autonomous planet analyser running four soil and atmospheric tests simultaneously via a dedicated science PCB and GUI."
+      },
+      {
+        "title": "Dual 5.8 GHz peer-to-peer network",
+        "description": "A redesigned network with separately powered IP and analog FPV camera systems on a 5.8 GHz peer-to-peer architecture, using 13 dBi and 19 dBi antennas for over 1 km of coverage."
+      },
+      {
+        "title": "Centimeter-accurate RTK autonomy",
+        "description": "Dual SparkFun GPS-RTK2 units, a military-grade WitMotion HWT905 IMU, RPLiDar A1, and Intel RealSense D435i deliver centimeter-level waypoint navigation and obstacle avoidance on the Jetson Nano."
+      },
+      {
+        "title": "Redesigned EPS and PCB electronics",
+        "description": "A custom-PCB electrical system with a dedicated Electric Protection System using ACS758LCB current and B25 voltage sensors, a MOSFET kill switch, and stacked Cytron motor drivers."
+      }
+    ],
+    "namedComponents": [
+      "Raspberry Pi 4",
+      "NVIDIA Jetson Nano",
+      "Arduino Mega",
+      "Arduino Nano",
+      "ROS Noetic",
+      "Ubuntu 20.04 LTS",
+      "YOLOv5",
+      "PyTorch",
+      "OpenCV ArUco",
+      "Intel RealSense D435i",
+      "RPLiDar A1",
+      "SparkFun GPS-RTK2",
+      "WitMotion HWT905 IMU",
+      "Rocket 5ac Lite router",
+      "AMO-5G13 antenna",
+      "AM-5G19-120 antenna",
+      "Cytron 10A Dual Channel DC Motor Driver",
+      "Cytron 30A Bi-Directional DC Motor Driver",
+      "ACS758LCB current sensor",
+      "B25 voltage sensor",
+      "BL18650 Li-ion battery",
+      "BMP-280",
+      "DHT22",
+      "MQ2",
+      "MQ135",
+      "MQ8",
+      "GUVA-S12SD UV sensor",
+      "SBG Ellipse-D",
+      "Gazebo",
+      "Rviz"
+    ],
+    "_groundedness": "high",
+    "_corrections": []
+  },
+  {
+    "year": 2024,
+    "roverName": "Phoenix",
+    "nameConfidence": "explicit",
+    "tagline": "Reborn for Mars: omni-wheel agility, a 7 kg-payload arm, triple-layer comms",
+    "overview": "Mongol-Tori Phoenix is BRAC University's redesigned URC 2024 rover, built by 30+ undergraduates across five sub-teams (Science, Automation, Arm, Drive, Navigation). It retains the proven 4-wheel rocker suspension while adding omnidirectional omni wheels for holonomic motion, a lighter base-heavy 5-DOF arm with up to 7 kg payload, and a three-layer dual-band communication system. A modular plug-and-play architecture isolates subsystem failures and lets the body be resized per mission.",
+    "teamLead": "Al Mahir Ahmed",
+    "teamLeadEmail": "al.mahir.ahmed@g.bracu.ac.bd",
+    "competition": {
+      "shortName": "URC",
+      "fullName": "University Rover Challenge",
+      "year": 2024,
+      "location": "Utah (URC finals, if selected)",
+      "result": ""
+    },
+    "specs": [
+      {
+        "label": "Drive System",
+        "value": "4-wheel rocker-bogie with omni wheels"
+      },
+      {
+        "label": "Wheel Angles",
+        "value": "0°, 45°, 90° via heavy-duty linear actuators"
+      },
+      {
+        "label": "Arm DOF",
+        "value": "5-DOF manipulator"
+      },
+      {
+        "label": "Payload",
+        "value": "Up to 7 kg"
+      },
+      {
+        "label": "Compute",
+        "value": "Intel NUC (ROS Noetic / Ubuntu 20.04)"
+      },
+      {
+        "label": "Power",
+        "value": "Dual 4S 16V LiPo batteries"
+      },
+      {
+        "label": "Comms",
+        "value": "Dual-band 2.4 GHz + 5.8 GHz point-to-point"
+      },
+      {
+        "label": "Range",
+        "value": "Up to 1 km traversal"
+      },
+      {
+        "label": "Body Materials",
+        "value": "Aluminum and ebonite"
+      },
+      {
+        "label": "Drop Test",
+        "value": "Passed 1 m drop"
+      }
+    ],
+    "subsystems": [
+      {
+        "name": "Mechanical",
+        "subTeamKey": "mechanical",
+        "summary": "A redesigned chassis in aluminum and ebonite retains the proven 4-wheel rocker suspension while adding omnidirectional omni wheels and a new lightweight 5-DOF arm. A fully modular layout separates science, navigation, network and electronics for plug-and-play swaps and weight reduction.",
+        "highlights": [
+          "Omni wheels with 0°/45°/90° angles via heavy-duty linear actuators for skid steer, spot rotation and lateral movement",
+          "Modular plug-and-play modules isolate failures and allow the body to be sized down per mission",
+          "5-DOF arm with weight concentrated at the base for up to 7 kg payload",
+          "2-finger end effector with laser and solenoid for precise manipulation",
+          "Dedicated 2-DOF science arm with excavator claw for soil collection",
+          "New antenna extension/bending mechanism to meet height limits and adjust orientation from the mount base"
+        ]
+      },
+      {
+        "name": "Controls & Software",
+        "subTeamKey": "controls",
+        "summary": "An onboard Intel NUC runs ROS Noetic on Ubuntu 20.04 as the system backbone, with the ROS master on the rover so it can keep deciding if comms drop. A web GUI tied to ROS shows position, orientation, science sensor data and battery level, with a WebSocket backup.",
+        "highlights": [
+          "ROS master situated on the rover for autonomy during comms loss",
+          "Web GUI with offline map plus separate science web page for sensor data",
+          "Modular ROS nodes so no subsystem depends on another",
+          "Gamepad and joystick control for accessibility",
+          "Backup WebSocket system for GUI if ROS fails",
+          "Inverse kinematics for large then fine arm movements"
+        ]
+      },
+      {
+        "name": "Electronics",
+        "subTeamKey": "electronics",
+        "summary": "The electronics subteam built two custom PCBs (arm and wheel) prioritizing modularity, efficiency and resilience. Each board carries an N-channel MOSFET H-bridge driven by DRV8702 plus relays, an onboard Arduino communicating serially with the Intel NUC, and onboard buttons for debugging.",
+        "highlights": [
+          "Two custom PCBs with DRV8702-driven N-channel MOSFET H-bridges and relays",
+          "Limit-switch feedback on arm and omni-wheel modes",
+          "Backup relay/off-the-shelf driver circuits for reliability",
+          "Dual 4S 16V LiPo batteries: one for comms/computer, one for actuators, sensors and cameras",
+          "Power distribution board with buck-boost converters and safety monitoring",
+          "Solid State Relay with killswitch; second SSR reduces locomotion on comms loss"
+        ]
+      },
+      {
+        "name": "Communication",
+        "subTeamKey": "network",
+        "summary": "A three-layer communication system gives uninterrupted control and feed using two dedicated point-to-point links on 2.4 GHz and 5.8 GHz. Ubiquiti Rocket M2/M5 units at the base station pair with a WAVLINK router on the rover, with automatic noise-avoiding channel binding.",
+        "highlights": [
+          "Dual-band 2.4 GHz and 5.8 GHz used simultaneously or independently as failsafe",
+          "Ubiquiti Rocket M2 and Rocket M5 at base station, WAVLINK router on rover",
+          "Automatic interference detection and channel binding",
+          "Rotator with elevation-azimuth controller for line-of-sight tracking",
+          "Multiple webcams assigned IPs as cheap IP cams plus FPV cams for failover",
+          "Drone-assisted range extension via repeater being evaluated"
+        ]
+      },
+      {
+        "name": "Autonomy",
+        "subTeamKey": "autonomous",
+        "summary": "Autonomous navigation uses GNSS localization and the ROS Navigation Stack with global and local planners for path planning and camera-based obstacle avoidance. An SBG Ellipse-D INS with differential GNSS delivers 1 m positioning and 0.2° heading precision.",
+        "highlights": [
+          "SBG Ellipse-D INS + differential GNSS: 1 m single-point, 0.2° heading precision",
+          "OpenCV ArUco tag detection with GNSS holding patterns",
+          "YOLO v8 object detection trained on larger datasets for rubber mallet and water bottle",
+          "Depth-camera approach to markers and obstacle avoidance",
+          "Search patterns when objects/markers not found on first attempt",
+          "Custom global planner under development"
+        ]
+      },
+      {
+        "name": "Science",
+        "subTeamKey": "science",
+        "summary": "A modular onboard life-detection assay centers on a custom UV-Vis spectrometer (250-800 nm) analyzing absorption spectra of biomarkers in 15 quartz cuvettes. A retractable science arm collects and crushes soil, feeding a sealed cache and cuvettes for spectroscopic and wet-chemistry analysis.",
+        "highlights": [
+          "Custom UV-Vis laser spectrometer, 250-800 nm, with 15 quartz cuvettes (12.5x12.5x45 mm)",
+          "Camera + Theremino software for wavelength peak identification; Beer-Lambert concentration analysis",
+          "Target biomarkers: FMN, porphyrins, Fe-S clusters; Ninhydrin test for amines/amino acids",
+          "EC sensor for conductivity/salinity, NPK sensor for soil fertility, thermal and moisture sensors",
+          "Retractable downward claw collects top 10 cm soil, with roller crushing and rotational-speed quantification",
+          "Sealed cache box holds at least 5 g of soil to prevent spills and contamination"
+        ]
+      }
+    ],
+    "missions": [
+      {
+        "name": "Extreme Delivery Mission",
+        "summary": "The 4-wheel rocker-bogie suspension carries the rover up to 1 km across sand, rock, gravel and boulder fields, having passed a 1 m drop test. Operators drive via a web GUI with offline map, while onboard fossil, rock and tool detection models help catalog geological features using only the camera."
+      },
+      {
+        "name": "Equipment Servicing Mission",
+        "summary": "Omni-wheel holonomic strafing gives precise positioning for transporting the cache container to the lander and operating panel controls. The base-heavy arm with prismatic end-effector joints and inverse kinematics enables fine tasks like inserting the cache, typing, aiming an antenna and inserting a USB stick."
+      },
+      {
+        "name": "Autonomous Navigation Mission",
+        "summary": "GNSS and the ROS Navigation Stack plan paths between coordinates with camera-based local obstacle avoidance. OpenCV ArUco detection plus a YOLO v8 model identify markers and objects, and depth perception guides accurate approach with search patterns as fallback."
+      },
+      {
+        "name": "Science Mission",
+        "summary": "A retractable science arm with excavator claw collects soil from the top 10 cm (deeper with extension), crushes it via roller, and routes samples to cuvettes and a sealed cache. A custom UV-Vis spectrometer and EC/NPK/thermal/moisture sensors drive a life-detection assay across multiple biomarkers."
+      }
+    ],
+    "keyInnovations": [
+      {
+        "title": "Omnidirectional omni wheels",
+        "description": "Wheels adjustable to 0°, 45° and 90° via heavy-duty linear actuators enable skid steering, spot rotation and lateral strafing, giving holonomic motion for tight maneuvering and equipment access."
+      },
+      {
+        "title": "Base-heavy 5-DOF arm",
+        "description": "A redesigned manipulator concentrates mass at the base for a high payload-to-weight ratio, reaching up to 7 kg payload with a 2-finger end effector, laser and solenoid for precise, modular task handling."
+      },
+      {
+        "title": "Three-layer dual-band comms",
+        "description": "Simultaneous and independent 2.4 GHz and 5.8 GHz point-to-point links with Ubiquiti Rocket M2/M5, automatic noise-avoiding channel binding and FPV failover keep video and control alive."
+      },
+      {
+        "title": "Custom UV-Vis life-detection spectrometer",
+        "description": "A modular onboard spectrometer spanning 250-800 nm with 15 quartz cuvettes detects biomarkers like FMN, porphyrins and Fe-S clusters using Beer-Lambert analysis for in-situ life detection."
+      },
+      {
+        "title": "Modular plug-and-play architecture",
+        "description": "Separate science, navigation, network and electronics modules allow swift swaps, isolate cascading failures, and let the rover body be resized per mission for significant weight reduction."
+      }
+    ],
+    "namedComponents": [
+      "Intel NUC",
+      "ROS Noetic",
+      "Ubuntu 20.04",
+      "DRV8702",
+      "Arduino",
+      "Ubiquiti Rocket M2",
+      "Ubiquiti Rocket M5",
+      "WAVLINK router",
+      "SBG Ellipse-D INS",
+      "OpenCV",
+      "YOLO v8",
+      "Theremino software",
+      "Solid State Relay (SSR)",
+      "4S 16V LiPo",
+      "EC sensor",
+      "NPK sensor"
+    ],
+    "changesFromPrev": [
+      "Kept the proven 4-wheel rocker suspension from URC 2023 but added new omni wheels and a new arm",
+      "New aluminum and ebonite body for weight reduction and rigidity",
+      "Redesigned, more optimized 5-DOF arm replacing the previous manipulator",
+      "Two new custom PCBs for arm and wheel with DRV8702 H-bridges",
+      "Upgraded three-layer dual-band communication system",
+      "Reused the prior year's excavator claw for science sample extraction",
+      "New antenna bending/extension mechanism to meet height limits"
+    ],
+    "_groundedness": "high",
+    "_corrections": [
+      "competition.location: removed the unsupported 'MDRS' reference. The document only states the team will prepare for Utah 'if we are selected for URC 2024 finals' and never mentions the Mars Desert Research Station. Changed to 'Utah (URC finals, if selected)'.",
+      "overview: changed '4-wheel rocker-bogie suspension' to '4-wheel rocker suspension' to match the mechanical section's wording (the rocker-bogie phrasing only appears in the Extreme Delivery mission text)."
+    ]
+  },
+  {
+    "year": 2025,
+    "roverName": "Hypersonic",
+    "nameConfidence": "explicit",
+    "tagline": "Redundant by design, autonomous by ambition — Hypersonic conquers Mars terrain",
+    "overview": "Hypersonic is BRACU Mongol-Tori's 2025 University Rover Challenge entry, a rocker-bogie suspension rover built around innovation, redundancy, and modular design. It pairs a 6-DOF manipulator and swappable end effectors with a ROS2 Humble software stack, dual-IMU RTK autonomy, and a frequency-hopping redundant communication system. The iteration is notable for a partial mechanical/control/autonomous redesign, a clip-on autonomous keyboard-typing arm, and a custom point-cloud path planner.",
+    "teamLead": "Mohammad Jesan",
+    "teamLeadEmail": "md.jesan@g.bracu.ac.bd",
+    "competition": {
+      "shortName": "URC",
+      "fullName": "University Rover Challenge",
+      "year": 2025,
+      "location": "",
+      "result": ""
+    },
+    "specs": [
+      {
+        "label": "Manipulator",
+        "value": "6-DOF arm"
+      },
+      {
+        "label": "Arm Reach",
+        "value": "1.4 m radius, 120° rotational base"
+      },
+      {
+        "label": "Power",
+        "value": "3x hot-swappable 18V 9Ah lithium-ion batteries"
+      },
+      {
+        "label": "Runtime",
+        "value": "~90 minutes"
+      },
+      {
+        "label": "Drive System",
+        "value": "Rocker-bogie suspension with arched base support"
+      },
+      {
+        "label": "Wheels",
+        "value": "12-inch slotted wheels"
+      },
+      {
+        "label": "Compute",
+        "value": "HP Mini PC (19.5V) + Pixhawk"
+      },
+      {
+        "label": "Autonomy Sensing",
+        "value": "SBG Ellipse-D INS, dual ZED 2i stereo cameras"
+      },
+      {
+        "label": "Comms Range",
+        "value": "Tested over 1 km direct line of sight"
+      },
+      {
+        "label": "Team Size",
+        "value": "50 students, 7 sub-teams"
+      }
+    ],
+    "subsystems": [
+      {
+        "name": "Mechanical",
+        "subTeamKey": "mechanical",
+        "summary": "A partially redesigned mechanical system built on a rocker-bogie suspension with an advanced arched base support for stability on steep and rocky terrain. The segmented chassis assembles and disassembles per mission and integrates a flipping mechanism that separates controls and electronics for easier maintenance.",
+        "highlights": [
+          "Rocker-bogie suspension with arched base support",
+          "Segmented, mission-configurable chassis with flipping mechanism",
+          "Jamdani-inspired CNC-machined aluminum panels for weight and aesthetics",
+          "6-DOF manipulator with 1.4 m reach and 120° base rotation",
+          "Swappable end effectors: excavator claw, 3D-printed adaptive gripper",
+          "Clip-on 2-DOF autonomous keyboard-typing arm"
+        ]
+      },
+      {
+        "name": "Electronics",
+        "subTeamKey": "electronics",
+        "summary": "Power is delivered by three hot-swappable 18V 9Ah lithium-ion batteries through a Power Distribution Board, driving wheels and arm via stacked Cytron motor drivers with onboard power monitoring. Safety features include a red kill switch with reverse polarity protection.",
+        "highlights": [
+          "3x hot-swappable 18V 9Ah lithium-ion batteries",
+          "Cytron 60A Bi-Directional dual-channel motor driver for wheels",
+          "4x Cytron MDDS10 10A dual-channel drivers for arm and extender",
+          "Stacked motor drivers with per-channel debugging via power monitor",
+          "Pixhawk-controlled status LEDs via 12V relays",
+          "Red kill switch with 12V relay and reverse polarity protection"
+        ]
+      },
+      {
+        "name": "Controls & Software",
+        "subTeamKey": "controls",
+        "summary": "Hypersonic runs ROS2 Humble for teleoperation and autonomous navigation, using mission-specific packages communicating over MAVLink. Alternating GNSS modules and swappable industry-grade INS units mitigate weather-related location errors and magnetometer drift, with a homebrewed GUI for status monitoring.",
+        "highlights": [
+          "ROS2 Humble framework with MAVLink protocol",
+          "Alternating GNSS modules for location accuracy",
+          "Swappable industry-grade INS to eliminate magnetometer drift",
+          "Homebrewed GUI for status, control, and science analysis",
+          "Redundant Pixhawk takeover on power failure"
+        ]
+      },
+      {
+        "name": "Network & Vision",
+        "subTeamKey": "network",
+        "summary": "A redundant point-to-point communication system with frequency hopping and load balancing links rover and base station. It combines 900MHz Holybro P900 telemetry, a 5GHz Ubiquiti airMAX router, and a Walksnail Avatar HD FPV kit, with vision handled by 8 analog cameras and a Logitech webcam streamed via RTSP.",
+        "highlights": [
+          "Holybro P900 900MHz telemetry + 5GHz Ubiquiti airMAX AC Lite router",
+          "13dBi AMO-5G13 omni and 19dBi AM5G19-120 sector antennas",
+          "Walksnail Avatar HD kit V2 for long-range FPV",
+          "8 analog cameras + Logitech C922 webcam encoded to RTSP over 5GHz",
+          "Frequency hopping to unlicensed bands on interference",
+          "18V battery powers full comms setup for 4 hours"
+        ]
+      },
+      {
+        "name": "Autonomy",
+        "subTeamKey": "autonomous",
+        "summary": "Autonomous navigation is built on a custom decision tree taking GNSS goals as input and switching between path planning, navigating, searching, and arrival. A custom point-cloud path planner determines terrain elevation for shortest paths, while dual ZED 2i cameras and YOLO models handle object and ArUco detection.",
+        "highlights": [
+          "SBG Ellipse-D tactical INS with dual-antenna DGNSS/RTK, centimeter accuracy, 0.2° heading",
+          "Witmotion HWT905 AHRS IMU as secondary, 1° heading",
+          "Custom decision-tree navigation with point-cloud shortest-path planner",
+          "Dual ZED 2i stereo cameras stitched to 200° FOV for ArUco search",
+          "OpenCV ArUco detection up to 15 m; square spiral search fallback",
+          "YOLO11 and YOLOv8-world trained on 6330-image custom mallet/bottle dataset"
+        ]
+      },
+      {
+        "name": "Science",
+        "subTeamKey": "science",
+        "summary": "The science module collects soil samples and performs onboard Nitrogen and Carbon detection via Molisch's reagent, Ninhydrin, and UV-C analysis to detect extinct, extant, and fossilized life. An excavator claw extracts samples from 15 cm deep into contamination-proof funnels and a detachable cache box.",
+        "highlights": [
+          "Molisch's reagent test for carbohydrate detection with peristaltic pump and H2SO4 purple ring",
+          "Ninhydrin test with nichrome wire heating, read by color sensor in GUI",
+          "UV-C analysis at 260-280 nm for protein quantification (tryptophan/tyrosine)",
+          "Excavator claw extracts soil from 15 cm deep into dual anti-cross-contamination funnels",
+          "NPK sensor pre-analysis; load-cell-measured 5g core in detachable cache box",
+          "Servo-mounted Logitech webcam stitches 180° panoramas with cardinal alignment via Pixhawk"
+        ]
+      }
+    ],
+    "missions": [
+      {
+        "name": "Delivery Mission",
+        "summary": "The rover finds and picks up objects, reads signs, and delivers samples across adverse terrain. A TPU-based 3D-printed adaptive end effector grips tools, rocks, and lids over 5 kg and objects longer than 7.5 cm, storing samples in a cache box. The legacy linear-actuator omni-wheel mechanism was removed to improve stability and deployment time."
+      },
+      {
+        "name": "Equipment Servicing Mission",
+        "summary": "The 6-DOF manipulator performs maintenance on the mock-up lander, with a dedicated servo-based mini-arm enabling autonomous keyboard typing via a motorized rail and solenoid. The rover picks and places cache, inserts/removes USB-A, pushes buttons, flips switches, operates joysticks via base rotation, and turns knobs with a bevel gear — completing tasks within 30 minutes over 0.25 km."
+      },
+      {
+        "name": "Autonomous Mission",
+        "summary": "A custom decision-tree navigation system takes GNSS goals and switches between path planning, navigating, searching, and arrival. A point-cloud path planner finds shortest paths over terrain; dual ZED 2i cameras stitch a 200° FOV for ArUco detection, with a square spiral search fallback and YOLO-based object detection of mallets and bottles."
+      },
+      {
+        "name": "Science Mission",
+        "summary": "The rover collects soil from sites and runs onboard Molisch's, Ninhydrin, and UV-C tests to detect Nitrogen and Carbon biosignatures. Subsurface site selection uses geological cues and an NPK sensor; an excavator claw extracts 15 cm-deep samples into a contamination-proof detachable cache, with panoramic imaging and atmospheric sensors supporting on-site geological validation."
+      }
+    ],
+    "keyInnovations": [
+      {
+        "title": "Clip-on autonomous keyboard-typing arm",
+        "description": "A clip-on 2-DOF manipulator attaches only for Equipment Servicing and uses fixed-camera machine vision calibrated to keyboard reference markers, navigating each key via inverse kinematics to type autonomously."
+      },
+      {
+        "title": "Custom point-cloud path planner",
+        "description": "A custom path-planning algorithm uses a point-cloud map of the environment to estimate terrain elevation and compute the shortest path, paired with a decision-tree global/local planner for dynamic obstacle avoidance."
+      },
+      {
+        "title": "Redundant frequency-hopping comms",
+        "description": "A redundant point-to-point communication system with frequency hopping and load balancing across 900MHz P900, 5GHz airMAX, and Walksnail FPV keeps rover-to-base links uninterrupted under interference."
+      },
+      {
+        "title": "Dual-INS RTK autonomy",
+        "description": "An SBG Ellipse-D tactical INS with dual-antenna DGNSS/RTK delivers centimeter positioning and 0.2° heading, backed by a Witmotion HWT905 secondary IMU to eliminate magnetometer drift."
+      },
+      {
+        "title": "Modular swappable chassis and end effectors",
+        "description": "A segmented chassis with a flipping mechanism separates controls from electronics for maintenance, while swappable grippers — adaptive TPU claw and excavator claw — reconfigure the rover per mission."
+      }
+    ],
+    "namedComponents": [
+      "ROS2 Humble",
+      "MAVLink",
+      "Pixhawk",
+      "SBG Ellipse-D",
+      "Witmotion HWT905",
+      "ZED 2i",
+      "YOLO11",
+      "YOLOv8-world",
+      "OpenCV ArUco",
+      "Holybro P900",
+      "Ubiquiti airMAX AC Lite",
+      "AMO-5G13 antenna",
+      "AM5G19-120 antenna",
+      "Walksnail Avatar HD kit V2",
+      "Cytron 60A Bi-Directional DC Motor Driver",
+      "Cytron MDDS10",
+      "Logitech C922",
+      "HP Mini PC",
+      "NPK sensor"
+    ],
+    "changesFromPrev": [
+      "Removed the linear-actuator-based omni-wheel mechanism due to slow deployment time, improving stability and path-traversal precision",
+      "Partial redesign of the mechanical, control, and autonomous systems for redundancy and modularity",
+      "Built a new custom point-cloud-based path planning algorithm"
+    ],
+    "_groundedness": "high",
+    "_corrections": []
+  },
+  {
+    "year": 2026,
+    "roverName": "Taurus",
+    "nameConfidence": "explicit",
+    "tagline": "Lighter, cooler, CAN-smart: a rocker-bogie rover engineered for Mars terrain",
+    "overview": "Taurus is BRACU Mongol-Tori's 2026 University Rover Challenge entry, a ground-up redesign of the 2025 Hypersonic rover that retains only the original chassis. It pairs a lighter four-wheel rocker-bogie suspension built from carbon fiber and in-house aluminum extrusion with a CAN-bus distributed control network, a 7-DOF manipulator, and a ROS2-based autonomy stack. Over a nine-month cycle the team advanced the rover from TRL-1 to TRL-5, addressing prior weaknesses in stability, RF reliability, and thermal management.",
+    "teamLead": "Md Rafid Khan",
+    "teamLeadEmail": "md.rafid.khan@g.bracu.ac.bd",
+    "competition": {
+      "shortName": "URC",
+      "fullName": "University Rover Challenge",
+      "year": 2026,
+      "location": "Mars Desert Research Station (MDRS)",
+      "result": ""
+    },
+    "specs": [
+      {
+        "label": "Suspension",
+        "value": "Four-wheel rocker-bogie"
+      },
+      {
+        "label": "Chassis",
+        "value": "Carbon fiber hollow tubes + in-house aluminum extrusion, truss enclosure"
+      },
+      {
+        "label": "Arm DOF",
+        "value": "7-DOF manipulator + linear rail"
+      },
+      {
+        "label": "Payload",
+        "value": "Lifts >5 kg; grips objects >7.5 cm"
+      },
+      {
+        "label": "Wheels",
+        "value": "12-inch-diameter slotted wheels"
+      },
+      {
+        "label": "Power",
+        "value": "Hot-swappable 18V 9Ah Li-ion, isolated rails (5V/12V/19.5V/24V)"
+      },
+      {
+        "label": "Comms Range",
+        "value": "Up to 3.3 km NLoS"
+      },
+      {
+        "label": "Compute",
+        "value": "Nvidia Jetson Orin"
+      },
+      {
+        "label": "Autonomy",
+        "value": "ROS2 Humble, Differential GNSS RTK, ZED 2i"
+      },
+      {
+        "label": "Thermal",
+        "value": "Tested up to 55 degrees C"
+      }
+    ],
+    "subsystems": [
+      {
+        "name": "Mechanical",
+        "subTeamKey": "mechanical",
+        "summary": "A complete SOLIDWORKS redesign of Hypersonic into the lighter, more compact Taurus, keeping only the original chassis. A four-wheel rocker-bogie suspension lowers the center of gravity for stability on slopes and rocky terrain, with a truss enclosure for rigidity and thermal endurance at MDRS.",
+        "highlights": [
+          "Four-wheel rocker-bogie suspension with carbon fiber hollow tubes and in-house aluminum extrusion",
+          "Truss-based avionics enclosure for structural rigidity and thermal endurance",
+          "Quick assemble/disassemble chassis with future omni-wheel module interfaces",
+          "7-DOF manipulator plus linear rail for ESM precision tasks",
+          "myActuator X4-36 end effector motor for high-torque pitch control, lifting 5 kg payload",
+          "Clip-on 2-DOF autonomous keyboard-typing manipulator; excavator claw swap for Science Mission",
+          "FEA and topological optimization in Ansys before manufacturing"
+        ]
+      },
+      {
+        "name": "Controls & Software",
+        "subTeamKey": "controls",
+        "summary": "A two-tier architecture splits a High-Level Control System (planning, reasoning, perception) from a Low-Level Control System running on a custom CAN-enabled ESP32 controller named Kachhim. Inverse Kinematics was reengineered with magnetic encoders and distributed PID to cut computational load.",
+        "highlights": [
+          "Custom CAN-enabled ESP32 controller 'Kachhim' in a small form factor controls all actuators",
+          "FreeRTOS-based rover control firmware with PID velocity control (Kp, Ki, Kd tuned)",
+          "IK reengineered using AS5600 magnetic encoders instead of potentiometers",
+          "Distributed CAN modules read data and run PID locally, reducing main controller load",
+          "Three IK modes: Full Manual, Full IK, IK Assisted",
+          "ROS2 Humble + Python HLCS with Mission Specific and Common Control Packages",
+          "Redesigned GUI with 3D arm visualization, camera feeds, direct IK input, kill command, mode switching"
+        ]
+      },
+      {
+        "name": "Electronics",
+        "subTeamKey": "electronics",
+        "summary": "Built on hot-swappable 18V 9Ah Li-ion batteries, the power system introduces multiple isolated voltage rails to eliminate voltage sag and isolate RF-sensitive components. Hardware reverse-polarity protection and a physical kill switch provide fail-safe operation.",
+        "highlights": [
+          "Hot-swappable 18V 9Ah lithium-ion batteries with multiple isolated voltage rails",
+          "Rails for 12V/24V comms, 19.5V Jetson, 5V logic",
+          "Two 60A Cytron MDDS60 bi-directional drivers for wheels/arm motors",
+          "Four dual-channel 10A Cytron MDDS10 drivers",
+          "Independent powering of control and hardware stacks to prevent outage faults",
+          "Hardware reverse-polarity protection circuit and physical kill switch"
+        ]
+      },
+      {
+        "name": "Network & Vision",
+        "subTeamKey": "network",
+        "summary": "After prior 5GHz radio failures during Delivery Mission, the team introduced frequency diversity with automatic RSSI-based load balancing across multiple bands, plus a custom in-house digital FPV failsafe. Reliable mission control was achieved up to 3.3 km in Non-Line-of-Sight scenarios.",
+        "highlights": [
+          "5GHz Ubiquiti airMAX AC Lite with 13dBi AMO-5G13 omni antenna, auto-shift to 2.4GHz Ubiquiti AC Bullet by RSSI",
+          "433MHz SATELLINE EASy (70cm band) and 900MHz Microhard P900 telemetry with 12dBi antennas",
+          "Reliable mission control up to 3.3 km NLoS; custom directional/omni antennas built with CompleTech",
+          "ProLink Interactive UPS giving 4 hours backup with real-time power monitoring",
+          "8 analog cameras plus in-house digital FPV using SSC338Q camera with OpenIPC firmware",
+          "RTL8812eu NIC with wfb-ng 802.11 datalink to reduce packet drops"
+        ]
+      },
+      {
+        "name": "Autonomy",
+        "subTeamKey": "autonomous",
+        "summary": "The autonomy stack uses Differential GNSS with RTK and a ZED 2i stereo camera for the MT-RTN (Mongol-Tori Rough Terrain Navigation) planner, a hierarchical state machine combining a GNSS global planner with a vision-based local planner. Object detection blends ArUco markers with custom YOLO11n models, all validated in a Unity digital-twin simulator.",
+        "highlights": [
+          "Differential GNSS with RTK plus 110-degree FOV ZED 2i stereo camera for depth",
+          "MT-RTN planner: GNSS global waypoint planner + local 3D point-cloud costmap",
+          "Local planner sweeps headings -60 to +60 degrees, biases toward goal",
+          "OpenCV ArUco detection + three custom-trained YOLO11n models for hammers/bottle",
+          "SBG Ellipse-D GNSS and Witmotion WT905 IMU for distance/bearing; GPS accuracy monitor",
+          "Incremental rotational then square search; approaches target to 1.5 m",
+          "Custom Unity-based simulator with digital twin and physics for pre-deployment validation"
+        ]
+      },
+      {
+        "name": "Science",
+        "subTeamKey": "science",
+        "summary": "A redesigned atmospheric module and science arm correlate in-situ sensing with onboard lab experiments to assess site habitability. Subsurface analysis uses an NPK soil sensor and auger, while life-detection runs organic-matter, electrical-conductivity, phosphate, and UV-C protein tests.",
+        "highlights": [
+          "Atmospheric sensors: BME680 (temp/humidity/pressure/AQI), electrochemical O2, SCD41 CO2, VEML7700 light, UV index, PM2.5, CH4/NO2 detection",
+          "Servo-mounted high-res camera stitches panorama for stratigraphic profiling",
+          "RS485 MODBUS-RTU soil NPK sensor, interlocking soil claws and auger at 90-degree rotation",
+          "Drilling beyond 15 cm with 3D-printed load-cell cuvette under no-contamination policy",
+          "Life detection: hydrogen peroxide organic-matter test, EC test for extant life",
+          "Phosphate test by Olsen method; UV-C protein detection at 260-280 nm",
+          "Excavator claw replaces adaptive gripper during Science Mission"
+        ]
+      }
+    ],
+    "missions": [
+      {
+        "name": "Delivery Mission",
+        "summary": "Taurus traverses narrow marked paths and challenging terrain with a truss design that keeps internals cool (tested to 55 degrees C) and supports a cache box for sample collection and delivery. It uses 900MHz/433MHz for NLoS control, 8 cameras over 5GHz/2.4GHz, a companion drone to relay analog feeds and scout signs, and a retractable antenna mount with an antenna tracker for line of sight."
+      },
+      {
+        "name": "Equipment Servicing Mission",
+        "summary": "A dual end-effector manipulator with independent pitch and roll switches between teleoperation and autonomous keyboard typing. A linear rail and base rotation enable USB-C insertion, switch flipping, tool handling, latched-door opening, test-tube insertion, and hose connection; a precision clicker with vertical axis types keys via closed-loop camera feedback and a laser crosshair."
+      },
+      {
+        "name": "Autonomous Navigation",
+        "summary": "Taurus autonomously navigates to GPS waypoints under MT-RTN, using a GNSS global planner (SBG Ellipse-D + Witmotion WT905) with heading control and a ZED 2i slope-based costmap local planner for obstacle avoidance. At each waypoint it runs ArUco or custom YOLO detection, performs a 360-degree search if needed, and approaches targets to 1.5 m with LED-matrix status feedback."
+      },
+      {
+        "name": "Science Mission",
+        "summary": "The redesigned atmospheric and subsurface modules pair sensor readings with onboard lab experiments to prove site habitability, drilling beyond 15 cm for soil samples and running organic-matter, electrical-conductivity, phosphate, and UV-C protein life-detection tests under a no-contamination protocol."
+      }
+    ],
+    "keyInnovations": [
+      {
+        "title": "Kachhim CAN-bus controller",
+        "description": "A custom in-house ESP32-based, CAN-enabled controller in a small form factor drives all actuators, with distributed modules running PID locally to cut main-controller computational load."
+      },
+      {
+        "title": "Reengineered IK with magnetic encoders",
+        "description": "Inverse Kinematics was rebuilt using AS5600 magnetic encoders instead of potentiometers for more precise angular feedback, operating in Full Manual, Full IK, and IK Assisted modes."
+      },
+      {
+        "title": "Frequency-diversity RF system",
+        "description": "Radios auto load-balance and shift between 5GHz and 2.4GHz by RSSI, with 433MHz and 900MHz mission-control diversity, delivering reliable control up to 3.3 km at Non-Line-of-Sight."
+      },
+      {
+        "title": "MT-RTN rough-terrain navigation",
+        "description": "A hierarchical state-machine planner pairs a GNSS global planner with a ZED 2i 3D point-cloud costmap local planner, validated in a custom Unity digital-twin simulator."
+      },
+      {
+        "title": "Dual end-effector with autonomous typing",
+        "description": "An independent pitch/roll dual end-effector enables seamless switching between teleoperation and an autonomous keyboard-typing precision clicker using closed-loop camera feedback."
+      },
+      {
+        "title": "Stability-focused rocker-bogie redesign",
+        "description": "A four-wheel rocker-bogie suspension in carbon fiber and aluminum lowers the center of gravity to fix prior autonomous-mission tipping, with a truss enclosure for thermal endurance."
+      }
+    ],
+    "namedComponents": [
+      "Nvidia Jetson Orin",
+      "ZED 2i",
+      "ESP32",
+      "Kachhim CAN controller",
+      "AS5600 magnetic encoders",
+      "myActuator X4-36",
+      "ROS2 Humble",
+      "YOLO11n",
+      "OpenCV ArUco",
+      "Cytron MDDS60",
+      "Cytron MDDS10",
+      "SBG Ellipse-D",
+      "Witmotion WT905 IMU",
+      "Ubiquiti airMAX AC Lite",
+      "Microhard P900",
+      "SATELLINE EASy",
+      "SSC338Q / OpenIPC",
+      "RTL8812eu NIC",
+      "wfb-ng",
+      "BME680",
+      "SCD41",
+      "VEML7700",
+      "SparkFun ZED-F9P"
+    ],
+    "changesFromPrev": [
+      "Complete SOLIDWORKS redesign of the 2025 Hypersonic rover, retaining only the original chassis",
+      "Switched to four-wheel rocker-bogie suspension to fix prior autonomous-mission tipping",
+      "Introduced custom CAN-enabled ESP32 controller (Kachhim) replacing prior actuator control",
+      "Replaced potentiometers with AS5600 magnetic encoders for IK feedback",
+      "Added frequency diversity across radios after prior 5GHz Delivery Mission failures",
+      "Introduced multiple isolated voltage rails to eliminate voltage sag",
+      "Added dual end-effector system with independent pitch and roll control",
+      "Significantly redesigned GUI with 3D arm visualization and IK input",
+      "Advanced rover from TRL-1 to TRL-5 in nine months"
+    ],
+    "_groundedness": "high",
+    "_corrections": [
+      "Trimmed competition.location from 'Mars Desert Research Station (MDRS), Hanksville, Utah' to 'Mars Desert Research Station (MDRS)'. The document references MDRS but never states 'Hanksville, Utah'; that geographic detail was external knowledge not grounded in the source."
+    ]
+  }
+]
