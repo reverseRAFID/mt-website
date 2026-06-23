@@ -4,7 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
-import { gsap, prefersReducedMotion } from '@/lib/gsap'
+import { gsap, prefersReducedMotion, isFinePointer } from '@/lib/gsap'
+import { Scramble } from '@/components/motion/Scramble'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { BlueprintBackdrop } from './BlueprintBackdrop'
 import type { RoverSpecs } from '@/sanity/lib/types'
@@ -63,6 +64,7 @@ export function RoverHero({
   const mediaRef = useRef<HTMLDivElement>(null)
   const words = name.split(' ')
   const stats = buildStats(specs)
+  const recLabel = `REC · ${competition ? `${competition.shortName} ${competition.year}` : `URC ${year}`}`
 
   useGSAP(
     () => {
@@ -79,6 +81,14 @@ export function RoverHero({
         .from(q('[data-hero-stat]'), { opacity: 0, y: 18, duration: 0.5, stagger: 0.06 }, '-=0.35')
         .from(q('[data-hero-cta]'), { opacity: 0, y: 14, duration: 0.5, stagger: 0.06 }, '-=0.35')
         .from(q('[data-hero-cue]'), { opacity: 0, duration: 0.6 }, '-=0.2')
+
+      // Power-on scan — a single line sweeps top to bottom, then is gone.
+      tl.fromTo(
+        q('[data-hero-scan]'),
+        { y: 0, opacity: 0.6 },
+        { y: () => root.offsetHeight, opacity: 0, duration: 1.1, ease: 'power1.in' },
+        0
+      )
 
       // Parallax — media drifts up and dims as the hero scrolls away.
       if (mediaRef.current) {
@@ -99,6 +109,23 @@ export function RoverHero({
         ease: 'none',
         scrollTrigger: { trigger: root, start: 'top top', end: 'bottom top', scrub: true },
       })
+
+      // Desktop cursor drift — nudges the tech-grid overlay ≤8px toward the
+      // pointer for parallax depth. Fine-pointer + motion only; cleaned up on revert.
+      if (isFinePointer()) {
+        const grid = q('[data-hero-grid]')[0] as HTMLElement | undefined
+        if (grid) {
+          const xTo = gsap.quickTo(grid, 'x', { duration: 0.6, ease: 'power2.out' })
+          const yTo = gsap.quickTo(grid, 'y', { duration: 0.6, ease: 'power2.out' })
+          const onMove = (e: PointerEvent) => {
+            const r = root.getBoundingClientRect()
+            xTo(((e.clientX - r.left) / r.width - 0.5) * 8)
+            yTo(((e.clientY - r.top) / r.height - 0.5) * 8)
+          }
+          root.addEventListener('pointermove', onMove)
+          return () => root.removeEventListener('pointermove', onMove)
+        }
+      }
     },
     { scope: rootRef }
   )
@@ -127,8 +154,9 @@ export function RoverHero({
       {/* Legibility scrims */}
       <div aria-hidden className="absolute inset-0 z-[1] bg-gradient-to-t from-bg via-bg/80 to-bg/10" />
       <div aria-hidden className="absolute inset-0 z-[1] bg-gradient-to-r from-bg/85 via-bg/30 to-transparent" />
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-[2] tech-grid-sm opacity-30 mask-radial-fade" />
+      <div data-hero-grid aria-hidden className="pointer-events-none absolute inset-0 z-[2] tech-grid-sm opacity-30 mask-radial-fade" />
       <CornerTicks className="z-[3] hidden text-primary/30 sm:block" size="md" />
+      <span data-hero-scan aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-[3] h-px bg-primary/45 opacity-0" />
 
       {/* Top telemetry strip */}
       <div
@@ -143,7 +171,7 @@ export function RoverHero({
         </Link>
         <span className="hud-label nums hidden items-center gap-2 text-text-faint sm:inline-flex">
           <span className="h-1.5 w-1.5 rounded-none bg-primary animate-blink" aria-hidden />
-          REC · {competition ? `${competition.shortName} ${competition.year}` : `URC ${year}`}
+          <Scramble text={recLabel} />
         </span>
       </div>
 
@@ -182,7 +210,9 @@ export function RoverHero({
             {stats.map((s) => (
               <div key={s.label} data-hero-stat className="bg-surface-raised/85 px-4 py-3.5 backdrop-blur-sm">
                 <dt className="hud-label text-text-faint">{s.label}</dt>
-                <dd className="mt-1.5 font-mono text-sm font-medium leading-snug text-text nums">{s.value}</dd>
+                <dd className="mt-1.5 font-mono text-sm font-medium leading-snug text-text nums">
+                  <Scramble text={s.value} />
+                </dd>
               </div>
             ))}
           </dl>

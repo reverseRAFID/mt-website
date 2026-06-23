@@ -1,15 +1,13 @@
 import { PageLayout } from '@/components/layout/PageLayout'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { PortableText } from '@portabletext/react'
-import { sanityFetch, urlFor, getFileUrl } from '@/sanity/lib/client'
+import { sanityFetch, urlFor, getFileUrl, getYouTubeID } from '@/sanity/lib/client'
 import { ROVER_BY_SLUG_QUERY, ROVERS_QUERY } from '@/sanity/lib/queries'
 import type { RoverFull, RoverCard } from '@/sanity/lib/types'
-import { Reveal } from '@/components/motion/Reveal'
-import { CornerTicks } from '@/components/ui/CornerTicks'
 import { RoverHero } from '@/components/rover/RoverHero'
+import { RoverBrief } from '@/components/rover/RoverBrief'
 import { RoverInnovations } from '@/components/rover/RoverInnovations'
+import { RoverBlueprint } from '@/components/rover/RoverBlueprint'
 import { RoverSubsystems } from '@/components/rover/RoverSubsystems'
 import { RoverSpecReadout } from '@/components/rover/RoverSpecReadout'
 import { RoverMissions } from '@/components/rover/RoverMissions'
@@ -17,6 +15,7 @@ import { RoverSarVideo } from '@/components/rover/RoverSarVideo'
 import { RoverGallery } from '@/components/rover/RoverGallery'
 import { RoverCrew } from '@/components/rover/RoverCrew'
 import { RoverFleetStrip } from '@/components/rover/RoverFleetStrip'
+import { MissionRail } from '@/components/rover/MissionRail'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -56,27 +55,37 @@ export default async function RoverPage({ params }: Props) {
   const pdfUrl = rover.technicalPdf?.asset?._ref ? getFileUrl(rover.technicalPdf.asset._ref) : undefined
 
   const comp = rover.competition
-  const metaRows: Array<{ label: string; value: React.ReactNode }> = []
-  if (comp) {
-    metaRows.push({
-      label: 'Competition',
-      value: comp.slug ? (
-        <Link href={`/competitions/${comp.slug.current}`} className="text-text transition-colors hover:text-primary">
-          {comp.shortName} {comp.year}
-        </Link>
-      ) : (
-        `${comp.shortName} ${comp.year}`
-      ),
-    })
-    if (comp.location) metaRows.push({ label: 'Venue', value: comp.location })
-    if (comp.rank) metaRows.push({ label: 'Result', value: `#${comp.rank}${comp.totalTeams ? ` of ${comp.totalTeams}` : ''}` })
-    else if (comp.result) metaRows.push({ label: 'Result', value: comp.result })
+  // Gate the SAR section on the SAME predicate the component renders on, so the
+  // hero "Watch SAR Video" CTA can never point at a section that returns null.
+  const hasVideo = Boolean(rover.sarVideoUrl && getYouTubeID(rover.sarVideoUrl))
+  const validCrew = (rover.crew ?? []).filter((c) => c?.member?.slug?.current)
+
+  // Number ONLY the sections that will actually render (each `show` mirrors the
+  // component's own null-guard), so an unseeded section never leaves a gap in
+  // the 01..0N sequence and MissionRail's tick count stays truthful.
+  const numbered: Array<[string, boolean]> = [
+    ['innovations', (rover.keyInnovations?.length ?? 0) > 0],
+    ['blueprint', (rover.diagrams?.length ?? 0) > 0],
+    ['subsystems', (rover.subsystems?.length ?? 0) > 0],
+    ['spec', (rover.keySpecs?.length ?? 0) > 0 || (rover.namedComponents?.length ?? 0) > 0],
+    ['missions', (rover.missions?.length ?? 0) > 0],
+    ['sar', hasVideo],
+    ['gallery', galleryImages.length > 0],
+    ['crew', validCrew.length > 0],
+  ]
+  const idx: Record<string, string> = {}
+  let shown = 0
+  for (const [key, show] of numbered) {
+    if (show) {
+      shown += 1
+      idx[key] = String(shown).padStart(2, '0')
+    }
   }
-  metaRows.push({ label: 'Year', value: String(rover.year) })
-  if (rover.teamLead) metaRows.push({ label: 'Team Lead', value: rover.teamLead })
 
   return (
     <PageLayout>
+      <MissionRail total={shown} callsign={rover.name} />
+
       <RoverHero
         name={rover.name}
         year={rover.year}
@@ -88,70 +97,34 @@ export default async function RoverPage({ params }: Props) {
         specs={rover.specs}
         competition={comp}
         pdfUrl={pdfUrl}
-        hasVideo={Boolean(rover.sarVideoUrl)}
+        hasVideo={hasVideo}
       />
 
-      {/* Mission brief */}
-      {(rover.overview || rover.description || metaRows.length > 0) && (
-        <section className="relative py-16 lg:py-24">
-          <div className="section-container grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
-            <Reveal>
-              <div className="mb-5 flex items-center gap-2.5">
-                <span className="h-1.5 w-1.5 rotate-45 bg-primary" aria-hidden />
-                <span className="hud-label text-primary">Mission Brief</span>
-              </div>
-              {rover.overview && (
-                <p className="max-w-2xl text-balance font-display text-xl font-medium leading-snug tracking-tight text-text sm:text-2xl lg:text-3xl">
-                  {rover.overview}
-                </p>
-              )}
-              {rover.description && (
-                <div className="prose prose-sm mt-7 max-w-none leading-relaxed text-text-muted">
-                  <PortableText value={rover.description} />
-                </div>
-              )}
-            </Reveal>
+      <RoverBrief
+        overview={rover.overview}
+        description={rover.description}
+        competition={comp}
+        year={rover.year}
+        teamLead={rover.teamLead}
+        pdfUrl={pdfUrl}
+        slug={rover.slug.current}
+      />
 
-            {metaRows.length > 0 && (
-              <Reveal y={20}>
-                <div className="relative rounded-card border border-divider bg-surface-raised p-6 lg:sticky lg:top-24">
-                  <CornerTicks className="text-primary/25" />
-                  <div className="mb-4 hud-label text-text-faint">Spec Sheet</div>
-                  <dl className="divide-y divide-divider">
-                    {metaRows.map((row) => (
-                      <div key={row.label} className="flex items-baseline justify-between gap-4 py-3">
-                        <dt className="hud-label text-text-faint">{row.label}</dt>
-                        <dd className="text-right text-sm font-medium text-text">{row.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                  {pdfUrl && (
-                    <a
-                      href={pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-none border border-border px-4 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                        <path d="M12 17V3M7 12l5 5 5-5M20 21H4" />
-                      </svg>
-                      Download SAR PDF
-                    </a>
-                  )}
-                </div>
-              </Reveal>
-            )}
-          </div>
-        </section>
-      )}
-
-      <RoverInnovations innovations={rover.keyInnovations ?? []} roverName={rover.name} index="01" />
-      <RoverSubsystems subsystems={rover.subsystems ?? []} index="02" />
-      <RoverSpecReadout keySpecs={rover.keySpecs} namedComponents={rover.namedComponents} index="03" />
-      <RoverMissions missions={rover.missions ?? []} index="04" />
-      <RoverSarVideo url={rover.sarVideoUrl} roverName={rover.name} year={rover.year} index="05" />
-      <RoverGallery images={galleryImages} roverName={rover.name} index="06" />
-      <RoverCrew crew={rover.crew ?? []} roverName={rover.name} index="07" />
+      <RoverInnovations innovations={rover.keyInnovations ?? []} roverName={rover.name} index={idx.innovations} />
+      <RoverBlueprint
+        diagrams={rover.diagrams}
+        annotations={rover.diagramAnnotations}
+        cadModel={rover.cadModel}
+        name={rover.name}
+        year={rover.year}
+        index={idx.blueprint}
+      />
+      <RoverSubsystems subsystems={rover.subsystems ?? []} index={idx.subsystems} />
+      <RoverSpecReadout keySpecs={rover.keySpecs} namedComponents={rover.namedComponents} index={idx.spec} />
+      <RoverMissions missions={rover.missions ?? []} index={idx.missions} />
+      <RoverSarVideo url={rover.sarVideoUrl} roverName={rover.name} year={rover.year} index={idx.sar} />
+      <RoverGallery images={galleryImages} roverName={rover.name} index={idx.gallery} />
+      <RoverCrew crew={rover.crew ?? []} roverName={rover.name} index={idx.crew} />
       <RoverFleetStrip rovers={rover.siblings} />
     </PageLayout>
   )

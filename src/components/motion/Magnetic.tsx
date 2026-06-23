@@ -9,6 +9,8 @@ interface MagneticProps {
   /** 0–1, how strongly the element follows the cursor. */
   strength?: number
   className?: string
+  /** Render as a block (fills its container) instead of the default inline-block. */
+  block?: boolean
 }
 
 /**
@@ -16,7 +18,7 @@ interface MagneticProps {
  * Pointer-fine devices only; disabled under reduced-motion. Purely decorative
  * wrapper, so it never changes focus order or semantics of its child.
  */
-export function Magnetic({ children, strength = 0.35, className }: MagneticProps) {
+export function Magnetic({ children, strength = 0.35, className, block = false }: MagneticProps) {
   const ref = useRef<HTMLSpanElement>(null)
 
   useGSAP(
@@ -51,7 +53,7 @@ export function Magnetic({ children, strength = 0.35, className }: MagneticProps
   )
 
   return (
-    <span ref={ref} className={className} style={{ display: 'inline-block', willChange: 'transform' }}>
+    <span ref={ref} className={className} style={{ display: block ? 'block' : 'inline-block', willChange: 'transform' }}>
       {children}
     </span>
   )

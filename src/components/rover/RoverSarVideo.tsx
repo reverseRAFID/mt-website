@@ -1,16 +1,19 @@
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SectionEyebrow } from '@/components/rover/SectionEyebrow'
+import { SarFacade } from '@/components/rover/SarFacade'
 import { getYouTubeID } from '@/sanity/lib/client'
 
 /**
- * Cinematic SAR video embed. Server component (just an iframe + Reveal island).
+ * Cinematic SAR video embed. Server component; the heavy YouTube iframe is
+ * lazy-loaded behind a click-to-load facade (SarFacade client island).
  * Anchored as #sar-video so the hero "Watch SAR Video" CTA can jump to it.
  */
 export function RoverSarVideo({
   url,
   roverName,
   year,
-  index = '05',
+  index = '06',
 }: {
   url?: string
   roverName: string
@@ -25,12 +28,7 @@ export function RoverSarVideo({
     <section id="sar-video" className="relative scroll-mt-24 border-t border-divider py-16 lg:py-24">
       <div className="section-container">
         <Reveal>
-          <div className="mb-3 flex items-center gap-2.5">
-            <span className="h-1.5 w-1.5 rounded-none bg-primary animate-pulse-glow" aria-hidden />
-            <span className="hud-label text-primary">
-              <span className="text-text-faint">{index} / </span>System Acceptance Review
-            </span>
-          </div>
+          <SectionEyebrow index={index} label="System Acceptance Review" className="mb-3" />
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 className="font-display text-3xl font-bold leading-[1.05] tracking-tight text-text sm:text-4xl lg:text-5xl">
               {roverName} in motion
@@ -49,13 +47,7 @@ export function RoverSarVideo({
             <span className="hud-label text-text-faint">REC · 00:00</span>
           </div>
           <div className="relative aspect-video overflow-hidden rounded-none border border-divider bg-surface-2">
-            <iframe
-              src={`https://www.youtube.com/embed/${id}?modestbranding=1&rel=0`}
-              title={`${roverName} SAR ${year} video`}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="h-full w-full"
-            />
+            <SarFacade id={id} title={`${roverName} SAR ${year} video`} />
           </div>
         </Reveal>
       </div>

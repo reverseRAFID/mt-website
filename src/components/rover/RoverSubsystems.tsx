@@ -1,9 +1,14 @@
 'use client'
 
 import Image from 'next/image'
+import { useRef } from 'react'
+import { useGSAP } from '@gsap/react'
+import { gsap } from '@/lib/gsap'
 import { Parallax } from '@/components/motion/Parallax'
 import { Reveal } from '@/components/motion/Reveal'
+import { TiltCard } from '@/components/motion/TiltCard'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SectionEyebrow } from './SectionEyebrow'
 import { urlFor } from '@/sanity/lib/client'
 import type { RoverSubsystem } from '@/sanity/lib/types'
 import { SUBTEAM_COLORS, labelFor, pad2 } from './roverHelpers'
@@ -12,43 +17,81 @@ function SubsystemRow({ subsystem, index }: { subsystem: RoverSubsystem; index: 
   const flip = index % 2 === 1
   const badge = subsystem.subTeam ? SUBTEAM_COLORS[subsystem.subTeam] : undefined
   const highlights = (subsystem.highlights ?? []).slice(0, 7)
+  const frameRef = useRef<HTMLDivElement>(null)
+
+  // One-shot vertical inspection scan across the media on scroll-in.
+  useGSAP(
+    () => {
+      const frame = frameRef.current
+      if (!frame) return
+      const scan = frame.querySelector<HTMLElement>('[data-sys-scan]')
+      if (!scan) return
+      const mm = gsap.matchMedia()
+      mm.add(
+        '(min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
+        () => {
+          const tween = gsap.fromTo(
+            scan,
+            { y: 0, opacity: 0.8 },
+            {
+              y: frame.offsetHeight,
+              opacity: 0,
+              ease: 'power1.in',
+              duration: 1.1,
+              scrollTrigger: { trigger: frame, start: 'top 75%', once: true },
+            }
+          )
+          return () => tween.scrollTrigger?.kill()
+        }
+      )
+      return () => mm.revert()
+    },
+    { scope: frameRef }
+  )
 
   return (
     <div className="grid items-center gap-8 border-t border-divider py-12 lg:grid-cols-2 lg:gap-14 lg:py-16">
       {/* Media */}
       <div className={flip ? 'lg:order-last' : ''}>
-        <div className="group relative aspect-[4/3] overflow-hidden rounded-card border border-divider bg-surface-2">
-          {subsystem.image ? (
-            <Parallax speed={0.22} className="absolute -inset-y-[11%] inset-x-0">
-              <Image
-                src={urlFor(subsystem.image).width(900).height(760).url()}
-                alt={subsystem.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-            </Parallax>
-          ) : (
-            <>
-              <div aria-hidden className="absolute inset-0 tech-grid-sm opacity-50" />
-              <div aria-hidden className="absolute inset-0 flex items-center justify-center">
-                <span className="font-display text-[34vw] font-bold leading-none tracking-tighter text-text/[0.05] lg:text-[12vw]">
-                  {pad2(index + 1)}
-                </span>
-              </div>
-            </>
-          )}
-          <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg/40 to-transparent" />
-          <span className="absolute left-3 top-3 hud-label nums text-text-faint [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">
-            SYS.{pad2(index + 1)}
-          </span>
-          {subsystem.subTeam && (
-            <span className={`absolute bottom-3 left-3 rounded-none px-2 py-0.5 text-[10px] font-semibold ${badge ?? 'bg-surface-2 text-text-faint'}`}>
-              {labelFor(subsystem.subTeam)}
+        <TiltCard max={5}>
+          <div ref={frameRef} className="group relative aspect-[4/3] overflow-hidden rounded-card border border-divider bg-surface-2">
+            {subsystem.image ? (
+              <Parallax speed={0.22} className="absolute -inset-y-[11%] inset-x-0">
+                <Image
+                  src={urlFor(subsystem.image).width(900).height(760).url()}
+                  alt={subsystem.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </Parallax>
+            ) : (
+              <>
+                <div aria-hidden className="absolute inset-0 tech-grid-sm opacity-50" />
+                <div aria-hidden className="absolute inset-0 flex items-center justify-center">
+                  <span className="font-display text-[34vw] font-bold leading-none tracking-tighter text-text/[0.05] lg:text-[12vw]">
+                    {pad2(index + 1)}
+                  </span>
+                </div>
+              </>
+            )}
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg/40 to-transparent" />
+            <span className="absolute left-3 top-3 hud-label nums text-text-faint [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">
+              SYS.{pad2(index + 1)}
             </span>
-          )}
-          <CornerTicks className="text-primary/0 transition-colors duration-300 group-hover:text-primary/45" />
-        </div>
+            {subsystem.subTeam && (
+              <span className={`absolute bottom-3 left-3 rounded-none px-2 py-0.5 text-[10px] font-semibold ${badge ?? 'bg-surface-2 text-text-faint'}`}>
+                {labelFor(subsystem.subTeam)}
+              </span>
+            )}
+            <span
+              data-sys-scan
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-primary/30 to-transparent opacity-0"
+            />
+            <CornerTicks className="text-primary/0 transition-colors duration-300 group-hover:text-primary/45" />
+          </div>
+        </TiltCard>
       </div>
 
       {/* Content */}
@@ -92,12 +135,7 @@ export function RoverSubsystems({
     <section className="relative py-16 lg:py-24">
       <div className="section-container">
         <Reveal>
-          <div className="mb-3 flex items-center gap-2.5">
-            <span className="h-1.5 w-1.5 rotate-45 bg-primary" aria-hidden />
-            <span className="hud-label text-primary">
-              <span className="text-text-faint">{index} / </span>Engineering
-            </span>
-          </div>
+          <SectionEyebrow index={index} label="Engineering" className="mb-3" />
           <h2 className="max-w-3xl font-display text-3xl font-bold leading-[1.05] tracking-tight text-text text-balance sm:text-4xl lg:text-5xl">
             Built subsystem by subsystem
           </h2>

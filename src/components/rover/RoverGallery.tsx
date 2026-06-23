@@ -3,7 +3,9 @@
 import Image from 'next/image'
 import { useCallback, useEffect, useState } from 'react'
 import { Reveal } from '@/components/motion/Reveal'
+import { TiltCard } from '@/components/motion/TiltCard'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SectionEyebrow } from './SectionEyebrow'
 import { urlFor } from '@/sanity/lib/client'
 import type { SanityImage } from '@/sanity/lib/types'
 import { pad2 } from './roverHelpers'
@@ -47,12 +49,7 @@ export function RoverGallery({
     <section className="relative border-t border-divider py-16 lg:py-24">
       <div className="section-container">
         <Reveal>
-          <div className="mb-3 flex items-center gap-2.5">
-            <span className="h-1.5 w-1.5 rotate-45 bg-primary" aria-hidden />
-            <span className="hud-label text-primary">
-              <span className="text-text-faint">{index} / </span>Imagery
-            </span>
-          </div>
+          <SectionEyebrow index={index} label="Imagery" className="mb-3" />
           <h2 className="font-display text-3xl font-bold leading-[1.05] tracking-tight text-text sm:text-4xl lg:text-5xl">
             Gallery
           </h2>
@@ -66,16 +63,18 @@ export function RoverGallery({
               onClick={() => setOpen(i)}
               aria-label={`Open image ${i + 1} of ${count}`}
               className={`group relative overflow-hidden rounded-card border border-divider bg-surface-2 transition-colors hover:border-primary/45 ${
-                i === 0 ? 'col-span-2 row-span-2 aspect-square sm:aspect-auto' : 'aspect-square'
+                i === 0 ? 'col-span-2 row-span-2 aspect-square sm:aspect-auto sm:min-h-[22rem]' : 'aspect-square'
               }`}
             >
-              <Image
-                src={urlFor(img).width(i === 0 ? 800 : 400).height(i === 0 ? 800 : 400).url()}
-                alt={img.caption ?? `${roverName} photo ${i + 1}`}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                sizes={i === 0 ? '(max-width: 640px) 100vw, 50vw' : '(max-width: 640px) 50vw, 25vw'}
-              />
+              <TiltCard max={6} className="absolute inset-0">
+                <Image
+                  src={urlFor(img).width(i === 0 ? 800 : 400).height(i === 0 ? 800 : 400).url()}
+                  alt={img.caption ?? `${roverName} photo ${i + 1}`}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes={i === 0 ? '(max-width: 640px) 100vw, 50vw' : '(max-width: 640px) 50vw, 25vw'}
+                />
+              </TiltCard>
               <span aria-hidden className="absolute left-2 top-2 hud-label nums text-white/90 [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">
                 {pad2(i + 1)}
               </span>
