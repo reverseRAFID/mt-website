@@ -1,12 +1,14 @@
-import { HorizontalScroll } from '@/components/motion/HorizontalScroll'
+import { Reveal } from '@/components/motion/Reveal'
+import { ScrollSpine } from '@/components/motion/ScrollSpine'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { PROCESS_STEPS } from '@/lib/sponsorship'
 
 /**
- * "How it works" — a pinned horizontal-scroll sequence on desktop, a native
- * snap-swipe row on mobile. Server-rendered step cards passed into the
- * client `HorizontalScroll` track.
+ * "How it works" — a vertical numbered stepper. A telemetry spine fills as you
+ * scroll, threading through big numbered nodes; each step card reveals in
+ * sequence. Replaces the former pinned horizontal-scroll sequence so the whole
+ * flow reads top-to-bottom with no scroll-jacking.
  */
 export function PartnershipProcess() {
   return (
@@ -18,38 +20,38 @@ export function PartnershipProcess() {
           title="From hello to lift-off"
           description="Becoming a sponsor is simple. Four steps and your brand is part of the mission."
         />
-        <p className="mt-4 flex items-center gap-2 text-sm text-text-muted lg:hidden">
-          <span className="hud-label">Swipe to explore</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </p>
-      </div>
 
-      <HorizontalScroll
-        ariaLabel="Partnership process steps"
-        className="mt-10 lg:mt-14"
-        trackClassName="gap-5 px-4 py-2 sm:px-6 lg:px-8"
-      >
-        {PROCESS_STEPS.map((step, i) => (
-          <article
-            key={step.title}
-            className="w-[82vw] shrink-0 snap-start sm:w-[58vw] lg:w-[42vw] xl:w-[34vw]"
-          >
-            <div className="relative flex h-full min-h-[15rem] flex-col overflow-hidden rounded-card border border-divider bg-surface-raised p-7 lg:p-9">
-              <CornerTicks className="text-primary/20" />
-              <div className="mb-5 flex items-start justify-between gap-4">
-                <span className="hud-label text-primary">Step {String(i + 1).padStart(2, '0')}</span>
-                <span aria-hidden className="font-display text-6xl font-bold leading-none text-text/[0.07] nums">
+        <ol className="relative mx-auto mt-14 max-w-3xl lg:mt-20">
+          <ScrollSpine className="absolute left-7 top-6 bottom-6 -translate-x-1/2" />
+
+          {PROCESS_STEPS.map((step, i) => (
+            <li key={step.title} className="relative pb-8 pl-20 last:pb-0">
+              {/* Numbered node on the rail */}
+              <span
+                aria-hidden
+                className="absolute left-7 top-0 z-10 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-none border border-divider bg-bg"
+              >
+                <span className="absolute inset-1 border border-primary/30" />
+                <span className="font-display text-xl font-bold text-primary nums">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-              </div>
-              <h3 className="mb-3 font-display text-2xl font-bold text-text">{step.title}</h3>
-              <p className="leading-relaxed text-text-muted text-pretty">{step.description}</p>
-            </div>
-          </article>
-        ))}
-      </HorizontalScroll>
+              </span>
+
+              <Reveal y={26}>
+                <div className="surface-lift group relative overflow-hidden rounded-card border border-divider bg-surface-raised p-6 hover:border-primary/40 sm:p-7 lg:p-8">
+                  <CornerTicks className="text-primary/0 transition-colors duration-300 group-hover:text-primary/40" size="md" />
+                  <div className="mb-3 flex items-center gap-3">
+                    <span className="hud-label text-primary">Step {String(i + 1).padStart(2, '0')}</span>
+                    <span className="h-px flex-1 bg-divider" aria-hidden />
+                  </div>
+                  <h3 className="mb-3 font-display text-2xl font-bold text-text">{step.title}</h3>
+                  <p className="leading-relaxed text-text-muted text-pretty">{step.description}</p>
+                </div>
+              </Reveal>
+            </li>
+          ))}
+        </ol>
+      </div>
     </section>
   )
 }

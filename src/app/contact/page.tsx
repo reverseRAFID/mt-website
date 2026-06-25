@@ -59,8 +59,14 @@ export default function ContactPage() {
         watermark="CONTACT"
       />
 
-      <section className="relative py-20 lg:py-28">
-        <div className="section-container">
+      <section className="relative overflow-hidden py-20 lg:py-28">
+        <div aria-hidden className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-[0.3]" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-24 top-1/4 h-[360px] w-[360px] rounded-full glow-orange blur-[120px] opacity-40"
+        />
+
+        <div className="section-container relative">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-12">
             {/* Reach Us — contact info + socials */}
             <div>
@@ -73,10 +79,10 @@ export default function ContactPage() {
 
               <Reveal stagger className="flex flex-col gap-4 mb-12">
                 {/* General / Email */}
-                <div className="group relative rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5">
+                <div className="group surface-lift relative rounded-card border border-divider bg-surface-raised p-5 hover:border-primary/40">
                   <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
                   <div className="flex items-start gap-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-primary">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-primary transition-colors duration-300 group-hover:border-primary/40">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         <rect x="2" y="4" width="20" height="16" rx="2" />
                         <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
@@ -84,7 +90,7 @@ export default function ContactPage() {
                     </span>
                     <div className="min-w-0">
                       <p className="hud-label text-text-faint mb-1.5">General</p>
-                      <a href="mailto:mongol-tori@bracu.ac.bd" className="link-underline break-words font-medium text-text hover:text-primary transition-colors">
+                      <a href="mailto:mongol-tori@bracu.ac.bd" className="link-underline break-words font-medium text-text hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised">
                         mongol-tori@bracu.ac.bd
                       </a>
                     </div>
@@ -92,17 +98,17 @@ export default function ContactPage() {
                 </div>
 
                 {/* Call Us / Phone */}
-                <div className="group relative rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5">
+                <div className="group surface-lift relative rounded-card border border-divider bg-surface-raised p-5 hover:border-primary/40">
                   <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
                   <div className="flex items-start gap-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-primary">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-primary transition-colors duration-300 group-hover:border-primary/40">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
                       </svg>
                     </span>
                     <div className="min-w-0">
                       <p className="hud-label text-text-faint mb-1.5">Call Us</p>
-                      <a href="tel:+8801783311941" className="link-underline font-medium text-text nums hover:text-primary transition-colors">
+                      <a href="tel:+8801783311941" className="link-underline font-medium text-text nums hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised">
                         +880 17833 11941
                       </a>
                     </div>
@@ -110,10 +116,10 @@ export default function ContactPage() {
                 </div>
 
                 {/* Location */}
-                <div className="group relative rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5">
+                <div className="group surface-lift relative rounded-card border border-divider bg-surface-raised p-5 hover:border-primary/40">
                   <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
                   <div className="flex items-start gap-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-primary">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-primary transition-colors duration-300 group-hover:border-primary/40">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
                         <circle cx="12" cy="10" r="3" />
@@ -141,16 +147,31 @@ export default function ContactPage() {
                     href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group relative flex items-center gap-3 rounded-card border border-divider bg-surface-raised p-4 transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5"
+                    aria-label={`Follow Mongol-Tori on ${s.name} (opens in a new tab)`}
+                    className="group surface-lift relative flex items-center gap-3 rounded-card border border-divider bg-surface-raised p-4 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
                   >
                     <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-text-faint transition-colors group-hover:text-primary">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-divider bg-surface text-text-faint transition-colors duration-300 group-hover:border-primary/40 group-hover:text-primary">
                       {s.icon}
                     </span>
-                    <span className="min-w-0">
+                    <span className="min-w-0 flex-1">
                       <span className="block font-medium text-text transition-colors group-hover:text-primary">{s.name}</span>
                       <span className="block truncate hud-label text-text-faint">{s.handle}</span>
                     </span>
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                      className="shrink-0 -translate-x-1 text-text-faint opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:text-primary group-hover:opacity-100"
+                    >
+                      <path d="M7 17 17 7M7 7h10v10" />
+                    </svg>
                   </a>
                 ))}
               </Reveal>
@@ -166,7 +187,7 @@ export default function ContactPage() {
               </Reveal>
 
               <Reveal y={32} blur={6}>
-                <div className="relative rounded-card border border-divider bg-surface-raised p-6 lg:p-7">
+                <div className="inset-glow relative rounded-card border border-divider bg-surface-raised p-6 lg:p-7">
                   <CornerTicks className="text-primary/40" size="md" />
 
                   <div className="mb-6 inline-flex items-center gap-2 rounded-none border border-divider bg-surface px-3 py-1">

@@ -128,7 +128,7 @@ export function MemberHero({
         {/* HUD strip — breadcrumb + ID */}
         <div data-hero-strip className="mb-8 flex items-center justify-between gap-4 border-b border-divider/70 pb-4">
           <nav className="hud-label flex items-center gap-2 text-text-faint">
-            <Link href="/team" className="transition-colors hover:text-primary">Team</Link>
+            <Link href="/team" className="rounded-none underline-offset-4 transition-colors hover:text-primary focus-visible:text-primary focus-visible:underline focus-visible:outline-none">Team</Link>
             <span aria-hidden>/</span>
             <span className="text-text">{name}</span>
           </nav>

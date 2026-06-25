@@ -158,7 +158,7 @@ export default async function JoinPage() {
             <div
               className={`inline-flex w-fit items-center gap-2 rounded-none border px-4 py-2 text-sm font-semibold ${config.color}`}
             >
-              <span className="h-2 w-2 rounded-none bg-current" aria-hidden />
+              <span className={`h-2 w-2 rounded-none bg-current ${status === 'open' ? 'animate-blink' : ''}`} aria-hidden />
               {config.label}
               {recruitment?.closingDate && status === 'open' && (
                 <span className="font-normal opacity-75">
@@ -176,8 +176,12 @@ export default async function JoinPage() {
       </PageHero>
 
       {/* Sub-teams + FAQ */}
-      <section className="relative py-16 lg:py-24">
-        <div className="section-container">
+      <section className="relative overflow-hidden py-20 lg:py-28">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-10 h-[420px] w-[420px] glow-orange opacity-40 blur-[130px]"
+        />
+        <div className="section-container relative z-10">
           <div className="grid gap-12 lg:grid-cols-3 lg:gap-14">
             {/* Sub-teams */}
             <div className="lg:col-span-2">
@@ -192,19 +196,25 @@ export default async function JoinPage() {
               </Reveal>
 
               <Reveal stagger className="mt-8 grid gap-4 sm:grid-cols-2">
-                {SUBTEAMS.map((team) => (
+                {SUBTEAMS.map((team, i) => (
                   <div
                     key={team.name}
-                    className="group relative rounded-card border border-divider bg-surface-raised p-6 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                    className="group relative rounded-card border border-divider bg-surface-raised p-6 surface-lift hover:border-primary/40"
                   >
                     <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
-                    <div className="flex items-center gap-3 mb-3">
+                    <div className="mb-3 flex items-center gap-3">
                       <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-divider bg-primary-highlight text-primary transition-colors group-hover:border-primary/40">
                         {team.icon}
                       </span>
-                      <h3 className="font-display font-bold text-base text-text tracking-tight">{team.name}</h3>
+                      <h3 className="font-display font-bold text-base tracking-tight text-text">{team.name}</h3>
+                      <span
+                        aria-hidden
+                        className="hud-label nums ml-auto self-start text-text-faint/70 transition-colors group-hover:text-primary/60"
+                      >
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
                     </div>
-                    <p className="text-sm text-text-muted leading-relaxed text-pretty">{team.description}</p>
+                    <p className="text-sm leading-relaxed text-text-muted text-pretty">{team.description}</p>
                   </div>
                 ))}
               </Reveal>
@@ -213,10 +223,10 @@ export default async function JoinPage() {
                 <Reveal delay={0.1}>
                   <a
                     href="/join/apply"
-                    className="mt-10 inline-flex items-center gap-2 rounded-none bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+                    className="group mt-10 inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                   >
                     Apply Now
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5">
                       <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
                   </a>
@@ -237,10 +247,11 @@ export default async function JoinPage() {
                   {recruitment.faqItems.map((item, i) => (
                     <div
                       key={i}
-                      className="rounded-card border border-divider bg-surface-raised p-5 transition-colors hover:border-primary/40"
+                      className="group relative rounded-card border border-divider bg-surface-raised p-5 surface-lift hover:border-primary/40"
                     >
-                      <h3 className="font-display font-semibold text-sm text-text mb-2">{item.question}</h3>
-                      <p className="text-sm text-text-muted leading-relaxed text-pretty">{item.answer}</p>
+                      <CornerTicks className="text-primary/0 group-hover:text-primary/30 transition-colors" />
+                      <h3 className="mb-2 font-display text-sm font-semibold text-text">{item.question}</h3>
+                      <p className="text-sm leading-relaxed text-text-muted text-pretty">{item.answer}</p>
                     </div>
                   ))}
                 </Reveal>

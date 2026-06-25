@@ -8,6 +8,7 @@ import { gsap, prefersReducedMotion } from '@/lib/gsap'
 import { urlFor } from '@/sanity/lib/client'
 import type { MemberCard } from '@/sanity/lib/types'
 import { TiltCard } from '@/components/motion/TiltCard'
+import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SUBTEAM_COLORS, labelFor } from '@/lib/subteam-style'
 
@@ -19,7 +20,7 @@ function MemberCardView({ member, index }: { member: MemberCard; index: number }
       <Link
         href={`/team/${member.slug.current}`}
         data-member-card
-        className="group relative flex h-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_22px_50px_-28px_rgba(var(--primary-rgb),0.6)]"
+        className="group relative flex h-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_22px_50px_-28px_rgba(var(--primary-rgb),0.6)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
       >
         <div className="relative aspect-[4/5] overflow-hidden bg-surface-2 scanlines">
           {member.photo ? (
@@ -119,8 +120,12 @@ export function TeamDirectory({ members }: { members: MemberCard[] }) {
 
   if (members.length === 0) {
     return (
-      <div className="py-20 text-center text-text-muted">
-        No members yet — add them in Sanity CMS → Team Members.
+      <div className="relative mx-auto max-w-xl rounded-card border border-divider bg-surface-raised px-8 py-16 text-center">
+        <CornerTicks className="text-primary/25" size="md" />
+        <span className="hud-label text-primary">No Crew On Record</span>
+        <p className="mt-4 text-pretty leading-relaxed text-text-muted">
+          The crew manifest is empty. Add members in Sanity CMS &rarr; Team Members to populate the directory.
+        </p>
       </div>
     )
   }
@@ -129,7 +134,7 @@ export function TeamDirectory({ members }: { members: MemberCard[] }) {
     <div>
       {/* Filter console */}
       {subteams.length > 0 && (
-        <div className="mb-10 flex flex-wrap items-center gap-2">
+        <Reveal className="mb-10 flex flex-wrap items-center gap-2" stagger y={12}>
           <span className="hud-label mr-1 text-text-faint">Filter //</span>
           <FilterChip label="All" count={members.length} active={filter === 'all'} onClick={() => setFilter('all')} />
           {subteams.map(([key, count]) => (
@@ -141,7 +146,7 @@ export function TeamDirectory({ members }: { members: MemberCard[] }) {
               onClick={() => setFilter(key)}
             />
           ))}
-        </div>
+        </Reveal>
       )}
 
       {active.length > 0 && (
@@ -169,8 +174,21 @@ export function TeamDirectory({ members }: { members: MemberCard[] }) {
       )}
 
       {active.length === 0 && alumni.length === 0 && (
-        <div className="py-16 text-center text-text-muted">
-          No members in <span className="text-primary">{labelFor(filter)}</span> yet.
+        <div className="relative mx-auto max-w-xl rounded-card border border-divider bg-surface-raised px-8 py-14 text-center">
+          <CornerTicks className="text-primary/25" size="md" />
+          <span className="hud-label text-text-faint">No Match</span>
+          <p className="mt-4 text-pretty leading-relaxed text-text-muted">
+            No members in <span className="text-primary">{labelFor(filter)}</span> on record yet.
+          </p>
+          <button
+            onClick={() => setFilter('all')}
+            className="group mt-6 inline-flex min-h-[44px] items-center gap-2 rounded-none border border-divider px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:-translate-x-0.5" aria-hidden>
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            View all members
+          </button>
         </div>
       )}
     </div>
@@ -192,7 +210,7 @@ function FilterChip({
     <button
       onClick={onClick}
       aria-pressed={active}
-      className={`group inline-flex items-center gap-2 rounded-none border px-3.5 py-1.5 text-sm font-semibold transition-colors duration-200 ${
+      className={`group inline-flex items-center gap-2 rounded-none border px-3.5 py-1.5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg ${
         active
           ? 'border-primary bg-primary text-on-accent'
           : 'border-divider text-text-muted hover:border-primary/50 hover:text-primary'

@@ -61,7 +61,7 @@ export default async function ApplyPage() {
         }
       />
 
-      <section className="section-container py-16 lg:py-20">
+      <section className="section-container py-16 lg:py-24">
         {isOpen ? (
           <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
             {/* Info aside */}
@@ -72,7 +72,7 @@ export default async function ApplyPage() {
                   <div
                     className={`inline-flex w-fit max-w-full flex-wrap items-center gap-x-2 gap-y-1 rounded-none border px-4 py-2 text-sm font-semibold ${config.color}`}
                   >
-                    <span className="h-2 w-2 rounded-none bg-current" aria-hidden />
+                    <span className="h-2 w-2 rounded-none bg-current animate-blink" aria-hidden />
                     {config.label}
                     {deadline && <span className="font-normal opacity-75">· Deadline: {deadline}</span>}
                   </div>
@@ -91,9 +91,14 @@ export default async function ApplyPage() {
                   </div>
                   <ol className="flex flex-col gap-4">
                     {STEPS.map((step, i) => (
-                      <li key={step.title} className="flex gap-3.5">
-                        <span className="hud-label nums mt-0.5 text-text-faint">{String(i + 1).padStart(2, '0')}</span>
-                        <div>
+                      <li key={step.title} className="group flex items-start gap-3.5">
+                        <span
+                          aria-hidden
+                          className="hud-label nums flex h-8 w-8 shrink-0 items-center justify-center border border-divider bg-surface text-text-faint transition-colors group-hover:border-primary/40 group-hover:text-primary"
+                        >
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                        <div className="pt-1">
                           <p className="font-display text-sm font-semibold text-text">{step.title}</p>
                           <p className="mt-0.5 text-sm text-text-muted leading-relaxed text-pretty">{step.desc}</p>
                         </div>
@@ -112,7 +117,7 @@ export default async function ApplyPage() {
                     {APPLY_SUBTEAMS.map((s) => (
                       <li
                         key={s}
-                        className="inline-flex items-center gap-1.5 rounded-none border border-divider bg-surface px-3 py-1 text-xs font-medium text-text-muted"
+                        className="inline-flex items-center gap-1.5 rounded-none border border-divider bg-surface px-3 py-1 text-xs font-medium text-text-muted transition-colors hover:border-primary/40 hover:text-text"
                       >
                         <span className="h-1 w-1 rotate-45 bg-primary" aria-hidden />
                         {s}
@@ -138,7 +143,11 @@ export default async function ApplyPage() {
           /* Closed / under-review state */
           <div className="flex min-h-[40vh] items-center justify-center">
             <Reveal y={28} blur={6} className="w-full max-w-lg">
-              <div className="relative rounded-card border border-divider bg-surface-raised p-8 text-center sm:p-10">
+              <div className="relative overflow-hidden rounded-card border border-divider bg-surface-raised p-8 text-center inset-glow sm:p-10">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute left-1/2 top-0 -z-10 h-48 w-48 -translate-x-1/2 glow-orange opacity-40 blur-[100px]"
+                />
                 <CornerTicks className="text-primary/30" size="md" />
                 <div
                   className={`mx-auto mb-6 inline-flex items-center gap-2 rounded-none border px-4 py-2 text-sm font-semibold ${config.color}`}
@@ -155,7 +164,7 @@ export default async function ApplyPage() {
                 </p>
                 <Link
                   href="/join"
-                  className="mt-7 inline-flex items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
+                  className="group mt-7 inline-flex min-h-[44px] items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
                 >
                   Recruitment overview
                   <svg
@@ -167,6 +176,7 @@ export default async function ApplyPage() {
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    className="transition-transform group-hover:translate-x-0.5"
                   >
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>

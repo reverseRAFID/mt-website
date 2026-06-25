@@ -22,8 +22,12 @@ export default async function TeamPage() {
         stat={{ value: members.length, label: 'On Record' }}
       />
 
-      <section className="relative py-16 lg:py-24">
-        <div className="section-container">
+      <section className="relative py-20 lg:py-28">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 tech-grid-sm mask-radial-fade opacity-[0.4]" />
+          <div className="absolute -left-32 top-16 h-[420px] w-[420px] rounded-full glow-orange blur-[130px] opacity-30" />
+        </div>
+        <div className="section-container relative z-10">
           <TeamDirectory members={members} />
         </div>
       </section>

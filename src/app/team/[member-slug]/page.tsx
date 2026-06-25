@@ -243,7 +243,7 @@ export default async function MemberPage({ params }: Props) {
                       </>
                     )
                     const cls =
-                      'group relative flex items-start justify-between gap-3 rounded-card border border-divider bg-surface-raised p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.5)]'
+                      'group relative flex items-start justify-between gap-3 rounded-card border border-divider bg-surface-raised p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.5)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
                     return work.url ? (
                       <a key={`${work.name}-${i}`} href={work.url} target="_blank" rel="noopener noreferrer" className={cls}>
                         {inner}
@@ -267,7 +267,7 @@ export default async function MemberPage({ params }: Props) {
                     <Link
                       key={comp._id}
                       href={`/competitions/${comp.slug.current}`}
-                      className="group relative flex items-center justify-between gap-4 rounded-card border border-divider bg-surface-raised p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                      className="group relative flex items-center justify-between gap-4 rounded-card border border-divider bg-surface-raised p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
                       <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />
                       <div className="min-w-0">
@@ -294,7 +294,7 @@ export default async function MemberPage({ params }: Props) {
                     <Link
                       key={paper._id}
                       href={`/research/${paper.slug.current}`}
-                      className="group relative rounded-card border border-divider bg-surface-raised p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                      className="group relative rounded-card border border-divider bg-surface-raised p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
                       <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />
                       <div className="hud-label nums mb-2 text-text-faint">{paper.conference ? `${paper.conference} · ` : ''}{paper.year}</div>
@@ -314,7 +314,7 @@ export default async function MemberPage({ params }: Props) {
                     <Link
                       key={rover._id}
                       href={`/rovers/${rover.slug.current}`}
-                      className="group relative flex items-center justify-between gap-3 rounded-card border border-divider bg-surface-raised p-4 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                      className="group relative flex items-center justify-between gap-3 rounded-card border border-divider bg-surface-raised p-4 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
                       <div>
                         <p className="font-display font-bold text-text transition-colors group-hover:text-primary">{rover.name}</p>
@@ -352,7 +352,7 @@ function SocialLink({ href, label, children }: { href: string; label: string; ch
         target="_blank"
         rel="noopener noreferrer"
         aria-label={label}
-        className="flex h-11 w-11 items-center justify-center rounded-none border border-divider text-text-faint transition-colors hover:border-primary hover:text-primary"
+        className="flex h-11 w-11 items-center justify-center rounded-none border border-divider text-text-faint transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:border-primary focus-visible:text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
       >
         {/* Only the LinkedIn glyph is a closed/filled path; GitHub + Website are stroke outlines. */}
         <svg

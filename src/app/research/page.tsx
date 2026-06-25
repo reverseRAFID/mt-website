@@ -1,4 +1,5 @@
 import { PageLayout } from '@/components/layout/PageLayout'
+import Link from 'next/link'
 import type { Metadata } from 'next'
 import { sanityFetch } from '@/sanity/lib/client'
 import { RESEARCH_QUERY } from '@/sanity/lib/queries'
@@ -39,9 +40,47 @@ export default async function ResearchPage() {
       {papers.length === 0 ? (
         <section className="relative py-20 lg:py-28">
           <div className="section-container">
-            <div className="rounded-card border border-divider bg-surface-raised py-20 text-center text-text-muted">
-              No papers yet — add them in Sanity CMS → Research.
-            </div>
+            <Reveal>
+              <div className="relative overflow-hidden rounded-card border border-divider bg-surface-raised px-6 py-20 text-center">
+                <CornerTicks className="text-primary/30" size="md" />
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-40"
+                />
+                <div className="relative mx-auto max-w-md">
+                  <div className="mb-4 flex items-center justify-center gap-2.5">
+                    <span className="h-1.5 w-1.5 animate-blink rounded-full bg-primary" aria-hidden />
+                    <span className="hud-label text-primary">Standby</span>
+                  </div>
+                  <h2 className="text-balance font-display text-2xl font-bold tracking-tight text-text">
+                    Publications archive is being populated
+                  </h2>
+                  <p className="mt-3 text-pretty leading-relaxed text-text-muted">
+                    Peer-reviewed papers, conference proceedings, and technical white papers will
+                    appear here as the team publishes them.
+                  </p>
+                  <Link
+                    href="/"
+                    className="link-underline mt-6 inline-flex items-center gap-2 font-mono text-sm text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                  >
+                    Return to mission control
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+            </Reveal>
           </div>
         </section>
       ) : (
@@ -52,9 +91,9 @@ export default async function ResearchPage() {
                 {stats.map((s) => (
                   <div
                     key={s.label}
-                    className="relative rounded-card border border-divider bg-surface-raised p-5 text-center transition-colors hover:border-primary/40 sm:p-6"
+                    className="group relative rounded-card border border-divider bg-surface-raised p-5 text-center transition-colors hover:border-primary/40 sm:p-6"
                   >
-                    <CornerTicks className="text-primary/30" />
+                    <CornerTicks className="text-primary/20 transition-colors group-hover:text-primary/50" />
                     <p className="mb-1 font-display text-3xl font-bold text-primary nums sm:text-5xl">
                       <Counter to={s.value} />
                     </p>
@@ -67,14 +106,25 @@ export default async function ResearchPage() {
             </div>
           </section>
 
-          <section className="relative border-t border-divider bg-surface py-20 lg:py-28">
-            <div className="section-container">
-              <SectionHeader
-                kicker="The archive"
-                title="All publications"
-                description="Filter by status or focus area to explore the team’s full body of work."
-                className="mb-10 lg:mb-12"
-              />
+          <section className="relative overflow-hidden border-t border-divider bg-surface py-20 lg:py-28">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 tech-grid mask-radial-fade opacity-50"
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full glow-orange opacity-40 blur-[120px]"
+            />
+            <div className="section-container relative">
+              <Reveal>
+                <SectionHeader
+                  index="01"
+                  kicker="The archive"
+                  title="All publications"
+                  description="Filter by status or focus area to explore the team’s full body of work."
+                  className="mb-10 lg:mb-12"
+                />
+              </Reveal>
               <ResearchExplorer papers={papers} />
             </div>
           </section>

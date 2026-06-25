@@ -22,10 +22,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-const STATUS_STYLE: Record<string, string> = {
-  published: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400',
-  preprint: 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400',
-  'under-review': 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400',
+const STATUS_DOT: Record<string, string> = {
+  published: 'bg-primary',
+  preprint: 'bg-text-muted',
+  'under-review': 'bg-primary animate-blink',
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -41,15 +41,20 @@ export default async function ResearchPage({ params }: Props) {
     <PageLayout>
       <div className="section-container py-14 lg:py-20 max-w-3xl mx-auto">
         <nav className="flex items-center gap-2 hud-label text-text-faint mb-8">
-          <Link href="/research" className="hover:text-primary transition-colors">Research</Link>
+          <Link href="/research" className="link-underline transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg">Research</Link>
           <span aria-hidden className="text-text-faint/60">/</span>
           <span className="text-text-muted line-clamp-1 normal-case tracking-normal">{paper.title}</span>
         </nav>
 
         <Reveal>
-          <header className="mb-12">
+          <header className="relative isolate mb-12">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -z-10 tech-grid-sm mask-radial-fade opacity-50"
+            />
             <div className="flex flex-wrap items-center gap-3 mb-5">
-              <span className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[paper.status] ?? 'text-text-faint bg-surface-2'}`}>
+              <span className="inline-flex items-center gap-1.5 rounded-none border border-divider bg-surface-2 px-2.5 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-text-muted">
+                <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[paper.status] ?? 'bg-text-faint'}`} aria-hidden />
                 {STATUS_LABEL[paper.status] ?? paper.status}
               </span>
               {paper.conference && (
@@ -62,7 +67,7 @@ export default async function ResearchPage({ params }: Props) {
             {paper.topics && paper.topics.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-7">
                 {paper.topics.map((topic) => (
-                  <span key={topic} className="inline-flex items-center rounded-none bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary">{topic}</span>
+                  <span key={topic} className="inline-flex items-center rounded-none border border-divider bg-surface-2 px-2.5 py-1 font-mono text-[10px] font-medium uppercase leading-none tracking-[0.12em] text-text-muted">{topic}</span>
                 ))}
               </div>
             )}
@@ -74,7 +79,7 @@ export default async function ResearchPage({ params }: Props) {
                   <Link
                     key={author._id}
                     href={`/team/${author.slug.current}`}
-                    className="group inline-flex items-center gap-2 rounded-none border border-divider bg-surface-raised py-1 pl-1 pr-3 transition-colors hover:border-primary/40"
+                    className="group inline-flex items-center gap-2 rounded-none border border-divider bg-surface-raised py-1 pl-1 pr-3 transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                   >
                     <span className="w-7 h-7 rounded-none overflow-hidden relative border border-divider bg-surface-2 shrink-0">
                       {author.photo ? (
@@ -100,41 +105,49 @@ export default async function ResearchPage({ params }: Props) {
             )}
 
             {/* Actions */}
-            <div className="flex flex-wrap gap-3">
-              {paper.doi && (
-                <a
-                  href={`https://doi.org/${paper.doi}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
-                >
-                  View on DOI
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
-                  </svg>
-                </a>
-              )}
-              {paper.pdfFile && (
-                <a
-                  href={getFileUrl(paper.pdfFile.asset._ref)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 17V3M7 12l5 5 5-5M20 21H4" />
-                  </svg>
-                  Download PDF
-                </a>
-              )}
-            </div>
+            {paper.doi || paper.pdfFile ? (
+              <div className="flex flex-wrap gap-3">
+                {paper.doi && (
+                  <a
+                    href={`https://doi.org/${paper.doi}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                  >
+                    View on DOI
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                  </a>
+                )}
+                {paper.pdfFile && (
+                  <a
+                    href={getFileUrl(paper.pdfFile.asset._ref)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex min-h-[44px] items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="transition-transform duration-200 group-hover:translate-y-0.5">
+                      <path d="M12 17V3M7 12l5 5 5-5M20 21H4" />
+                    </svg>
+                    Download PDF
+                  </a>
+                )}
+              </div>
+            ) : (
+              <p className="inline-flex items-center gap-2 hud-label text-text-faint">
+                <span className="h-1.5 w-1.5 rounded-full bg-text-faint" aria-hidden />
+                Full text not yet available
+              </p>
+            )}
           </header>
         </Reveal>
 
         {paper.abstract && (
           <Reveal>
-            <div className="relative rounded-card border border-divider bg-surface-raised p-6 lg:p-7 mb-8">
-              <div className="hud-label text-primary mb-3">Abstract</div>
+            <div className="relative rounded-card border border-divider bg-surface-raised inset-glow p-6 lg:p-7 mb-8">
+              <CornerTicks className="text-primary/20" size="md" />
+              <div className="hud-label accent-line text-primary mb-4">Abstract</div>
               <p className="text-text-muted leading-relaxed text-pretty">{paper.abstract}</p>
             </div>
           </Reveal>

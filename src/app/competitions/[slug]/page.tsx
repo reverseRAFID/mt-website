@@ -21,11 +21,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: comp ? `${comp.name} ${comp.year}` : 'Competition' }
 }
 
-const COMPETITION_COLORS: Record<string, string> = {
-  URC: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400',
-  IRC: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400',
-  ERC: 'bg-purple-50 text-purple-700 dark:bg-purple-950/50 dark:text-purple-400',
-}
+const SERIES_BADGE =
+  'inline-flex items-center rounded-none border border-divider bg-surface-2 px-2.5 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-text-muted'
 
 function getYouTubeEmbedUrl(url: string): string | null {
   const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/)
@@ -47,7 +44,10 @@ export default async function CompetitionPage({ params }: Props) {
         <div className="section-container relative">
           <Reveal>
             <nav className="flex items-center gap-2 hud-label text-text-faint mb-6" aria-label="Breadcrumb">
-              <Link href="/competitions" className="hover:text-primary transition-colors">
+              <Link
+                href="/competitions"
+                className="link-underline rounded-none transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
                 Competitions
               </Link>
               <span aria-hidden>/</span>
@@ -55,9 +55,7 @@ export default async function CompetitionPage({ params }: Props) {
             </nav>
 
             <div className="flex items-center gap-3 mb-5">
-              <span className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold ${COMPETITION_COLORS[comp.shortName] ?? 'bg-surface-2 text-text-faint'}`}>
-                {comp.shortName}
-              </span>
+              <span className={SERIES_BADGE}>{comp.shortName}</span>
               <span className="hud-label text-text-faint nums">{comp.year}</span>
             </div>
 
@@ -74,21 +72,25 @@ export default async function CompetitionPage({ params }: Props) {
           <div className="grid lg:grid-cols-3 gap-10">
             <div className="lg:col-span-2 flex flex-col gap-12">
               {/* Result hero card */}
-              {comp.rank && (
+              {comp.rank ? (
                 <Reveal>
-                  <div className="group relative rounded-card border border-divider bg-surface-raised p-7 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8 transition-colors hover:border-primary/40">
+                  <div className="group relative overflow-hidden rounded-card border border-divider bg-surface-raised p-7 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8 transition-colors hover:border-primary/40">
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute -left-10 -top-10 h-44 w-44 rounded-full glow-orange opacity-50 blur-[90px]"
+                    />
                     <CornerTicks className="text-primary/40" size="md" />
-                    <div className="shrink-0 flex items-baseline gap-0.5">
-                      <span className="font-display font-bold text-6xl sm:text-7xl text-primary leading-none nums">
+                    <div className="relative shrink-0 flex items-baseline gap-0.5">
+                      <span className="display-figure nums text-6xl sm:text-7xl text-primary leading-none">
                         <Counter to={comp.rank} />
                       </span>
                       <span className="font-display font-bold text-2xl sm:text-3xl text-primary/70 leading-none">
                         {getOrdinalSuffix(comp.rank)}
                       </span>
                     </div>
-                    <div className="min-w-0">
+                    <div className="relative min-w-0">
                       <div className="hud-label text-text-faint mb-2">Final Standing</div>
-                      <p className="font-display font-bold text-xl sm:text-2xl text-text tracking-tight mb-1">
+                      <p className="font-display font-bold text-xl sm:text-2xl text-text tracking-tight mb-1 text-balance">
                         {comp.result ?? `${comp.rank}${getOrdinalSuffix(comp.rank)} Place`}
                       </p>
                       {comp.totalTeams && (
@@ -96,6 +98,22 @@ export default async function CompetitionPage({ params }: Props) {
                           Top {Math.round((comp.rank / comp.totalTeams) * 100)}% of {comp.totalTeams} teams
                         </p>
                       )}
+                    </div>
+                  </div>
+                </Reveal>
+              ) : (
+                <Reveal>
+                  <div className="relative overflow-hidden rounded-card border border-divider bg-surface-raised p-7 sm:p-8">
+                    <div aria-hidden className="pointer-events-none absolute inset-0 tech-grid-sm opacity-40" />
+                    <CornerTicks className="text-primary/20" size="md" />
+                    <div className="relative">
+                      <div className="hud-label text-primary mb-2">Result Pending</div>
+                      <p className="font-display font-bold text-xl sm:text-2xl text-text tracking-tight text-balance">
+                        {comp.result ?? 'Final standing not yet logged'}
+                      </p>
+                      <p className="mt-2 max-w-md text-pretty text-sm leading-relaxed text-text-muted">
+                        Results for this competition will be published here once they are confirmed.
+                      </p>
                     </div>
                   </div>
                 </Reveal>
@@ -161,7 +179,7 @@ export default async function CompetitionPage({ params }: Props) {
                 <Reveal>
                   <Link
                     href={`/rovers/${comp.rover.slug.current}`}
-                    className="group relative block rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                    className="group relative block rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                   >
                     <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
                     <div className="hud-label text-text-faint mb-3">Rover</div>
@@ -184,7 +202,7 @@ export default async function CompetitionPage({ params }: Props) {
                     href={getFileUrl(comp.reportPdf.asset._ref)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group relative flex items-center justify-between gap-3 rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                    className="group relative flex items-center justify-between gap-3 rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                   >
                     <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
                     <div className="min-w-0">
@@ -212,7 +230,7 @@ export default async function CompetitionPage({ params }: Props) {
                         <Link
                           key={i}
                           href={`/team/${entry.member.slug.current}`}
-                          className="group flex items-center gap-3"
+                          className="group flex items-center gap-3 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
                         >
                           <div className="relative w-9 h-9 rounded-none overflow-hidden border border-divider bg-surface-2 shrink-0">
                             {entry.member.photo ? (

@@ -7,10 +7,10 @@ import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { cn } from '@/lib/utils'
 
-const STATUS_STYLE: Record<string, string> = {
-  published: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400',
-  preprint: 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400',
-  'under-review': 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400',
+const STATUS_DOT: Record<string, string> = {
+  published: 'bg-primary',
+  preprint: 'bg-text-muted',
+  'under-review': 'bg-primary animate-blink',
 }
 const STATUS_LABEL: Record<string, string> = {
   published: 'Published',
@@ -19,6 +19,16 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 const STATUS_ORDER = ['published', 'preprint', 'under-review']
+
+/** Token-only status readout: a mono chip with a state dot (no off-brand hues). */
+function StatusBadge({ status }: { status: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-none border border-divider bg-surface-2 px-2 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-text-muted">
+      <span className={cn('h-1.5 w-1.5 rounded-full', STATUS_DOT[status] ?? 'bg-text-faint')} aria-hidden />
+      {STATUS_LABEL[status] ?? status}
+    </span>
+  )
+}
 
 function FilterChip({
   active,
@@ -114,15 +124,26 @@ export function ResearchExplorer({ papers }: { papers: ResearchCard[] }) {
       </p>
 
       {filtered.length === 0 ? (
-        <div className="rounded-card border border-divider bg-surface-raised py-16 text-center">
-          <p className="text-text-muted">No papers match these filters.</p>
-          <button
-            type="button"
-            onClick={reset}
-            className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
-          >
-            Clear filters
-          </button>
+        <div className="relative overflow-hidden rounded-card border border-divider bg-surface-raised px-6 py-16 text-center">
+          <CornerTicks className="text-primary/25" size="md" />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-40"
+          />
+          <div className="relative">
+            <div className="mb-3 flex items-center justify-center gap-2.5">
+              <span className="h-1.5 w-1.5 rotate-45 bg-primary" aria-hidden />
+              <span className="hud-label text-primary">No matches</span>
+            </div>
+            <p className="text-pretty text-text-muted">No publications match the current filters.</p>
+            <button
+              type="button"
+              onClick={reset}
+              className="mt-5 inline-flex min-h-[44px] items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+            >
+              Clear filters
+            </button>
+          </div>
         </div>
       ) : (
         <Reveal stagger dependencies={[status, topic]} className="flex flex-col gap-3">
@@ -130,7 +151,7 @@ export function ResearchExplorer({ papers }: { papers: ResearchCard[] }) {
             <Link
               key={paper._id}
               href={`/research/${paper.slug.current}`}
-              className="group relative flex flex-col gap-4 rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] sm:flex-row sm:items-center sm:gap-6 sm:p-6"
+              className="group relative flex flex-col gap-4 rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg sm:flex-row sm:items-center sm:gap-6 sm:p-6"
             >
               <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />
 
@@ -140,9 +161,7 @@ export function ResearchExplorer({ papers }: { papers: ResearchCard[] }) {
 
               <div className="min-w-0 flex-1">
                 <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                  <span className={`inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[paper.status] ?? 'bg-surface-2 text-text-muted'}`}>
-                    {STATUS_LABEL[paper.status] ?? paper.status}
-                  </span>
+                  <StatusBadge status={paper.status} />
                   {paper.conference && (
                     <span className="hud-label nums text-text-muted">
                       {paper.conference} · {paper.year}
@@ -163,7 +182,7 @@ export function ResearchExplorer({ papers }: { papers: ResearchCard[] }) {
                     {paper.topics.map((t) => (
                       <span
                         key={t}
-                        className="inline-flex items-center whitespace-nowrap rounded-none bg-primary-highlight px-2 py-0.5 text-xs font-medium text-primary"
+                        className="inline-flex items-center whitespace-nowrap rounded-none border border-divider bg-surface-2 px-2 py-1 font-mono text-[10px] font-medium uppercase leading-none tracking-[0.12em] text-text-muted transition-colors group-hover:border-primary/30 group-hover:text-primary"
                       >
                         {t}
                       </span>

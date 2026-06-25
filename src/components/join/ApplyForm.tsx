@@ -24,7 +24,7 @@ const initialForm = {
 }
 
 const inputCls =
-  'w-full min-h-[44px] rounded-none border border-divider bg-surface px-3.5 py-2.5 text-sm text-text placeholder-text-faint transition-colors focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30'
+  'w-full min-h-[44px] rounded-none border border-divider bg-surface px-3.5 py-2.5 text-sm text-text placeholder-text-faint transition-colors hover:border-border focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30'
 const textareaCls = `${inputCls} resize-none leading-relaxed`
 const selectCls = `${inputCls} appearance-none cursor-pointer pr-10`
 
@@ -53,6 +53,18 @@ function Field({
         {hint && <span className="ml-2 font-normal normal-case tracking-normal text-text-faint">{hint}</span>}
       </label>
       {children}
+    </div>
+  )
+}
+
+function SectionTitle({ index, children }: { index: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-2.5 border-b border-divider/60 pb-3">
+      <span className="hud-label nums text-text-faint" aria-hidden>
+        {index}
+      </span>
+      <span className="h-1 w-1 rotate-45 bg-primary" aria-hidden />
+      <span className="hud-label text-text-muted">{children}</span>
     </div>
   )
 }
@@ -130,8 +142,12 @@ export function ApplyForm() {
       <div
         role="status"
         aria-live="polite"
-        className="relative overflow-hidden rounded-card border border-divider bg-surface-raised p-8 text-center sm:p-10"
+        className="relative overflow-hidden rounded-card border border-divider bg-surface-raised p-8 text-center inset-glow sm:p-10"
       >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-0 -z-10 h-56 w-56 -translate-x-1/2 glow-orange opacity-50 blur-[110px]"
+        />
         <CornerTicks className="text-primary/40" size="md" />
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-none bg-emerald-100 dark:bg-emerald-950/40">
           <svg
@@ -164,7 +180,7 @@ export function ApplyForm() {
         </p>
         <Link
           href="/"
-          className="inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+          className="group inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
         >
           Back to Home
           <svg
@@ -177,6 +193,7 @@ export function ApplyForm() {
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
+            className="transition-transform group-hover:translate-x-0.5"
           >
             <path d="M5 12h14M12 5l7 7-7 7" />
           </svg>
@@ -187,9 +204,26 @@ export function ApplyForm() {
 
   return (
     <div className="relative rounded-card border border-divider bg-surface-raised p-6 sm:p-8">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6" aria-busy={status === 'loading'}>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Field label="Full Name" htmlFor={f('name')} required>
+      <CornerTicks className="text-primary/15" size="md" />
+
+      {/* Console header */}
+      <div className="mb-7 flex items-center justify-between gap-4 border-b border-divider pb-4">
+        <div className="flex items-center gap-2.5">
+          <span className="h-1.5 w-1.5 rounded-none bg-primary animate-blink" aria-hidden />
+          <span className="hud-label text-text-muted">Application // Intake</span>
+        </div>
+        <span className="hud-label text-text-faint">
+          <span className="text-primary">*</span> Required
+        </span>
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-8" aria-busy={status === 'loading'}>
+        <fieldset className="m-0 flex min-w-0 flex-col gap-8 border-0 p-0" disabled={status === 'loading'}>
+          {/* 01 — Identity */}
+          <div className="flex flex-col gap-6">
+            <SectionTitle index="01">Identity</SectionTitle>
+            <div className="grid gap-6 sm:grid-cols-2">
+              <Field label="Full Name" htmlFor={f('name')} required>
             <input id={f('name')} type="text" autoComplete="name" className={inputCls} placeholder="Farhan Ahmed" value={form.name} onChange={set('name')} required />
           </Field>
           <Field label="Email Address" htmlFor={f('email')} required>
@@ -204,10 +238,14 @@ export function ApplyForm() {
           <Field label="Phone" htmlFor={f('phone')} hint="optional">
             <input id={f('phone')} type="tel" autoComplete="tel" className={inputCls} placeholder="+880 1XXX-XXXXXX" value={form.phone} onChange={set('phone')} />
           </Field>
+          </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Field label="Department" htmlFor={f('department')} required>
+        {/* 02 — Academics */}
+        <div className="flex flex-col gap-6">
+          <SectionTitle index="02">Academics</SectionTitle>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <Field label="Department" htmlFor={f('department')} required>
             <input id={f('department')} type="text" className={inputCls} placeholder="CSE / EEE / ME / etc." value={form.department} onChange={set('department')} required />
           </Field>
           <Field label="Academic Year" htmlFor={f('year')} required>
@@ -225,10 +263,14 @@ export function ApplyForm() {
               {SelectChevron}
             </div>
           </Field>
+          </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Field label="First Sub-Team Choice" htmlFor={f('subteam1')} required>
+        {/* 03 — Sub-team Preferences */}
+        <div className="flex flex-col gap-6">
+          <SectionTitle index="03">Sub-team Preferences</SectionTitle>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <Field label="First Sub-Team Choice" htmlFor={f('subteam1')} required>
             <div className="relative">
               <select id={f('subteam1')} className={selectCls} value={form.subteam1} onChange={set('subteam1')} required>
                 <option value="" disabled>
@@ -256,9 +298,13 @@ export function ApplyForm() {
               {SelectChevron}
             </div>
           </Field>
+          </div>
         </div>
 
-        <Field label="Why do you want to join Mongol-Tori?" htmlFor={f('whyJoin')} required>
+        {/* 04 — About You */}
+        <div className="flex flex-col gap-6">
+          <SectionTitle index="04">About You</SectionTitle>
+          <Field label="Why do you want to join Mongol-Tori?" htmlFor={f('whyJoin')} required>
           <textarea
             id={f('whyJoin')}
             rows={4}
@@ -294,6 +340,8 @@ export function ApplyForm() {
             onChange={set('portfolio')}
           />
         </Field>
+        </div>
+        </fieldset>
 
         {error && (
           <p
@@ -310,7 +358,7 @@ export function ApplyForm() {
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+            className="group inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status === 'loading' ? (
               <>
@@ -343,6 +391,7 @@ export function ApplyForm() {
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  className="transition-transform group-hover:translate-x-0.5"
                 >
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
@@ -351,7 +400,7 @@ export function ApplyForm() {
           </button>
           <Link
             href="/join"
-            className="inline-flex min-h-[44px] items-center px-1 text-sm font-medium text-text-faint transition-colors hover:text-primary"
+            className="inline-flex min-h-[44px] items-center rounded-none px-1 text-sm font-medium text-text-faint transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
           >
             Cancel
           </Link>

@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SectionHeader } from '@/components/ui/SectionHeader'
 
 export const metadata: Metadata = { title: 'STEM Outreach' }
 
@@ -76,24 +77,48 @@ export default function OutreachPage() {
         watermark="OUTREACH"
       />
 
-      <section className="relative py-20 lg:py-28">
-        <div className="section-container">
+      <section className="relative overflow-hidden border-b border-divider py-20 lg:py-28">
+        <div aria-hidden className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-[0.35]" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-0 h-[320px] w-[480px] -translate-x-1/2 rounded-full glow-orange blur-[120px] opacity-40"
+        />
+
+        <div className="section-container relative">
+          <Reveal>
+            <SectionHeader
+              index="01"
+              kicker="Programs"
+              title="Where the lab meets the public"
+              description="Outreach runs year-round — live rover demonstrations, open labs, free technical workshops, and the science communication that carries engineering culture across Bangladesh."
+              className="mb-12 lg:mb-16"
+            />
+          </Reveal>
+
           <Reveal stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {PROGRAMS.map((program) => (
+            {PROGRAMS.map((program, i) => (
               <div
                 key={program.name}
-                className="group relative flex flex-col rounded-card border border-divider bg-surface-raised p-6 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                className="group surface-lift relative flex flex-col rounded-card border border-divider bg-surface-raised p-6 hover:border-primary/40"
               >
                 <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
 
-                <span className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-none border border-primary/20 bg-primary-highlight text-primary">
-                  {program.icon}
-                </span>
+                <div className="mb-5 flex items-start justify-between gap-4">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-none border border-primary/20 bg-primary-highlight text-primary transition-colors duration-300 group-hover:border-primary/50">
+                    {program.icon}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="hud-label text-text-faint transition-colors duration-300 group-hover:text-primary/60"
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                </div>
 
-                <h2 className="font-display font-bold text-lg lg:text-xl text-text tracking-tight group-hover:text-primary transition-colors duration-150 mb-2">
+                <h2 className="font-display font-bold text-lg lg:text-xl text-text tracking-tight text-balance group-hover:text-primary transition-colors duration-150 mb-2">
                   {program.name}
                 </h2>
-                <p className="text-sm text-text-muted leading-relaxed">{program.description}</p>
+                <p className="text-sm text-text-muted leading-relaxed text-pretty">{program.description}</p>
               </div>
             ))}
           </Reveal>
@@ -115,10 +140,10 @@ export default function OutreachPage() {
                 </p>
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 rounded-none bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+                  className="group/cta inline-flex items-center gap-2 rounded-none bg-primary px-6 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   Get in Touch
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform duration-300 group-hover/cta:translate-x-1">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </Link>
