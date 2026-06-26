@@ -50,7 +50,7 @@ export function Testimonials({
   testimonials,
   index,
   kicker = 'Advisors',
-  title = 'Words from our advisors',
+  title = 'Our advisors',
   description = 'The mentors and faculty who guide Mongol-Tori on what the team is building.',
 }: TestimonialsProps) {
   const count = testimonials.length
@@ -58,7 +58,7 @@ export function Testimonials({
 
   const rootRef = useRef<HTMLDivElement>(null)
   const slideRef = useRef<HTMLDivElement>(null)
-  const firstRun = useRef(true)
+  const animatedActive = useRef(0)
   const startX = useRef<number | null>(null)
 
   const [active, setActive] = useState(0)
@@ -69,19 +69,28 @@ export function Testimonials({
     setReduced(prefersReducedMotion())
   }, [])
 
-  // Crossfade the quote in on every navigation. Skips the first mount (the
-  // section reveals on scroll instead) and stays still under reduced-motion.
+  // Crossfade the quote in on every navigation. Only fires when `active`
+  // actually changes — never on (re)mount. Comparing against the last-animated
+  // index (rather than a one-shot "first run" flag) keeps this correct under
+  // React Strict Mode, whose double-invoked effects would otherwise flip a flag
+  // on the first pass and fire a stray animation on the second. `clearProps` +
+  // `overwrite` stop useGSAP's per-change revert from flashing the old state.
   useGSAP(
     () => {
-      if (firstRun.current) {
-        firstRun.current = false
-        return
-      }
+      if (animatedActive.current === active) return
+      animatedActive.current = active
       if (prefersReducedMotion() || !slideRef.current) return
       gsap.fromTo(
         slideRef.current,
         { opacity: 0, y: 16 },
-        { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.45,
+          ease: 'power2.out',
+          overwrite: 'auto',
+          clearProps: 'opacity,transform',
+        }
       )
     },
     { dependencies: [active], scope: rootRef }
