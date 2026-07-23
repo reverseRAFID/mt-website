@@ -15,6 +15,7 @@ import { SponsorFaq } from '@/components/sponsors/SponsorFaq'
 import { SponsorCTA } from '@/components/sponsors/SponsorCTA'
 import { BecomeSponsorSticky } from '@/components/sponsors/BecomeSponsorSticky'
 import { sponsorMailto } from '@/lib/sponsorship'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = {
   title: 'Sponsor Us',
@@ -78,6 +79,8 @@ export default async function SponsorsPage() {
       <SponsorFaq />
 
       <SponsorCTA />
+
+      <SupportCTA copy="sponsors" />
 
       <BecomeSponsorSticky />
     </PageLayout>
