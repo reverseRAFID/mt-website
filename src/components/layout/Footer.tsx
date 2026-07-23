@@ -28,6 +28,7 @@ const footerLinks = {
     { href: '/join', label: 'Open Positions' },
     { href: '/join/apply', label: 'Apply Now' },
     { href: '/sponsors', label: 'Sponsor Us' },
+    { href: '/support', label: 'Support Us' },
   ],
 }
 

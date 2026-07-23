@@ -15,6 +15,7 @@ const navLinks = [
   { href: '/research', label: 'Research' },
   { href: '/news', label: 'News' },
   { href: '/sponsors', label: 'Sponsors' },
+  { href: '/support', label: 'Support' },
 ]
 
 export function Navbar() {
