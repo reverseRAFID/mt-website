@@ -29,6 +29,18 @@
   --hairline: rgba(10, 10, 10, 0.10);
   --scrim: rgba(0, 0, 0, 0.5);
   --on-accent: #ffffff;
+
+  /* Supporter rank medals (crowdfunding honour roll).
+     The ONLY hues outside the orange system. They are deliberately metallic so
+     they read as medals rather than as a competing brand accent — ranks 4–5
+     fall back to the house orange. Foregrounds are darkened well past their
+     literal metal values to clear 4.5:1 on --surface-raised. */
+  --rank-gold: #8a6100;
+  --rank-gold-bg: #fdf5e2;
+  --rank-silver: #55606f;
+  --rank-silver-bg: #f1f3f6;
+  --rank-bronze: #8c4416;
+  --rank-bronze-bg: #fbeee5;
 }
 
 /* ============================================
@@ -57,6 +69,15 @@
   --hairline: rgba(255, 255, 255, 0.10);
   --scrim: rgba(0, 0, 0, 0.6);
   --on-accent: #0a0a0a;
+
+  /* Rank medals — brightened for dark surfaces, tinted backgrounds kept at
+     ~10% so a badged row reads as a tint rather than a block of colour. */
+  --rank-gold: #f0c14e;
+  --rank-gold-bg: rgba(240, 193, 78, 0.12);
+  --rank-silver: #cbd2dc;
+  --rank-silver-bg: rgba(203, 210, 220, 0.12);
+  --rank-bronze: #e0925e;
+  --rank-bronze-bg: rgba(224, 146, 94, 0.12);
 }
 
 /* ============================================
@@ -81,6 +102,13 @@
   --color-primary-active: var(--primary-active);
   --color-primary-highlight: var(--primary-highlight);
   --color-on-accent: var(--on-accent);
+
+  --color-rank-gold: var(--rank-gold);
+  --color-rank-gold-bg: var(--rank-gold-bg);
+  --color-rank-silver: var(--rank-silver);
+  --color-rank-silver-bg: var(--rank-silver-bg);
+  --color-rank-bronze: var(--rank-bronze);
+  --color-rank-bronze-bg: var(--rank-bronze-bg);
 
   --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
