@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
@@ -36,7 +37,8 @@ export function FundAllocation() {
 
   return (
     <section className="relative py-20 lg:py-28">
-      <div className="section-container">
+      <GhostText text="FUNDING" drift="right" />
+      <div className="section-container relative">
         <SectionHeader
           index="06"
           kicker="Full transparency"

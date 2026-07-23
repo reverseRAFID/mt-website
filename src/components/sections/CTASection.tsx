@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Reveal } from '@/components/motion/Reveal'
+import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
@@ -47,7 +48,8 @@ const CTAS = [
 export function CTASection() {
   return (
     <section className="relative py-20 lg:py-28 bg-bg">
-      <div className="section-container">
+      <GhostText text="JOIN US" drift="right" />
+      <div className="section-container relative">
         <SectionHeader align="center" kicker="Get Involved" title="Be Part of the Mission" />
 
         <Reveal stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-fr">

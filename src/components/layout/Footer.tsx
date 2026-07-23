@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
+import { GhostText } from '@/components/motion/GhostText'
 import { SponsorMarquee } from '@/components/sponsors/SponsorMarquee'
 import { sanityFetch } from '@/sanity/lib/client'
 import { ACTIVE_SPONSORS_QUERY } from '@/sanity/lib/queries'
@@ -167,13 +168,13 @@ export async function Footer() {
         </div>
       </div>
 
-      {/* oversized wordmark watermark */}
-      <div
-        aria-hidden
-        className="pointer-events-none select-none absolute -bottom-6 left-0 right-0 text-center font-display font-bold leading-none text-text/[0.025] text-[22vw] tracking-tighter"
-      >
-        MONGOL-TORI
-      </div>
+      {/* oversized animated wordmark watermark */}
+      <GhostText
+        text="MONGOL-TORI"
+        anchor="bottom"
+        drift="right"
+        className="text-[22vw] text-text/[0.025] translate-y-[14%]"
+      />
     </footer>
   )
 }

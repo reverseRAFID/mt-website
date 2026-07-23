@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { SarVideo } from '@/sanity/lib/types'
 import { getYouTubeID } from '@/sanity/lib/client'
 import { Reveal } from '@/components/motion/Reveal'
+import { GhostText } from '@/components/motion/GhostText'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 interface VideoHighlightProps {
@@ -16,7 +17,8 @@ export function VideoHighlight({ video }: VideoHighlightProps) {
 
   return (
     <section className="relative py-20 lg:py-28 bg-surface">
-      <div className="section-container">
+      <GhostText text="DOWNLINK" drift="right" />
+      <div className="section-container relative">
         <Reveal className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
           {/* Media frame */}
           <div className="relative rounded-card border border-divider bg-surface-raised p-2 sm:p-3 shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]">

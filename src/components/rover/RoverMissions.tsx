@@ -1,3 +1,4 @@
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import type { RoverMission } from '@/sanity/lib/types'
 import { SectionEyebrow } from './SectionEyebrow'
@@ -19,7 +20,8 @@ export function RoverMissions({
 
   return (
     <section className="relative py-16 lg:py-24">
-      <div className="section-container">
+      <GhostText text="MISSIONS" drift="left" />
+      <div className="section-container relative">
         <Reveal>
           <SectionEyebrow index={index} label="Mission Plan" className="mb-3" />
           <h2 className="max-w-3xl font-display text-3xl font-bold leading-[1.05] tracking-tight text-text text-balance sm:text-4xl lg:text-5xl">

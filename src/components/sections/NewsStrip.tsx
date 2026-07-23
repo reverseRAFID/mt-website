@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { PostCard } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
+import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
@@ -29,7 +30,8 @@ export function NewsStrip({ posts }: NewsStripProps) {
 
   return (
     <section className="relative py-20 lg:py-28 bg-bg">
-      <div className="section-container">
+      <GhostText text="DISPATCH" drift="left" />
+      <div className="section-container relative">
         <SectionHeader
           index="04"
           kicker="Latest"

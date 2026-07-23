@@ -6,6 +6,7 @@ import { RESEARCH_QUERY } from '@/sanity/lib/queries'
 import type { ResearchCard } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { Counter } from '@/components/motion/Counter'
+import { GhostText } from '@/components/motion/GhostText'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { PageHero } from '@/components/ui/PageHero'
 import { SectionHeader } from '@/components/ui/SectionHeader'
@@ -86,7 +87,8 @@ export default async function ResearchPage() {
       ) : (
         <>
           <section className="relative py-20 lg:py-28">
-            <div className="section-container">
+            <GhostText text="PAPERS" drift="left" />
+            <div className="section-container relative">
               <Reveal stagger className="mb-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:mb-16">
                 {stats.map((s) => (
                   <div
@@ -107,6 +109,7 @@ export default async function ResearchPage() {
           </section>
 
           <section className="relative overflow-hidden border-t border-divider bg-surface py-20 lg:py-28">
+            <GhostText text="ARCHIVE" drift="right" outline />
             <span
               aria-hidden
               className="pointer-events-none absolute inset-0 tech-grid mask-radial-fade opacity-50"

@@ -1,3 +1,4 @@
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Accordion } from '@/components/ui/Accordion'
@@ -10,7 +11,8 @@ import { SPONSOR_FAQ, SPONSOR_EMAIL, sponsorMailto } from '@/lib/sponsorship'
 export function SponsorFaq() {
   return (
     <section className="relative border-t border-divider bg-surface py-20 lg:py-28">
-      <div className="section-container">
+      <GhostText text="FAQ" drift="right" outline />
+      <div className="section-container relative">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           <div>
             <SectionHeader

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { JetBrains_Mono } from 'next/font/google'
+import { JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 import { SiteFx } from '@/components/fx/SiteFx'
 import './globals.css'
@@ -8,6 +8,13 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-jetbrains',
   weight: ['400', '500'],
+  display: 'swap',
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 })
 
@@ -34,11 +41,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={jetbrainsMono.variable}>
+    <html lang="en" suppressHydrationWarning className={`${jetbrainsMono.variable} ${spaceGrotesk.variable}`}>
       <head>
         <link rel="preconnect" href="https://api.fontshare.com" />
         <link
-          href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&f[]=satoshi@400,500,700&display=swap"
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
           rel="stylesheet"
         />
       </head>

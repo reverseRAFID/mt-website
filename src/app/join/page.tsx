@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { sanityFetch } from '@/sanity/lib/client'
 import { RECRUITMENT_CONFIG_QUERY } from '@/sanity/lib/queries'
 import type { RecruitmentConfig } from '@/sanity/lib/types'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
@@ -177,6 +178,7 @@ export default async function JoinPage() {
 
       {/* Sub-teams + FAQ */}
       <section className="relative overflow-hidden py-20 lg:py-28">
+        <GhostText text="CREW" drift="right" outline />
         <div
           aria-hidden
           className="pointer-events-none absolute right-0 top-10 h-[420px] w-[420px] glow-orange opacity-40 blur-[130px]"

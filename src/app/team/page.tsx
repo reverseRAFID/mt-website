@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { sanityFetch } from '@/sanity/lib/client'
 import { MEMBERS_QUERY } from '@/sanity/lib/queries'
 import type { MemberCard } from '@/sanity/lib/types'
+import { GhostText } from '@/components/motion/GhostText'
 import { PageHero } from '@/components/ui/PageHero'
 import { TeamDirectory } from '@/components/team/TeamDirectory'
 
@@ -23,6 +24,7 @@ export default async function TeamPage() {
       />
 
       <section className="relative py-20 lg:py-28">
+        <GhostText text="ROSTER" drift="left" />
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 tech-grid-sm mask-radial-fade opacity-[0.4]" />
           <div className="absolute -left-32 top-16 h-[420px] w-[420px] rounded-full glow-orange blur-[130px] opacity-30" />

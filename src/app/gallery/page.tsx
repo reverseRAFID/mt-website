@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 import { sanityFetch, urlFor } from '@/sanity/lib/client'
 import { GALLERY_QUERY } from '@/sanity/lib/queries'
 import type { SanityImage, SanitySlug } from '@/sanity/lib/types'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
@@ -36,6 +37,7 @@ export default async function GalleryPage() {
       />
 
       <section className="relative overflow-hidden py-20 lg:py-28">
+        <GhostText text="FRAMES" drift="right" />
         {/* Ambient mission-control texture — kept very low opacity */}
         <div
           aria-hidden

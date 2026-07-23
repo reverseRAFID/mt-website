@@ -1,4 +1,5 @@
 import { PageLayout } from '@/components/layout/PageLayout'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
@@ -60,6 +61,7 @@ export default function ContactPage() {
       />
 
       <section className="relative overflow-hidden py-20 lg:py-28">
+        <GhostText text="SIGNAL" drift="left" />
         <div aria-hidden className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-[0.3]" />
         <div
           aria-hidden

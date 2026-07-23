@@ -1,3 +1,4 @@
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { ScrollSpine } from '@/components/motion/ScrollSpine'
 import { SectionHeader } from '@/components/ui/SectionHeader'
@@ -13,7 +14,8 @@ import { PROCESS_STEPS } from '@/lib/sponsorship'
 export function PartnershipProcess() {
   return (
     <section className="relative border-t border-divider py-20 lg:py-28">
-      <div className="section-container">
+      <GhostText text="PROCESS" drift="left" />
+      <div className="section-container relative">
         <SectionHeader
           index="07"
           kicker="How it works"

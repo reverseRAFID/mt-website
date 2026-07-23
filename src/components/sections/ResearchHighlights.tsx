@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { ResearchCard } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
+import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 
 interface ResearchHighlightsProps {
@@ -24,7 +25,8 @@ export function ResearchHighlights({ papers }: ResearchHighlightsProps) {
 
   return (
     <section className="relative py-20 lg:py-28 bg-surface">
-      <div className="section-container">
+      <GhostText text="RESEARCH" drift="right" outline />
+      <div className="section-container relative">
         <SectionHeader
           kicker="Publications"
           title="Research Highlights"

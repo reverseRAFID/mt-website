@@ -4,6 +4,7 @@ import type { RoverCard } from '@/sanity/lib/types'
 import { urlFor } from '@/sanity/lib/client'
 import { Reveal } from '@/components/motion/Reveal'
 import { Parallax } from '@/components/motion/Parallax'
+import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
@@ -24,8 +25,9 @@ export function RoverSpotlight({ rover }: RoverSpotlightProps) {
   const specEntries = Object.entries(rover.specs ?? {}).filter(([, v]) => v !== undefined && v !== null)
 
   return (
-    <section className="relative py-20 lg:py-28 bg-bg">
-      <div className="section-container">
+    <section className="relative overflow-hidden py-20 lg:py-28 bg-bg">
+      <GhostText text={rover.name} drift="right" outline />
+      <div className="section-container relative">
         <Reveal>
           <SectionHeader kicker="Featured Rover" title={rover.name} description={rover.tagline ?? undefined} />
         </Reveal>
