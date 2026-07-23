@@ -321,3 +321,71 @@ it needs an Editor token to run.
 
 - [ ] Browser pass at 375 / 768 / 1440 in light and dark (the Chrome extension
       was not connected; responsive behaviour was verified from markup only)
+
+---
+
+## 7. Phase 2 — site-wide CTAs + dedicated donate page
+
+### 7.1 Why the flow is split
+
+`/support` is the **why** (story, where the money goes, how it works, honour
+roll, FAQ). `/support/donate` is the **how** — copy a number, pay, declare,
+and nothing else on the page competing for that click. The form was moved off
+`/support` rather than duplicated: two live forms split both attention and
+whatever analytics get added later.
+
+### 7.2 CTA placement
+
+Crowdfunding is impulse-led, so the ask sits next to the proof rather than in a
+generic banner. Each of 18 routes gets one contextual band whose copy names
+what the visitor just read — parts on rover pages, freight on competition and
+achievement pages, the students on team pages, end-of-article on news.
+
+Two are conversion plays rather than filler:
+
+- **`/join`** — people who wanted to join and cannot (BRACU students only).
+  Highest-intent audience on the site, previously a dead end.
+- **`/sponsors`** — individuals who are not there on a company's behalf.
+
+Plus three chrome placements on every page: a floating sticky (suppressed on
+`/support*`, `/join/apply`, and `/sponsors` where it would collide with the
+existing sticky), a quiet footer strip, and a fourth card in the homepage
+Get Involved grid.
+
+### 7.3 Fail-quiet rules
+
+Every piece of CTA copy self-suppresses rather than saying something weak:
+
+| Condition | Behaviour |
+|---|---|
+| Campaign not `open` | **Every** CTA site-wide disappears — 18 bands, sticky, footer strip. Asking for money that cannot be received is the fastest way to lose a donor. |
+| Sanity unreachable | `getSupportCtaData` fails **closed**, so an outage hides CTAs rather than inviting payments. |
+| Deadline passed | No countdown. Never renders "-3 days left". |
+| Deadline > 21 days out | No countdown — a months-long timer stops being noticed by the time it matters. |
+| Deadline < 48h | "Last day to contribute", not "1 days left". |
+| Supporters < 5 | No social-proof line — "Join 2 supporters" is worse than silence. |
+| `showSupporterCount` off | Count suppressed in CTAs, hero, and honour roll; the roll itself still lists people. |
+| Campaign open, 0 channels | Donate page routes to `/contact` instead of showing a form nobody could have paid into. |
+
+### 7.4 Verification — CTA state matrix
+
+A fixture harness drove `getCrowdfundingConfig` / `getSupporters` /
+`getSupporterCount` so all ten campaign states could be rendered and asserted
+against. **63 assertions, 0 failures.** Harness reverted afterwards; the
+committed tree contains none of it.
+
+Scenarios: campaign open · paused · open-with-zero-channels · deadline at 6d /
+90d / past / <48h · 3 supporters · 0 supporters · `showSupporterCount` off.
+
+Two findings worth recording:
+
+1. **Real bug caught** — `/sponsors` was missing from the rollout map, silently
+   dropping one of the two best-placed CTAs. Fixed.
+2. When the campaign is closed the sticky **client island is not shipped at
+   all** (only the server wrapper module appears in the payload), confirmed by
+   diffing the flight output between open and paused.
+
+Also confirmed against the real Sanity dataset: with no config document the
+campaign resolves closed, and the prerendered `/rovers` build output contains
+zero CTA strings while `/support/donate` renders the closed notice with no
+form.
