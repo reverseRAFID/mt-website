@@ -33,12 +33,25 @@ import { NewsStrip } from '@/components/sections/NewsStrip'
 import { ResearchHighlights } from '@/components/sections/ResearchHighlights'
 import { CTASection } from '@/components/sections/CTASection'
 import { Testimonials } from '@/components/sections/Testimonials'
+import { CrowdfundingSection } from '@/components/sections/CrowdfundingSection'
 import { SponsorsStrip } from '@/components/sections/SponsorsStrip'
 import { MARQUEE_SUBTEAMS } from '@/lib/subteams'
+import { getTopSupporters, getSupporterCount, getCrowdfundingConfig } from '@/lib/donations'
 
 export default async function HomePage() {
   // Fetch all landing page data in parallel
-  const [competition, rover, video, posts, allResearch, sponsors, testimonials] = await Promise.all([
+  const [
+    competition,
+    rover,
+    video,
+    posts,
+    allResearch,
+    sponsors,
+    testimonials,
+    topSupporters,
+    supporterCount,
+    crowdfunding,
+  ] = await Promise.all([
     sanityFetch<CompetitionCard | null>(LATEST_COMPETITION_QUERY),
     sanityFetch<RoverCard | null>(FEATURED_ROVER_QUERY),
     sanityFetch<SarVideo | null>(LATEST_SAR_VIDEO_QUERY),
@@ -46,6 +59,9 @@ export default async function HomePage() {
     sanityFetch<ResearchCard[]>(RESEARCH_QUERY),
     sanityFetch<Sponsor[]>(ACTIVE_SPONSORS_QUERY),
     sanityFetch<Testimonial[]>(FEATURED_TESTIMONIALS_QUERY),
+    getTopSupporters(),
+    getSupporterCount(),
+    getCrowdfundingConfig(),
   ])
 
   // Show only the 3 most recent research papers on the landing page
@@ -70,6 +86,16 @@ export default async function HomePage() {
         {posts?.length > 0 && <NewsStrip posts={posts} />}
         {papers.length > 0 && <ResearchHighlights papers={papers} />}
         {testimonials?.length > 0 && <Testimonials testimonials={testimonials} />}
+        {/* Nothing to say when the campaign is shut and nobody has been
+            verified yet — skip the section rather than show an empty board. */}
+        {(crowdfunding.status === 'open' || topSupporters.length > 0) && (
+          <CrowdfundingSection
+            supporters={topSupporters}
+            supporterCount={supporterCount}
+            showSupporterCount={crowdfunding.showSupporterCount ?? true}
+            isOpen={crowdfunding.status === 'open'}
+          />
+        )}
         <CTASection />
         <SponsorsStrip sponsors={sponsors ?? []} />
       </main>
