@@ -1,6 +1,7 @@
 import { urlFor } from '@/sanity/lib/client'
 import type { Sponsor } from '@/sanity/lib/types'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { TiltCard } from '@/components/motion/TiltCard'
 import { SectionHeader } from '@/components/ui/SectionHeader'
@@ -40,7 +41,8 @@ export function SponsorShowcase({ sponsors }: { sponsors: Sponsor[] }) {
 
   return (
     <section className="relative border-y border-divider bg-surface py-20 lg:py-28">
-      <div className="section-container">
+      <GhostText text="ALLIES" drift="right" />
+      <div className="section-container relative">
         <SectionHeader
           index="03"
           kicker="Our partners"

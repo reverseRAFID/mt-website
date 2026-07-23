@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { RoverCard } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
+import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { CAPABILITIES, type Capability } from '@/lib/capabilities'
@@ -63,7 +64,8 @@ export function Innovation({ rover }: { rover: RoverCard | null }) {
 
   return (
     <section className="relative border-t border-divider bg-surface py-20 lg:py-28">
-      <div className="section-container">
+      <GhostText text="SYSTEMS" drift="left" />
+      <div className="section-container relative">
         <SectionHeader
           kicker="Engineering"
           title="What makes our rover tick"

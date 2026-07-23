@@ -4,9 +4,11 @@ import type { Metadata } from 'next'
 import { sanityFetch } from '@/sanity/lib/client'
 import { SAR_VIDEOS_QUERY } from '@/sanity/lib/queries'
 import type { SarVideo } from '@/sanity/lib/types'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'SAR Videos' }
 
@@ -28,7 +30,8 @@ export default async function SarVideosPage() {
       />
 
       <section className="relative py-20 lg:py-28">
-        <div className="section-container">
+        <GhostText text="FOOTAGE" drift="left" outline />
+        <div className="section-container relative">
           {!videos?.length ? (
             <div className="rounded-card border border-divider bg-surface-raised py-20 text-center text-text-muted">
               No videos yet — add them in Sanity CMS → SAR Videos.
@@ -134,6 +137,7 @@ export default async function SarVideosPage() {
           )}
         </div>
       </section>
+      <SupportCTA copy="sarVideos" />
     </PageLayout>
   )
 }

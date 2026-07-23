@@ -8,6 +8,7 @@ import { RESEARCH_BY_SLUG_QUERY } from '@/sanity/lib/queries'
 import type { ResearchFull } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -163,6 +164,7 @@ export default async function ResearchPage({ params }: Props) {
           </Reveal>
         )}
       </div>
+      <SupportCTA copy="research" />
     </PageLayout>
   )
 }

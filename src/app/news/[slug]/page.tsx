@@ -9,6 +9,7 @@ import type { PostFull } from '@/sanity/lib/types'
 import { PortableText } from '@portabletext/react'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -170,6 +171,7 @@ export default async function PostPage({ params }: Props) {
           </Link>
         </div>
       </article>
+      <SupportCTA copy="newsDetail" />
     </PageLayout>
   )
 }

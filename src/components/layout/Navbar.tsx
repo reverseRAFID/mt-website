@@ -15,6 +15,7 @@ const navLinks = [
   { href: '/research', label: 'Research' },
   { href: '/news', label: 'News' },
   { href: '/sponsors', label: 'Sponsors' },
+  { href: '/support', label: 'Support' },
 ]
 
 export function Navbar() {
@@ -108,6 +109,15 @@ export function Navbar() {
                 }`}
               >
                 {link.label}
+                {/* Support is the campaign link — a small pip lifts it out of
+                    the run of seven without adding a second button that would
+                    compete with "Join Us". */}
+                {link.href === '/support' && (
+                  <span
+                    aria-hidden
+                    className="ml-1.5 inline-block h-1.5 w-1.5 rotate-45 bg-primary align-middle"
+                  />
+                )}
                 <span
                   className={`pointer-events-none absolute left-3 right-3 -bottom-px h-px origin-left bg-primary transition-transform duration-300 ${
                     active ? 'scale-x-100' : 'scale-x-0'

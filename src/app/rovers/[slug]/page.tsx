@@ -16,6 +16,7 @@ import { RoverGallery } from '@/components/rover/RoverGallery'
 import { RoverCrew } from '@/components/rover/RoverCrew'
 import { RoverFleetStrip } from '@/components/rover/RoverFleetStrip'
 import { MissionRail } from '@/components/rover/MissionRail'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -126,6 +127,7 @@ export default async function RoverPage({ params }: Props) {
       <RoverGallery images={galleryImages} roverName={rover.name} index={idx.gallery} />
       <RoverCrew crew={rover.crew ?? []} roverName={rover.name} index={idx.crew} />
       <RoverFleetStrip rovers={rover.siblings} />
+      <SupportCTA copy="roverDetail" />
     </PageLayout>
   )
 }

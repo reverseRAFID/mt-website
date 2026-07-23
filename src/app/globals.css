@@ -29,6 +29,18 @@
   --hairline: rgba(10, 10, 10, 0.10);
   --scrim: rgba(0, 0, 0, 0.5);
   --on-accent: #ffffff;
+
+  /* Supporter rank medals (crowdfunding honour roll).
+     The ONLY hues outside the orange system. They are deliberately metallic so
+     they read as medals rather than as a competing brand accent — ranks 4–5
+     fall back to the house orange. Foregrounds are darkened well past their
+     literal metal values to clear 4.5:1 on --surface-raised. */
+  --rank-gold: #8a6100;
+  --rank-gold-bg: #fdf5e2;
+  --rank-silver: #55606f;
+  --rank-silver-bg: #f1f3f6;
+  --rank-bronze: #8c4416;
+  --rank-bronze-bg: #fbeee5;
 }
 
 /* ============================================
@@ -57,6 +69,15 @@
   --hairline: rgba(255, 255, 255, 0.10);
   --scrim: rgba(0, 0, 0, 0.6);
   --on-accent: #0a0a0a;
+
+  /* Rank medals — brightened for dark surfaces, tinted backgrounds kept at
+     ~10% so a badged row reads as a tint rather than a block of colour. */
+  --rank-gold: #f0c14e;
+  --rank-gold-bg: rgba(240, 193, 78, 0.12);
+  --rank-silver: #cbd2dc;
+  --rank-silver-bg: rgba(203, 210, 220, 0.12);
+  --rank-bronze: #e0925e;
+  --rank-bronze-bg: rgba(224, 146, 94, 0.12);
 }
 
 /* ============================================
@@ -82,7 +103,14 @@
   --color-primary-highlight: var(--primary-highlight);
   --color-on-accent: var(--on-accent);
 
-  --font-display: 'Cabinet Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --color-rank-gold: var(--rank-gold);
+  --color-rank-gold-bg: var(--rank-gold-bg);
+  --color-rank-silver: var(--rank-silver);
+  --color-rank-silver-bg: var(--rank-silver-bg);
+  --color-rank-bronze: var(--rank-bronze);
+  --color-rank-bronze-bg: var(--rank-bronze-bg);
+
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
@@ -137,9 +165,28 @@ body {
 /* ============================================
    TYPOGRAPHY HELPERS
    ============================================ */
+/* Titles are ALWAYS Space Grotesk, bold, uppercase — brutalist spec plate.
+   overflow-wrap guards small screens: uppercase runs ~8% wider, so a long
+   word breaks instead of clipping. */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Cabinet Grotesk', ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+}
+
+/* Embedded Sanity Studio keeps its own typography — admin UI, not site chrome. */
+.studio-reset h1,
+.studio-reset h2,
+.studio-reset h3,
+.studio-reset h4,
+.studio-reset h5,
+.studio-reset h6 {
+  font-family: revert;
+  font-weight: revert;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 code, pre, .font-mono {
@@ -169,6 +216,28 @@ code, pre, .font-mono {
   }
   *::-webkit-scrollbar-thumb:hover {
     background-color: var(--primary);
+  }
+}
+
+/* ============================================
+   GHOST WORD — oversized animated section watermark
+   (components layer so Tailwind utilities can override size/opacity)
+   ============================================ */
+@layer components {
+  .ghost-word {
+    font-family: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    line-height: 0.78;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    user-select: none;
+    font-size: clamp(4.5rem, 16vw, 15rem);
+    will-change: transform;
+  }
+  .ghost-word-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--hairline);
   }
 }
 
@@ -408,10 +477,11 @@ html.cursor-reticle [contenteditable='true'] {
   }
   /* Big kinetic display number */
   .display-figure {
-    font-family: 'Cabinet Grotesk', ui-sans-serif, system-ui, sans-serif;
-    font-weight: 800;
+    font-family: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
     line-height: 0.9;
     letter-spacing: -0.03em;
+    text-transform: uppercase;
   }
 
   /* ── Shared interaction polish ─────────────────────────────────
@@ -442,8 +512,8 @@ html.cursor-reticle [contenteditable='true'] {
 
   /* Display number that fades into the background as a watermark */
   .figure-ghost {
-    font-family: 'Cabinet Grotesk', ui-sans-serif, system-ui, sans-serif;
-    font-weight: 800;
+    font-family: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
     line-height: 0.82;
     letter-spacing: -0.04em;
     color: transparent;

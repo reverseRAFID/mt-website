@@ -90,7 +90,7 @@ export function PageHero({
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
       >
-        <span className="select-none whitespace-nowrap font-display text-[30vw] font-bold leading-[0.8] tracking-tighter text-text/[0.045] lg:text-[21vw]">
+        <span className="select-none whitespace-nowrap font-display text-[30vw] font-bold uppercase leading-[0.8] tracking-tighter text-text/[0.045] lg:text-[21vw]">
           {mark}
         </span>
       </div>
@@ -128,11 +128,13 @@ export function PageHero({
               </span>
             </div>
 
-            <h1 className="font-display text-5xl font-bold leading-[0.95] tracking-tight text-text sm:text-6xl lg:text-7xl">
+            <h1 className="font-display text-[clamp(2.25rem,11vw,3rem)] font-bold leading-[0.95] tracking-tight text-text sm:text-6xl lg:text-7xl">
               {words.map((w, i) => (
-                <span key={`${w}-${i}`} className="inline-block overflow-hidden pb-[0.1em] align-bottom">
-                  <span data-ph-word className="inline-block">
-                    {w}
+                <span key={`${w}-${i}`}>
+                  <span className="inline-block overflow-hidden pb-[0.1em] align-bottom">
+                    <span data-ph-word className="inline-block">
+                      {w}
+                    </span>
                   </span>
                   {i < words.length - 1 ? ' ' : ''}
                 </span>

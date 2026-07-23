@@ -79,6 +79,68 @@ export default defineConfig({
                   .schemaType('recruitmentConfig')
                   .title('Recruitment Configuration')
               ),
+            S.divider(),
+            // Crowdfunding — donation verification queue + campaign settings.
+            // Pending sits first: it is the queue somebody has to work through,
+            // and a donation stays invisible on the site until it is approved.
+            S.listItem()
+              .title('Crowdfunding')
+              .icon(() => '🫱')
+              .child(
+                S.list()
+                  .title('Crowdfunding')
+                  .items([
+                    S.listItem()
+                      .title('Pending Verification')
+                      .icon(() => '⏳')
+                      .child(
+                        S.documentList()
+                          .title('Pending Verification')
+                          .filter('_type == "donation" && status == "pending"')
+                          .defaultOrdering([{ field: 'donatedAt', direction: 'asc' }])
+                      ),
+                    S.listItem()
+                      .title('Approved (rank order)')
+                      .icon(() => '✅')
+                      .child(
+                        S.documentList()
+                          .title('Approved — public rank order')
+                          .filter('_type == "donation" && status == "approved"')
+                          .defaultOrdering([
+                            { field: 'amount', direction: 'desc' },
+                            { field: 'approvedAt', direction: 'asc' },
+                          ])
+                      ),
+                    S.listItem()
+                      .title('Rejected')
+                      .icon(() => '⛔')
+                      .child(
+                        S.documentList()
+                          .title('Rejected')
+                          .filter('_type == "donation" && status == "rejected"')
+                          .defaultOrdering([{ field: 'donatedAt', direction: 'desc' }])
+                      ),
+                    S.divider(),
+                    S.listItem()
+                      .title('All Donations')
+                      .icon(() => '📋')
+                      .child(
+                        S.documentTypeList('donation')
+                          .title('All Donations')
+                          .defaultOrdering([{ field: 'donatedAt', direction: 'desc' }])
+                      ),
+                    S.divider(),
+                    S.listItem()
+                      .title('Campaign Settings')
+                      .icon(() => '⚙️')
+                      .child(
+                        S.document()
+                          .documentId('crowdfunding-config')
+                          .schemaType('crowdfundingConfig')
+                          .title('Crowdfunding Configuration')
+                      ),
+                  ])
+              ),
           ]),
     }),
   ],

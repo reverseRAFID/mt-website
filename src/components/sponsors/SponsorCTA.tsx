@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { Magnetic } from '@/components/motion/Magnetic'
 import { CornerTicks } from '@/components/ui/CornerTicks'
@@ -10,7 +11,8 @@ import { sponsorMailto } from '@/lib/sponsorship'
 export function SponsorCTA() {
   return (
     <section className="relative py-20 lg:py-28">
-      <div className="section-container">
+      <GhostText text="LAUNCH" drift="left" />
+      <div className="section-container relative">
         <Reveal>
           <div className="relative overflow-hidden rounded-card border border-primary/30 bg-primary-highlight px-6 py-14 text-center lg:px-12 lg:py-20">
             <CornerTicks className="text-primary/40" size="md" />

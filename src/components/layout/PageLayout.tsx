@@ -1,6 +1,7 @@
 import { AnnouncementBarServer } from '@/components/layout/AnnouncementBarServer'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { SupportStickyCTAServer } from '@/components/support/SupportStickyCTAServer'
 
 interface PageLayoutProps {
   children: React.ReactNode
@@ -34,6 +35,10 @@ export function PageLayout({ children }: PageLayoutProps) {
         <div className="relative z-10">{children}</div>
       </main>
       <Footer />
+      {/* Floating crowdfunding prompt. Self-suppresses on the support pages and
+          anywhere it would cover a form; absent entirely when the campaign is
+          not open. */}
+      <SupportStickyCTAServer />
     </>
   )
 }

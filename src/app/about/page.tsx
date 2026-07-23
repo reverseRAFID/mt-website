@@ -2,6 +2,7 @@ import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { Counter } from '@/components/motion/Counter'
 import { PageHero } from '@/components/ui/PageHero'
@@ -10,6 +11,7 @@ import { Testimonials } from '@/components/sections/Testimonials'
 import { sanityFetch } from '@/sanity/lib/client'
 import { FEATURED_TESTIMONIALS_QUERY } from '@/sanity/lib/queries'
 import type { Testimonial } from '@/sanity/lib/types'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'About Us' }
 
@@ -57,6 +59,7 @@ export default async function AboutPage() {
       </PageHero>
 
       <section className="relative overflow-hidden py-20 lg:py-28">
+        <GhostText text="ORIGIN" drift="left" />
         <div
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-10 h-72 w-72 -translate-x-1/2 rounded-full glow-orange opacity-50 blur-[120px]"
@@ -181,6 +184,7 @@ export default async function AboutPage() {
           description="The faculty and mentors who back Mongol-Tori on what the team is building and where it's headed."
         />
       )}
+      <SupportCTA copy="about" />
     </PageLayout>
   )
 }

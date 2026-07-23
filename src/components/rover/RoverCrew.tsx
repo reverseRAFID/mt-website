@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useMemo, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { urlFor } from '@/sanity/lib/client'
@@ -126,7 +127,8 @@ export function RoverCrew({
 
   return (
     <section className="relative border-t border-divider bg-surface py-16 lg:py-24">
-      <div className="section-container">
+      <GhostText text="CREW" anchor="top" drift="right" />
+      <div className="section-container relative">
         <Reveal>
           <div className="mb-3 flex items-center gap-2.5">
             <span className="h-1.5 w-1.5 rotate-45 bg-primary" aria-hidden />

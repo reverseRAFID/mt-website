@@ -1,5 +1,6 @@
 import { Reveal } from '@/components/motion/Reveal'
 import { Counter } from '@/components/motion/Counter'
+import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SponsorGlyph } from '@/components/sponsors/icons'
@@ -41,7 +42,8 @@ export function ImpactMetrics({
         className
       )}
     >
-      <div className="section-container">
+      <GhostText text="IMPACT" drift="left" />
+      <div className="section-container relative">
         {(kicker || title || description) && (
           <SectionHeader
             index={index}

@@ -5,9 +5,11 @@ import type { Metadata } from 'next'
 import { sanityFetch, urlFor } from '@/sanity/lib/client'
 import { ROVERS_QUERY } from '@/sanity/lib/queries'
 import type { RoverCard } from '@/sanity/lib/types'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'Our Rovers' }
 
@@ -24,7 +26,8 @@ export default async function RoversPage() {
       />
 
       <section className="relative py-20 lg:py-28">
-        <div className="section-container">
+        <GhostText text="HANGAR" drift="right" />
+        <div className="section-container relative">
           {rovers?.length === 0 ? (
             <EmptyState message="No rovers yet — add one in Sanity CMS → Rovers." />
           ) : (
@@ -107,6 +110,7 @@ export default async function RoversPage() {
           )}
         </div>
       </section>
+      <SupportCTA copy="rovers" />
     </PageLayout>
   )
 }

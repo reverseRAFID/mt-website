@@ -31,7 +31,7 @@ export function BlueprintBackdrop({
         <circle cx="200" cy="200" r="3" fill="currentColor" stroke="none" />
       </svg>
       {watermark && (
-        <span className="absolute inset-0 flex select-none items-center justify-center font-display text-[22vw] font-bold leading-none tracking-tighter text-text/[0.04] lg:text-[12vw]">
+        <span className="absolute inset-0 flex select-none items-center justify-center font-display text-[22vw] font-bold uppercase leading-none tracking-tighter text-text/[0.04] lg:text-[12vw]">
           {watermark}
         </span>
       )}

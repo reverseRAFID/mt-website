@@ -6,10 +6,12 @@ import { COMPETITIONS_QUERY } from '@/sanity/lib/queries'
 import type { CompetitionCard } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { Counter } from '@/components/motion/Counter'
+import { GhostText } from '@/components/motion/GhostText'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { Milestones } from '@/components/achievements/Milestones'
 import { RankTrend, type RankPoint } from '@/components/achievements/RankTrend'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'Achievements' }
 
@@ -82,7 +84,8 @@ export default async function AchievementsPage() {
 
       {/* Competition history */}
       <section className="relative border-t border-divider py-20 lg:py-28">
-        <div className="section-container">
+        <GhostText text="RECORD" drift="right" />
+        <div className="section-container relative">
           {!competitions?.length ? (
             <div className="py-12 text-center text-text-muted">
               No competitions yet — add them in Sanity CMS → Competitions.
@@ -146,6 +149,7 @@ export default async function AchievementsPage() {
           )}
         </div>
       </section>
+      <SupportCTA copy="achievements" />
     </PageLayout>
   )
 }

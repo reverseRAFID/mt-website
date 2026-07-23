@@ -1,3 +1,4 @@
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
@@ -20,7 +21,8 @@ function Check() {
 export function SponsorTiers() {
   return (
     <section className="relative py-20 lg:py-28">
-      <div className="section-container">
+      <GhostText text="TIERS" drift="left" outline />
+      <div className="section-container relative">
         <SectionHeader
           index="04"
           kicker="Ways to partner"

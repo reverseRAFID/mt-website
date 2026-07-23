@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Reveal } from '@/components/motion/Reveal'
+import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
@@ -42,12 +43,25 @@ const CTAS = [
     cta: 'Become a Sponsor',
     primary: false,
   },
+  {
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+      </svg>
+    ),
+    title: 'Back the Mission',
+    description: 'Not a company? Chip in through bKash, Nagad or bank transfer and take your place on the supporters roll. Your amount is never published.',
+    href: '/support/donate',
+    cta: 'Support the Team',
+    primary: false,
+  },
 ]
 
 export function CTASection() {
   return (
     <section className="relative py-20 lg:py-28 bg-bg">
-      <div className="section-container">
+      <GhostText text="JOIN US" drift="right" />
+      <div className="section-container relative">
         <SectionHeader align="center" kicker="Get Involved" title="Be Part of the Mission" />
 
         <Reveal stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-fr">

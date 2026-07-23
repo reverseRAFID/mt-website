@@ -9,6 +9,8 @@ import { testimonial } from './testimonial'
 import { sarVideo } from './sarVideo'
 import { recruitmentConfig } from './recruitmentConfig'
 import { application } from './application'
+import { crowdfundingConfig } from './crowdfundingConfig'
+import { donation } from './donation'
 
 export const schemaTypes = [
   // Documents
@@ -21,8 +23,10 @@ export const schemaTypes = [
   sponsor,
   testimonial,
   sarVideo,
-  // Singleton
+  // Singletons
   recruitmentConfig,
+  crowdfundingConfig,
   // Form submissions
   application,
+  donation,
 ]

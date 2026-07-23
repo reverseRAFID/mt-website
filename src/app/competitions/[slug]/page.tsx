@@ -8,8 +8,10 @@ import { COMPETITION_BY_SLUG_QUERY } from '@/sanity/lib/queries'
 import type { CompetitionFull } from '@/sanity/lib/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { Counter } from '@/components/motion/Counter'
+import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -40,6 +42,7 @@ export default async function CompetitionPage({ params }: Props) {
     <PageLayout>
       {/* Page hero band */}
       <section className="relative overflow-hidden border-b border-divider py-16 lg:py-24">
+        <GhostText text="ARENA" drift="left" />
         <div className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-60" />
         <div className="section-container relative">
           <Reveal>
@@ -68,7 +71,8 @@ export default async function CompetitionPage({ params }: Props) {
       </section>
 
       <section className="relative py-16 lg:py-24">
-        <div className="section-container">
+        <GhostText text="FIELD LOG" drift="right" />
+        <div className="section-container relative">
           <div className="grid lg:grid-cols-3 gap-10">
             <div className="lg:col-span-2 flex flex-col gap-12">
               {/* Result hero card */}
@@ -267,6 +271,7 @@ export default async function CompetitionPage({ params }: Props) {
           </div>
         </div>
       </section>
+      <SupportCTA copy="competitions" />
     </PageLayout>
   )
 }

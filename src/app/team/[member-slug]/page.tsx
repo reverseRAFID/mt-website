@@ -12,6 +12,7 @@ import { MemberHero, type HeroStat } from '@/components/team/MemberHero'
 import { ContributionRail } from '@/components/team/ContributionRail'
 import { AchievementTimeline } from '@/components/team/AchievementTimeline'
 import { SUBTEAM_COLORS, labelFor } from '@/lib/subteam-style'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 interface Props {
   params: Promise<{ 'member-slug': string }>
@@ -331,6 +332,7 @@ export default async function MemberPage({ params }: Props) {
           </div>
         </div>
       </section>
+      <SupportCTA copy="teamDetail" />
     </PageLayout>
   )
 }

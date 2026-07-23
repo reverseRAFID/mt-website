@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
+import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
@@ -46,7 +47,8 @@ export function RankTrend({ points }: { points: RankPoint[] }) {
 
   return (
     <section className="relative border-t border-divider bg-surface py-20 lg:py-28">
-      <div className="section-container">
+      <GhostText text="ASCENT" drift="left" outline />
+      <div className="section-container relative">
         <SectionHeader
           index="02"
           kicker="Trajectory"

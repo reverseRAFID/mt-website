@@ -2,10 +2,12 @@ import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionHeader } from '@/components/ui/SectionHeader'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'STEM Outreach' }
 
@@ -78,6 +80,7 @@ export default function OutreachPage() {
       />
 
       <section className="relative overflow-hidden border-b border-divider py-20 lg:py-28">
+        <GhostText text="IMPACT" drift="right" />
         <div aria-hidden className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-[0.35]" />
         <div
           aria-hidden
@@ -152,6 +155,7 @@ export default function OutreachPage() {
           </Reveal>
         </div>
       </section>
+      <SupportCTA copy="outreach" />
     </PageLayout>
   )
 }

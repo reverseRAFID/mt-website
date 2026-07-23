@@ -356,3 +356,57 @@ export interface Application {
   reviewerNotes?: string
   submittedAt: string
 }
+
+// ── Crowdfunding ──────────────────────────────────────────────
+// PRIVACY: `PublicDonation` is the ONLY donation shape allowed to reach a
+// browser. It has no `amount`, no `senderAccount`, no contact details, and no
+// `donorName` — an anonymous donor's real name is swapped for "Anonymous"
+// inside the GROQ projection, so it never leaves Sanity. Adding a private
+// field to this interface is the mistake to watch for; `npm run check:privacy`
+// fails the build if one shows up in a public query.
+
+export interface PaymentChannel {
+  _key: string
+  method: string
+  accountNumber: string
+  accountName?: string
+  accountType?: string
+  note?: string
+  bankName?: string
+  branch?: string
+  routingNumber?: string
+}
+
+export interface CrowdfundingStep {
+  title: string
+  body: string
+}
+
+export interface CrowdfundingConfig {
+  status: 'open' | 'paused' | 'closed'
+  headline?: string
+  pitch?: string
+  closedMessage?: string
+  deadline?: string
+  verificationHours?: number
+  showSupporterCount?: boolean
+  channels?: PaymentChannel[]
+  steps?: CrowdfundingStep[]
+  faqItems?: FaqItem[]
+}
+
+/** A single approved supporter as published. No monetary figure, by design. */
+export interface PublicDonation {
+  _id: string
+  /** Already anonymised in GROQ — safe to render directly. */
+  displayName: string
+  /** Null for anonymous donors. */
+  affiliation?: string | null
+  message?: string | null
+  approvedAt?: string | null
+}
+
+/** A `PublicDonation` with its 1-based position, derived from array index. */
+export interface Supporter extends PublicDonation {
+  rank: number
+}

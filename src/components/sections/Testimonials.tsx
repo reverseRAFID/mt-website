@@ -10,6 +10,7 @@ import type { Testimonial } from '@/sanity/lib/types'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { Reveal } from '@/components/motion/Reveal'
+import { GhostText } from '@/components/motion/GhostText'
 
 interface TestimonialsProps {
   testimonials: Testimonial[]
@@ -149,6 +150,7 @@ export function Testimonials({
         aria-hidden
         className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full glow-orange blur-[130px] opacity-50"
       />
+      <GhostText text="VOICES" drift="left" />
 
       <div className="section-container relative">
         <Reveal>

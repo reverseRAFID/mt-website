@@ -181,3 +181,76 @@ export const GALLERY_QUERY = groq`
     _id, name, slug, year, gallery[]
   }
 `
+
+// ── Crowdfunding ──────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════
+// PRIVACY-CRITICAL. Everything these queries project is public.
+//
+// Two things are load-bearing:
+//
+//  1. `order(amount desc, ...)` sorts INSIDE Sanity, and the projection then
+//     omits `amount`. The site receives rows already in rank order and derives
+//     the rank from array position (see src/lib/donations.ts), so the figure
+//     itself is never serialised into HTML or a JSON payload.
+//
+//  2. `select(isAnonymous == true => ...)` resolves anonymity here, not in
+//     React. An anonymous donor's real `donorName` is never projected at all,
+//     so it cannot be recovered by reading the page source.
+//
+// Never add `amount`, `senderAccount`, `transactionId`, `contactEmail`,
+// `contactPhone`, `adminNotes`, `rejectionReason`, `verifiedBy` or a bare
+// `donorName` to these projections. `npm run check:privacy` enforces this.
+// ════════════════════════════════════════════════════════════════════════
+
+export const CROWDFUNDING_CONFIG_QUERY = groq`
+  *[_type == "crowdfundingConfig" && _id == "crowdfunding-config"][0] {
+    status, headline, pitch, closedMessage, deadline, verificationHours, showSupporterCount,
+    channels[] {
+      _key, method, accountNumber, accountName, accountType, note,
+      bankName, branch, routingNumber
+    },
+    steps[] { title, body },
+    faqItems[] { question, answer }
+  }
+`
+
+/** Just the gate — used by /api/donate, which has no use for page content. */
+export const CROWDFUNDING_STATUS_QUERY = groq`
+  *[_type == "crowdfundingConfig" && _id == "crowdfunding-config"][0].status
+`
+
+/** Approved supporters in rank order. Ties break on the earlier verification. */
+export const APPROVED_DONATIONS_QUERY = groq`
+  *[_type == "donation" && status == "approved"]
+    | order(amount desc, approvedAt asc, _createdAt asc) {
+      _id,
+      "displayName": select(isAnonymous == true => "Anonymous", donorName),
+      "affiliation": select(isAnonymous == true => null, affiliation),
+      message,
+      approvedAt
+    }
+`
+
+/** Same ordering, capped — for the homepage top-5 strip. */
+export const TOP_DONATIONS_QUERY = groq`
+  *[_type == "donation" && status == "approved"]
+    | order(amount desc, approvedAt asc, _createdAt asc)[0...$limit] {
+      _id,
+      "displayName": select(isAnonymous == true => "Anonymous", donorName),
+      "affiliation": select(isAnonymous == true => null, affiliation),
+      message,
+      approvedAt
+    }
+`
+
+export const APPROVED_DONATION_COUNT_QUERY = groq`
+  count(*[_type == "donation" && status == "approved"])
+`
+
+/**
+ * Duplicate guard for /api/donate. Returns only a boolean-ish count so a
+ * probe cannot be used to enumerate transaction IDs.
+ */
+export const DONATION_TRX_EXISTS_QUERY = groq`
+  count(*[_type == "donation" && transactionId == $transactionId]) > 0
+`

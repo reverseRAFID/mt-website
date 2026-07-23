@@ -1,3 +1,4 @@
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { TiltCard } from '@/components/motion/TiltCard'
 import { SectionHeader } from '@/components/ui/SectionHeader'
@@ -14,7 +15,8 @@ import { cn } from '@/lib/utils'
 export function SponsorValueProps() {
   return (
     <section className="relative py-20 lg:py-28">
-      <div className="section-container">
+      <GhostText text="IMPACT" drift="left" />
+      <div className="section-container relative">
         <SectionHeader
           index="01"
           kicker="Why partner with us"

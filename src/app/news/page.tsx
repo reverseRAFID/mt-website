@@ -5,9 +5,11 @@ import type { Metadata } from 'next'
 import { sanityFetch, urlFor } from '@/sanity/lib/client'
 import { POSTS_QUERY } from '@/sanity/lib/queries'
 import type { PostCard } from '@/sanity/lib/types'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'News & Blog' }
 
@@ -32,6 +34,7 @@ export default async function NewsPage() {
       />
 
       <section className="relative py-20 lg:py-28">
+        <GhostText text="DISPATCH" drift="left" />
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 tech-grid-sm mask-radial-fade opacity-40"
@@ -181,6 +184,7 @@ export default async function NewsPage() {
           )}
         </div>
       </section>
+      <SupportCTA copy="news" />
     </PageLayout>
   )
 }

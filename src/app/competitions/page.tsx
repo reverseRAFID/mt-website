@@ -4,9 +4,11 @@ import type { Metadata } from 'next'
 import { sanityFetch } from '@/sanity/lib/client'
 import { COMPETITIONS_QUERY } from '@/sanity/lib/queries'
 import type { CompetitionCard } from '@/sanity/lib/types'
+import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'Competitions' }
 
@@ -26,6 +28,7 @@ export default async function CompetitionsPage() {
       />
 
       <section className="relative py-20 lg:py-28">
+        <GhostText text="PODIUM" drift="left" outline />
         <div
           aria-hidden
           className="pointer-events-none absolute -top-10 right-0 h-72 w-72 rounded-full glow-orange opacity-50 blur-[120px]"
@@ -143,6 +146,7 @@ export default async function CompetitionsPage() {
           )}
         </div>
       </section>
+      <SupportCTA copy="competitions" />
     </PageLayout>
   )
 }
