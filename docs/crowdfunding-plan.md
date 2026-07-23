@@ -258,18 +258,66 @@ Branch: **`feat/crowdfunding`**. Every step is one commit, pushed immediately.
 
 ---
 
-## 6. Production-readiness checklist
+## 6. Production-readiness — verification results
 
-- [ ] `npm run lint` clean
-- [ ] `tsc --noEmit` clean
-- [ ] `next build` succeeds; `/support` renders
-- [ ] `POST /api/donate` — happy path creates a `pending` doc
-- [ ] `POST /api/donate` — rejects: closed campaign, missing required fields,
-      bad channel, over-length, duplicate trx ID, honeypot, too-fast submit,
-      rate limit
-- [ ] Zero amount leakage: page HTML + all JSON payloads grepped for the
-      seeded amounts and private fields
-- [ ] Anonymous donors' real names absent from the wire
-- [ ] Dataset visibility = private; anonymous `curl` returns 401
-- [ ] Reduced-motion and keyboard paths work; table is screen-reader sane
-- [ ] Light + dark, 375 / 768 / 1440 widths
+### Verified
+
+- [x] `npm run lint` — no ESLint warnings or errors
+- [x] `tsc --noEmit` — clean
+- [x] `next build` — 29/29 pages, `/support` prerendered (8.29 kB, ISR 30s),
+      `/api/donate` dynamic
+- [x] All routes 200 (`/`, `/support`, `/sponsors`, `/join/apply`, `/team`,
+      `/rovers`, `/news`, `/research`); no server errors logged
+- [x] **`POST /api/donate` rejection paths**, each returning the intended code:
+
+      missing name        400   bad email          400
+      bad channel         400   over-length field  400
+      bad account format  400   invalid JSON       400
+      not confirmed       400   campaign closed    403
+      honeypot            200 (decoy)   rate limit  429 + Retry-After: 3600
+      too-fast submit     200 (decoy)
+
+- [x] **Campaign fails shut** — with the config singleton absent, `/support`
+      renders the closed state and the API returns 403. A Sanity outage cannot
+      accidentally reopen a campaign.
+- [x] **The rank mechanism, proven against the live Sanity API.** Two queries
+      over the same documents, one projecting the sort key and one not,
+      returned *identical order* — while the non-projecting query omitted the
+      sort key entirely and `select()` replaced the matching rows with
+      `"Anonymous"` and a null affiliation. This is exactly how amount-ordering
+      and anonymity behave for donations.
+- [x] **Rendering** against fixtures: ranks 1–5 badged gold/silver/bronze/
+      orange/orange-outline, 6+ plain; anonymous rows show no affiliation;
+      metal tokens resolve; `lg:table-cell` / `md:table-cell` column hiding and
+      `overflow-x-auto` present; sr-only caption states amounts are not
+      published; no currency-like token anywhere in visible text.
+- [x] `npm run check:privacy` static checks pass, **and were proven to catch
+      regressions** — injecting `amount` into the public projection, and
+      replacing the anonymity `select()` with a bare `donorName`, were both
+      detected.
+
+### Blocked — needs an Editor token
+
+The `SANITY_API_TOKEN` in `.env.local` is read-scoped (`create` denied), so
+these could not be exercised:
+
+- [ ] `POST /api/donate` happy path creating a real `pending` document
+- [ ] Duplicate transaction-ID guard (409) — needs an existing document
+- [ ] End-to-end roll rendering from real approved donations, with the HTML
+      grepped for the actual seeded amounts
+
+`scripts/seed-donations.mjs` is written and dry-run verified for exactly this;
+it needs an Editor token to run.
+
+### Outstanding action — REQUIRED before launch
+
+- [ ] **Dataset visibility → Private.** `npm run check:privacy` currently
+      FAILS on this: an anonymous request to the production dataset still
+      succeeds. Until it is flipped, every donation amount, sender account and
+      donor phone number would be world-readable regardless of the code.
+      See `docs/privacy-runbook.md` §1.
+
+### Not covered
+
+- [ ] Browser pass at 375 / 768 / 1440 in light and dark (the Chrome extension
+      was not connected; responsive behaviour was verified from markup only)
