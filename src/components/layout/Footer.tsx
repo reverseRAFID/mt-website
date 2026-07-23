@@ -5,6 +5,8 @@ import { SponsorMarquee } from '@/components/sponsors/SponsorMarquee'
 import { sanityFetch } from '@/sanity/lib/client'
 import { ACTIVE_SPONSORS_QUERY } from '@/sanity/lib/queries'
 import type { Sponsor } from '@/sanity/lib/types'
+import { getSupportCtaData } from '@/lib/donations'
+import { DONATE_HREF, urgencyLabel, socialProofLabel } from '@/lib/support-cta'
 
 const footerLinks = {
   Team: [
@@ -67,6 +69,52 @@ const socials = [
   },
 ]
 
+/**
+ * Site-wide crowdfunding strip in the footer — the final ask on every page.
+ *
+ * Deliberately quiet: a single line and a button, so it reads as a standing
+ * offer rather than a repeat of the contextual band above it. Absent entirely
+ * when the campaign is not open.
+ */
+async function FooterSupportStrip() {
+  const { isOpen, supporterCount, deadline, showSupporterCount } = await getSupportCtaData()
+  if (!isOpen) return null
+
+  const urgency = urgencyLabel(deadline)
+  const proof = showSupporterCount ? socialProofLabel(supporterCount) : null
+
+  return (
+    <div className="border-b border-divider bg-primary-highlight/40">
+      <div className="section-container flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <span className="font-display text-base font-bold uppercase tracking-tight text-text">
+            Help fund the next rover
+          </span>
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            {urgency && (
+              <span className="hud-label inline-flex items-center gap-1.5 text-primary">
+                <span aria-hidden className="h-1.5 w-1.5 rounded-none bg-primary animate-blink" />
+                {urgency}
+              </span>
+            )}
+            {proof && <span className="hud-label nums text-text-faint">{proof}</span>}
+            <span className="hud-label text-text-faint">Amount never published</span>
+          </span>
+        </div>
+        <Link
+          href={DONATE_HREF}
+          className="group inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
+        >
+          Support the mission
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5" aria-hidden>
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </Link>
+      </div>
+    </div>
+  )
+}
+
 export async function Footer() {
   const sponsors = await sanityFetch<Sponsor[]>(ACTIVE_SPONSORS_QUERY)
 
@@ -74,6 +122,10 @@ export async function Footer() {
     <footer className="relative overflow-hidden bg-surface border-t border-divider">
       {/* full-color partner marquee — rides along on every page */}
       <SponsorMarquee sponsors={sponsors ?? []} />
+
+      {/* Crowdfunding strip — the last chance to ask, on every page of the
+          site. Renders nothing when the campaign is not open. */}
+      <FooterSupportStrip />
 
       {/* telemetry status row */}
       <div className="border-b border-divider">

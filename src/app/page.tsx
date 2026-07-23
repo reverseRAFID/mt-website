@@ -21,6 +21,7 @@ import type {
 import { AnnouncementBarServer } from '@/components/layout/AnnouncementBarServer'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { SupportStickyCTAServer } from '@/components/support/SupportStickyCTAServer'
 import { Marquee } from '@/components/ui/Marquee'
 import { Hero } from '@/components/sections/Hero'
 import { AchievementCallout } from '@/components/sections/AchievementCallout'
@@ -100,6 +101,7 @@ export default async function HomePage() {
         <SponsorsStrip sponsors={sponsors ?? []} />
       </main>
       <Footer />
+      <SupportStickyCTAServer />
     </>
   )
 }
