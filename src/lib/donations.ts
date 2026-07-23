@@ -11,6 +11,7 @@
 // figure behind it never crosses the wire. See src/sanity/lib/queries.ts.
 // ============================================================
 
+import { cache } from 'react'
 import { sanityFetch } from '@/sanity/lib/client'
 import {
   APPROVED_DONATIONS_QUERY,
@@ -94,3 +95,40 @@ export async function getSupportPageData() {
   ])
   return { config, supporters, supporterCount }
 }
+
+/** The minimum a support CTA needs to decide whether and what to render. */
+export interface SupportCtaData {
+  /** False whenever the campaign cannot receive money — CTAs must not render. */
+  isOpen: boolean
+  supporterCount: number
+  deadline?: string
+  showSupporterCount: boolean
+}
+
+/**
+ * Campaign state for the site-wide CTAs.
+ *
+ * Wrapped in React `cache()` so the dozen-plus pages and the sticky banner that
+ * each need this resolve to a single fetch pair per request, rather than one
+ * per CTA. The underlying queries are ISR-cached for 60s on top of that.
+ *
+ * Fails CLOSED on error: if Sanity is unreachable the CTAs disappear rather
+ * than inviting money the team may not be able to receive.
+ */
+export const getSupportCtaData = cache(async (): Promise<SupportCtaData> => {
+  try {
+    const [config, supporterCount] = await Promise.all([
+      getCrowdfundingConfig(),
+      getSupporterCount(),
+    ])
+    return {
+      isOpen: config.status === 'open',
+      supporterCount,
+      deadline: config.deadline,
+      showSupporterCount: config.showSupporterCount ?? true,
+    }
+  } catch (err) {
+    console.error('[support-cta] falling back to hidden CTAs:', err)
+    return { isOpen: false, supporterCount: 0, showSupporterCount: false }
+  }
+})
