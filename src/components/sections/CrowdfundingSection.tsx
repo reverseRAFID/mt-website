@@ -7,6 +7,7 @@ import { CornerTicks } from '@/components/ui/CornerTicks'
 import { Counter } from '@/components/motion/Counter'
 import { RankBadge, ROW_STYLES, RANK_TEXT } from '@/components/support/RankBadge'
 import { formatRank, rankTier, HIGHLIGHT_RANKS } from '@/lib/crowdfunding'
+import { DONATE_HREF } from '@/lib/support-cta'
 import { cn } from '@/lib/utils'
 
 interface CrowdfundingSectionProps {
@@ -176,7 +177,7 @@ export function CrowdfundingSection({
             <div className="flex flex-col gap-2.5">
               {isOpen && (
                 <Link
-                  href="/support#contribute"
+                  href={DONATE_HREF}
                   className="group inline-flex min-h-[44px] items-center justify-center gap-2 rounded-none bg-primary px-5 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
                 >
                   Support the mission
