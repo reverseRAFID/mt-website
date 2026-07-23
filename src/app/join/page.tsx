@@ -149,7 +149,7 @@ export default async function JoinPage() {
       {/* Page hero band */}
       <PageHero
         kicker="Recruitment"
-        title="Join the Team"
+        title="Join The Team"
         description="We are a multidisciplinary engineering team where students build practical expertise across design, fabrication, electronics, software, autonomy, research, and outreach. Our recruitment process helps us find people who are curious, collaborative, and ready to learn through project-based work, mentorship, and technical evaluation."
         watermark="JOIN"
       >
