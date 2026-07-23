@@ -3,7 +3,7 @@ import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Accordion } from '@/components/ui/Accordion'
 
-export function SupportFaq({ items }: { items: FaqItem[] }) {
+export function SupportFaq({ items, index = '04' }: { items: FaqItem[]; index?: string }) {
   if (items.length === 0) return null
 
   return (
@@ -11,7 +11,7 @@ export function SupportFaq({ items }: { items: FaqItem[] }) {
       <GhostText text="ANSWERS" drift="left" outline />
       <div className="section-container relative">
         <SectionHeader
-          index="04"
+          index={index}
           kicker="Questions"
           title="What supporters ask"
           description="Mostly about privacy — so here it is in plain terms."

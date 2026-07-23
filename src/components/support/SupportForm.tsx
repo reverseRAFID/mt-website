@@ -194,7 +194,7 @@ export function SupportForm({ verificationHours }: { verificationHours: number }
           in touch.
         </p>
         <Link
-          href="#supporters"
+          href="/support#supporters"
           className="group inline-flex min-h-[44px] items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
         >
           See the supporters roll

@@ -10,6 +10,7 @@ interface SupportersHonourRollProps {
   supporters: Supporter[]
   supporterCount: number
   showSupporterCount: boolean
+  index?: string
 }
 
 /**
@@ -23,13 +24,14 @@ export function SupportersHonourRoll({
   supporters,
   supporterCount,
   showSupporterCount,
+  index = '03',
 }: SupportersHonourRollProps) {
   return (
     <section id="supporters" className="relative scroll-mt-20 border-t border-divider py-20 lg:py-28">
       <GhostText text="BACKERS" drift="left" />
       <div className="section-container relative">
         <SectionHeader
-          index="03"
+          index={index}
           kicker="Honour roll"
           title="The people behind the rover"
           description={

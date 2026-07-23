@@ -14,9 +14,11 @@ import { CornerTicks } from '@/components/ui/CornerTicks'
 export function HowItWorks({
   steps,
   verificationHours,
+  index = '01',
 }: {
   steps: CrowdfundingStep[]
   verificationHours: number
+  index?: string
 }) {
   if (steps.length === 0) return null
 
@@ -25,7 +27,7 @@ export function HowItWorks({
       <GhostText text="PROCESS" drift="right" outline />
       <div className="section-container relative">
         <SectionHeader
-          index="01"
+          index={index}
           kicker="How it works"
           title="Four steps, verified by a human"
           description={`You send the money yourself, then tell us about it. A team member matches every declaration against our statement by hand — usually within ${verificationHours} hours — before anyone appears on the roll.`}
