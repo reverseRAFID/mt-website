@@ -204,7 +204,7 @@ export const GALLERY_QUERY = groq`
 
 export const CROWDFUNDING_CONFIG_QUERY = groq`
   *[_type == "crowdfundingConfig" && _id == "crowdfunding-config"][0] {
-    status, headline, pitch, closedMessage, verificationHours, showSupporterCount,
+    status, headline, pitch, closedMessage, deadline, verificationHours, showSupporterCount,
     channels[] {
       _key, method, accountNumber, accountName, accountType, note,
       bankName, branch, routingNumber

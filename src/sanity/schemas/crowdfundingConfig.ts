@@ -65,6 +65,14 @@ export const crowdfundingConfig = defineType({
       placeholder: 'We are not collecting donations right now — thank you to everyone who chipped in!',
     }),
     defineField({
+      name: 'deadline',
+      title: 'Campaign Deadline',
+      type: 'datetime',
+      group: 'campaign',
+      description:
+        'Optional. Drives the "N days left" urgency line on every support CTA across the site. Once it passes, the countdown simply stops appearing — it does NOT close the campaign, so set the status to Closed as well when the campaign really ends.',
+    }),
+    defineField({
       name: 'verificationHours',
       title: 'Verification Turnaround (hours)',
       type: 'number',

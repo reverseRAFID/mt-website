@@ -387,6 +387,7 @@ export interface CrowdfundingConfig {
   headline?: string
   pitch?: string
   closedMessage?: string
+  deadline?: string
   verificationHours?: number
   showSupporterCount?: boolean
   channels?: PaymentChannel[]
