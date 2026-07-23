@@ -9,6 +9,7 @@ import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import type { ApplySubteam } from '@/lib/subteams'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'Join the Team' }
 
@@ -262,6 +263,7 @@ export default async function JoinPage() {
           </div>
         </div>
       </section>
+      <SupportCTA copy="join" />
     </PageLayout>
   )
 }

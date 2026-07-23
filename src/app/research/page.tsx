@@ -12,6 +12,7 @@ import { PageHero } from '@/components/ui/PageHero'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { FeaturedPaper } from '@/components/research/FeaturedPaper'
 import { ResearchExplorer } from '@/components/research/ResearchExplorer'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'Research & Publications' }
 
@@ -133,6 +134,7 @@ export default async function ResearchPage() {
           </section>
         </>
       )}
+      <SupportCTA copy="research" />
     </PageLayout>
   )
 }

@@ -10,6 +10,7 @@ import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { PageHero } from '@/components/ui/PageHero'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'Gallery' }
 
@@ -171,6 +172,7 @@ export default async function GalleryPage() {
           )}
         </div>
       </section>
+      <SupportCTA copy="gallery" />
     </PageLayout>
   )
 }

@@ -9,6 +9,7 @@ import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'Our Rovers' }
 
@@ -109,6 +110,7 @@ export default async function RoversPage() {
           )}
         </div>
       </section>
+      <SupportCTA copy="rovers" />
     </PageLayout>
   )
 }

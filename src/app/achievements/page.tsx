@@ -11,6 +11,7 @@ import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { Milestones } from '@/components/achievements/Milestones'
 import { RankTrend, type RankPoint } from '@/components/achievements/RankTrend'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'Achievements' }
 
@@ -148,6 +149,7 @@ export default async function AchievementsPage() {
           )}
         </div>
       </section>
+      <SupportCTA copy="achievements" />
     </PageLayout>
   )
 }

@@ -7,6 +7,7 @@ import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionHeader } from '@/components/ui/SectionHeader'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'STEM Outreach' }
 
@@ -154,6 +155,7 @@ export default function OutreachPage() {
           </Reveal>
         </div>
       </section>
+      <SupportCTA copy="outreach" />
     </PageLayout>
   )
 }

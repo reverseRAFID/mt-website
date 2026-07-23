@@ -4,6 +4,7 @@ import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import type { Metadata } from 'next'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'Contact' }
 
@@ -243,6 +244,7 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+      <SupportCTA copy="contact" />
     </PageLayout>
   )
 }

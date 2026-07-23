@@ -11,6 +11,7 @@ import { Counter } from '@/components/motion/Counter'
 import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -270,6 +271,7 @@ export default async function CompetitionPage({ params }: Props) {
           </div>
         </div>
       </section>
+      <SupportCTA copy="competitions" />
     </PageLayout>
   )
 }

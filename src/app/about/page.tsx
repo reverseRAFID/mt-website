@@ -11,6 +11,7 @@ import { Testimonials } from '@/components/sections/Testimonials'
 import { sanityFetch } from '@/sanity/lib/client'
 import { FEATURED_TESTIMONIALS_QUERY } from '@/sanity/lib/queries'
 import type { Testimonial } from '@/sanity/lib/types'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'About Us' }
 
@@ -183,6 +184,7 @@ export default async function AboutPage() {
           description="The faculty and mentors who back Mongol-Tori on what the team is building and where it's headed."
         />
       )}
+      <SupportCTA copy="about" />
     </PageLayout>
   )
 }

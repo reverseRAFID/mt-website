@@ -8,6 +8,7 @@ import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'SAR Videos' }
 
@@ -136,6 +137,7 @@ export default async function SarVideosPage() {
           )}
         </div>
       </section>
+      <SupportCTA copy="sarVideos" />
     </PageLayout>
   )
 }

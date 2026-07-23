@@ -9,6 +9,7 @@ import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'News & Blog' }
 
@@ -183,6 +184,7 @@ export default async function NewsPage() {
           )}
         </div>
       </section>
+      <SupportCTA copy="news" />
     </PageLayout>
   )
 }

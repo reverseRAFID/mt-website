@@ -6,6 +6,7 @@ import type { MemberCard } from '@/sanity/lib/types'
 import { GhostText } from '@/components/motion/GhostText'
 import { PageHero } from '@/components/ui/PageHero'
 import { TeamDirectory } from '@/components/team/TeamDirectory'
+import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'The Team' }
 
@@ -33,6 +34,7 @@ export default async function TeamPage() {
           <TeamDirectory members={members} />
         </div>
       </section>
+      <SupportCTA copy="team" />
     </PageLayout>
   )
 }
