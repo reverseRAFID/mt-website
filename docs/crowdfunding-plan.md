@@ -1,0 +1,275 @@
+# Crowdfunding / Supporters — Feature Plan
+
+Individual-donor crowdfunding for BRACU Mongol-Tori. Donors pay through a mobile
+financial service (bKash / Nagad / Rocket / Upay) or bank transfer, then declare
+that payment through a form on the site. An admin verifies the payment manually in
+Sanity Studio, records the amount, and approves it. Approved supporters appear on a
+public honour roll ranked by amount — **without the amount ever being public**.
+
+---
+
+## 1. Product spec
+
+### 1.1 Donor journey
+
+```
+/support
+  │
+  ├─ 1. Read the campaign pitch
+  ├─ 2. Pick a payment channel card → tap "Copy" on the account number
+  ├─ 3. Leave the site, send money in the bKash/Nagad/bank app
+  ├─ 4. Come back, fill the declaration form:
+  │        • channel used            (required)
+  │        • account you sent from   (required — how the admin matches it)
+  │        • transaction ID          (optional but speeds verification)
+  │        • your name               (required — always recorded)
+  │        • "list me as Anonymous"  (checkbox)
+  │        • affiliation             (optional, e.g. "BRACU CSE '22")
+  │        • public message          (optional, ≤ 160 chars)
+  │        • email / phone           (optional, for the thank-you)
+  │        • "I confirm I sent this" (required)
+  └─ 5. Submit → status: pending → "We'll verify within N hours"
+```
+
+### 1.2 Admin journey
+
+```
+Sanity Studio → Crowdfunding
+  ├─ ⏳ Pending Verification   ← new declarations land here
+  │      1. Match sender account / trx ID against the bKash statement
+  │      2. Type the verified amount  (required to approve)
+  │      3. Set Verified At
+  │      4. Status → ✅ Approved      → appears publicly within 60s (ISR)
+  │      or  Status → ⛔ Rejected     + reason (never shown publicly)
+  ├─ ✅ Approved   (ordered by amount desc — the live leaderboard)
+  ├─ ⛔ Rejected
+  ├─ 📋 All Donations
+  └─ ⚙️ Crowdfunding Config (singleton)
+```
+
+### 1.3 Public honour roll
+
+Table layout, ranked. Rank is derived purely from position in an
+`order(amount desc)` query — **the amount itself is never projected**.
+
+| RANK | SUPPORTER              | BADGE           | NOTE            | VERIFIED   |
+|------|------------------------|-----------------|-----------------|------------|
+| #01  | Tanvir Rahman · CSE'19 | GOLD PATRON     | "Go get gold."  | 12 Jul 2026 |
+| #02  | Anonymous              | SILVER PATRON   | —               | 09 Jul 2026 |
+| #03  | Nusrat Jahan           | BRONZE PATRON   | —               | 08 Jul 2026 |
+| #04  | Anonymous              | TOP SUPPORTER   | —               | 04 Jul 2026 |
+| #05  | Rafid Hasan · EEE'21   | TOP SUPPORTER   | —               | 02 Jul 2026 |
+| 06   | Sadia Islam            | —               | —               | 01 Jul 2026 |
+| …    |                        |                 |                 |            |
+
+Ties (equal amounts) break on earlier `approvedAt`, then `_createdAt` — stable
+and deterministic.
+
+### 1.4 Homepage section
+
+A `CrowdfundingSection` between `Testimonials` and `CTASection`:
+supporter count + top-5 mini table + **"See all supporters" → `/support`**
+(the "see more" button) + a primary "Support the mission" CTA.
+
+---
+
+## 2. Privacy architecture — the load-bearing decision
+
+> **The Sanity `production` dataset is currently PUBLIC.** Verified with an
+> unauthenticated request:
+> `curl 'https://aslda7ok.api.sanity.io/v2024-01-01/data/query/production?query=count(*[_type=="sponsor"])'`
+> → `{"result":17}`.
+>
+> On a public dataset **every field of every document is world-readable**, no
+> matter what the site's own GROQ projections select. Donation amounts, sender
+> account numbers, and donor emails would all be one `curl` away.
+
+**Decision: make the `production` dataset private.**
+(sanity.io/manage → project `aslda7ok` → Datasets → production → Visibility → Private)
+
+Why this is safe for the existing site:
+
+| Concern | Status |
+|---|---|
+| Server-side reads | Already tokened — `readClient` in `src/sanity/lib/client.ts` uses `SANITY_API_READ_TOKEN ?? SANITY_API_TOKEN`. |
+| Client-side reads | None. No `'use client'` component calls `sanityFetch`/`.fetch` — they only import `urlFor` and types. |
+| Images | Sanity **assets stay publicly served from `cdn.sanity.io` regardless of dataset visibility**. `next/image` keeps working. |
+| Studio `/studio` | Uses interactive Sanity login, unaffected. |
+| Seed scripts | Already token-authenticated. |
+| Vercel | `SANITY_API_TOKEN` must be set in Production **and** Preview. It already is — the apply form requires it. |
+
+Bonus: this also closes an existing hole — `application` documents (applicant
+name, email, phone, student ID) are currently world-readable. There are 0 today,
+so nothing has leaked, but the next recruitment cycle would expose all of it.
+
+### 2.1 Defence in depth (code-side, independent of dataset visibility)
+
+1. **Private fields are never projected.** The public GROQ query selects only
+   `_id, displayName, affiliation, message, approvedAt`. `amount`,
+   `senderAccount`, `transactionId`, `contactEmail`, `contactPhone`,
+   `adminNotes`, `rejectionReason`, and the real `donorName` of an anonymous
+   donor are never in a payload that reaches a browser.
+2. **Anonymity is resolved server-side, in GROQ**, not in React:
+   `"displayName": select(isAnonymous == true => "Anonymous", donorName)`.
+   The real name of an anonymous donor never leaves Sanity.
+3. **Rank is computed from array position**, never from the amount value.
+   Sanity does the `order(amount desc)` internally and returns rows without it.
+4. **No aggregate figures.** No "total raised", no goal thermometer, no
+   averages — nothing an attacker could difference against known ranks.
+   Supporter *count* only.
+5. **A privacy guard script** (`npm run check:privacy`) fails the build if any
+   public query string mentions a private field, and probes the live API to
+   assert the dataset is not anonymously readable.
+
+---
+
+## 3. Sub-modules
+
+| # | Module | Files |
+|---|---|---|
+| A | Shared domain constants | `src/lib/crowdfunding.ts` |
+| B | Sanity schema | `src/sanity/schemas/donation.ts`, `crowdfundingConfig.ts`, `index.ts` |
+| C | Studio structure | `sanity.config.ts` |
+| D | Types + queries | `src/sanity/lib/types.ts`, `queries.ts` |
+| E | Server data layer | `src/lib/donations.ts`, `src/lib/rate-limit.ts` |
+| F | Submission API | `src/app/api/donate/route.ts` |
+| G | Design tokens | `src/app/globals.css` (rank metal tokens) |
+| H | UI primitives | `src/components/ui/CopyButton.tsx` |
+| I | Support components | `src/components/support/*` |
+| J | Pages + wiring | `src/app/support/page.tsx`, `src/app/page.tsx`, `Navbar`, `Footer` |
+| K | Ops | `.env.local.example`, `docs/`, `scripts/check-donation-privacy.mjs`, `scripts/seed-donations.mjs` |
+
+### 3.1 `donation` document
+
+**Public-safe** (projected to the site)
+
+| Field | Type | Notes |
+|---|---|---|
+| `status` | string | `pending` \| `approved` \| `rejected`. Initial `pending`. |
+| `donorName` | string | Always recorded. Replaced by `"Anonymous"` in the public projection when `isAnonymous`. |
+| `isAnonymous` | boolean | |
+| `affiliation` | string | Optional, e.g. `BRACU CSE '22`. Suppressed when anonymous. |
+| `message` | text | Optional public note, ≤ 160 chars. |
+| `donatedAt` | datetime | Set by the API on submission. |
+| `approvedAt` | datetime | Set by admin. Required when approving. |
+
+**Admin-only** (never projected)
+
+| Field | Type | Notes |
+|---|---|---|
+| `amount` | number | BDT. **Required and > 0 to approve.** |
+| `paymentMethod` | string | Channel the donor used. |
+| `senderAccount` | string | Number the donor sent from. |
+| `transactionId` | string | Optional. Unique-checked on submit. |
+| `contactEmail` / `contactPhone` | string | Optional. |
+| `adminNotes` | text | Internal. |
+| `verifiedBy` | string | Internal. |
+| `rejectionReason` | string | Internal. |
+
+All donor-supplied fields are `readOnly` in the Studio (same convention as
+`application`) so verification can't silently rewrite a declaration. Only
+`status`, `amount`, `approvedAt`, `verifiedBy`, `adminNotes`, and
+`rejectionReason` are editable.
+
+### 3.2 `crowdfundingConfig` singleton (`_id: crowdfunding-config`)
+
+`status` (`open`/`paused`/`closed`, gates the API server-side) · `headline` ·
+`pitch` · `closedMessage` · `verificationHours` · `showSupporterCount` ·
+`channels[]` (method, accountName, accountNumber, accountType, note, bankName,
+branch, routingNumber) · `steps[]` · `faqItems[]`.
+
+The account numbers donors copy live here, so the team can rotate them without
+a deploy.
+
+---
+
+## 4. Design system compliance
+
+Everything reuses the existing mission-control language — no new patterns:
+
+- `PageLayout` + `PageHero` (watermark `SUPPORT`) for the page shell
+- `SectionHeader` with numbered kickers, `GhostText` watermarks per section
+- `Reveal` for scroll entrances, `Counter` for the supporter tally
+- `CornerTicks`, `hud-label`, `nums`, `surface-lift`, `rounded-card` (= 0 radius),
+  `tech-grid`, `Accordion` for the FAQ
+- Form styling copied verbatim from `ApplyForm` (`inputCls` / `SectionTitle` /
+  numbered fieldsets / focus rings / 44px min targets)
+- Single hot accent preserved. The only new hues are three **metal** tokens for
+  ranks 1–3 (gold/silver/bronze), which read as medals rather than as a second
+  brand colour; ranks 4–5 use the existing orange (solid vs outline).
+
+New tokens in `globals.css`, light + dark, registered in `@theme inline`:
+`--rank-gold`, `--rank-gold-bg`, `--rank-silver`, `--rank-silver-bg`,
+`--rank-bronze`, `--rank-bronze-bg`.
+
+---
+
+## 5. Implementation plan — 30 steps
+
+Branch: **`feat/crowdfunding`**. Every step is one commit, pushed immediately.
+
+### Phase 0 — Branch
+- **S00** Branch off `main`; commit the pending working-tree work (brutalist type
+  system + `GhostText.tsx`) as the branch baseline so the branch builds standalone.
+- **S01** Commit this plan.
+
+### Phase 1 — Data layer
+- **S02** `src/lib/crowdfunding.ts` — payment methods, rank tiers, display helpers, validators.
+- **S03** `crowdfundingConfig` schema.
+- **S04** `donation` schema.
+- **S05** Register both in `schemas/index.ts`.
+- **S06** Studio structure: Crowdfunding group (Pending / Approved / Rejected / All / Config).
+- **S07** Types in `src/sanity/lib/types.ts`.
+- **S08** GROQ in `src/sanity/lib/queries.ts` — public-safe projections.
+
+### Phase 2 — Server
+- **S09** `src/lib/rate-limit.ts`.
+- **S10** `POST /api/donate`.
+- **S11** `src/lib/donations.ts` — fetch + rank derivation.
+
+### Phase 3 — Tokens
+- **S12** Rank metal tokens in `globals.css`.
+
+### Phase 4 — Components
+- **S13** `CopyButton`.
+- **S14** `RankBadge`.
+- **S15** `SupportersTable` (search + show-more + responsive).
+- **S16** `PaymentChannels`.
+- **S17** `SupportForm`.
+- **S18** `HowItWorks`.
+- **S19** `SupportFaq`.
+- **S20** `SupportersHonourRoll` section wrapper + empty state.
+
+### Phase 5 — Pages
+- **S21** `/support` page + metadata.
+- **S22** `CrowdfundingSection` (homepage).
+- **S23** Wire into homepage.
+- **S24** Navbar + Footer links.
+
+### Phase 6 — Ops
+- **S25** `.env.local.example` + privacy runbook doc.
+- **S26** `scripts/check-donation-privacy.mjs` + `npm run check:privacy`.
+- **S27** `scripts/seed-donations.mjs` (demo rows, `seed-` prefixed like the others).
+
+### Phase 7 — Verification
+- **S28** Typecheck + lint + production build.
+- **S29** Runtime smoke: dev server, every route, API happy path + each rejection path.
+- **S30** Browser pass across widths; privacy audit; final push.
+
+---
+
+## 6. Production-readiness checklist
+
+- [ ] `npm run lint` clean
+- [ ] `tsc --noEmit` clean
+- [ ] `next build` succeeds; `/support` renders
+- [ ] `POST /api/donate` — happy path creates a `pending` doc
+- [ ] `POST /api/donate` — rejects: closed campaign, missing required fields,
+      bad channel, over-length, duplicate trx ID, honeypot, too-fast submit,
+      rate limit
+- [ ] Zero amount leakage: page HTML + all JSON payloads grepped for the
+      seeded amounts and private fields
+- [ ] Anonymous donors' real names absent from the wire
+- [ ] Dataset visibility = private; anonymous `curl` returns 401
+- [ ] Reduced-motion and keyboard paths work; table is screen-reader sane
+- [ ] Light + dark, 375 / 768 / 1440 widths
