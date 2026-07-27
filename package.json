@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check:privacy": "node scripts/check-donation-privacy.mjs"
+    "check:privacy": "node scripts/check-shop-privacy.mjs; s=$?; node scripts/check-donation-privacy.mjs; d=$?; exit $((s|d))",
+    "check:shop": "node scripts/check-shop-privacy.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

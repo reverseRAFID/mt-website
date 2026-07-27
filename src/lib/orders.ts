@@ -21,7 +21,7 @@ import {
   ORDER_BY_TRACK_ID_INTERNAL_QUERY,
   ORDER_STOCK_STATE_INTERNAL_QUERY,
   PRODUCTS_BY_IDS_QUERY,
-  TRACK_ID_EXISTS_QUERY,
+  TRACK_ID_EXISTS_INTERNAL_QUERY,
 } from '@/sanity/lib/queries'
 import type {
   OrderInternal,
@@ -401,7 +401,7 @@ function arrayKey(): string {
 async function reserveTrackId(prefix: string): Promise<string> {
   for (let attempt = 0; attempt < MAX_TRACK_ID_ATTEMPTS; attempt++) {
     const trackId = generateTrackId(prefix)
-    const exists = await sanityFetch<boolean>(TRACK_ID_EXISTS_QUERY, { trackId }, 0)
+    const exists = await sanityFetch<boolean>(TRACK_ID_EXISTS_INTERNAL_QUERY, { trackId }, 0)
     if (!exists) return trackId
   }
   throw new Error('[shop] could not allocate a unique track ID after repeated attempts')

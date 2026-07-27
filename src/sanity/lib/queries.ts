@@ -404,7 +404,7 @@ export const ORDER_BY_TRACK_ID_INTERNAL_QUERY = groq`
 `
 
 /** Uniqueness probe for a freshly generated track ID. */
-export const TRACK_ID_EXISTS_QUERY = groq`
+export const TRACK_ID_EXISTS_INTERNAL_QUERY = groq`
   count(*[_type == "order" && trackId == $trackId]) > 0
 `
 
