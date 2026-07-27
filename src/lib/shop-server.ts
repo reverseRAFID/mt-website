@@ -96,10 +96,32 @@ function clampInt(value: unknown, fallback: number, min: number): number {
   return Math.max(min, Math.round(value))
 }
 
-/** Strip the internal-only fields. Use this anywhere a component sees the config. */
+/**
+ * Strip the internal-only fields. Use this anywhere a component sees the config.
+ *
+ * Built by picking fields rather than by destructuring away the private ones,
+ * so a field added to ShopConfigInternal in future is private until someone
+ * deliberately publishes it — the same reasoning as toPublicOrder().
+ */
 function toPublic(config: ShopConfigInternal): ShopConfig {
-  const { adminNotifyEmails: _adminNotifyEmails, ...rest } = config
-  return rest
+  return {
+    status: config.status,
+    closedMessage: config.closedMessage,
+    announcement: config.announcement,
+    standardDeliveryFee: config.standardDeliveryFee,
+    campusDeliveryEnabled: config.campusDeliveryEnabled,
+    campusHandoverPoints: config.campusHandoverPoints,
+    requireBracuEmailForCampus: config.requireBracuEmailForCampus,
+    estimatedDeliveryDays: config.estimatedDeliveryDays,
+    minOrderValue: config.minOrderValue,
+    maxQtyPerItem: config.maxQtyPerItem,
+    maxItemsPerOrder: config.maxItemsPerOrder,
+    orderPrefix: config.orderPrefix,
+    supportEmail: config.supportEmail,
+    supportPhone: config.supportPhone,
+    shippingPolicy: config.shippingPolicy,
+    returnPolicy: config.returnPolicy,
+  }
 }
 
 // ── Config ────────────────────────────────────────────────────

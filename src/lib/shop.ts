@@ -383,12 +383,14 @@ export function isTrackIdShape(value: string): boolean {
 // the buyer to recognise their own order and nothing more. See
 // docs/shop-runbook.md for the full "never published" list.
 
-/** `01712345678` → `••••••678`. Short or malformed input is fully masked. */
-export function maskPhone(phone: string): string {
-  const digits = phone.replace(/\D/g, '')
-  if (digits.length < 4) return '••••••'
-  return `••••••${digits.slice(-3)}`
-}
+// There is deliberately no maskPhone() here any more.
+//
+// Masking a phone number in TypeScript meant fetching the full number into the
+// page first, and Next serialises fetch responses into the RSC flight payload —
+// so the raw number sat in the page source even though nothing rendered it.
+// The number is now reduced to `phoneLast3` when the order is written, and
+// ORDER_TRACK_QUERY simply never selects `customerPhone`. Masking a value you
+// already fetched is too late; the fix has to be upstream of the fetch.
 
 /**
  * Reduce a delivery address to the coarsest recognisable form — area and city

@@ -21,15 +21,20 @@ export const dynamic = 'force-dynamic'
 /**
  * Orders per IP per hour.
  *
- * Deliberately loose. BRAC University's campus network puts a great many
- * students behind one address, and a merch drop is exactly when they all order
- * at once — a tight per-IP limit would lock out the shop's core audience during
- * its busiest hour. The real protections are elsewhere: the honeypot and fill
- * timer stop scripted submissions, orders are cash-on-delivery so a fake one
- * costs the team nothing but review time, and an admin cancelling a junk order
+ * Deliberately loose, and the number is load-bearing. BRAC University's campus
+ * network puts hundreds of students behind a handful of public addresses, and a
+ * merch drop is precisely when they all order within the same hour. A tight
+ * per-IP limit does not stop an attacker — they rotate addresses, and this
+ * limiter is per-instance in-memory anyway — it only locks out the shop's core
+ * audience at its busiest moment. An earlier value of 15 was low enough that
+ * the end-to-end test suite tripped it, which is a fair proxy for a real drop.
+ *
+ * The protections that actually carry weight are elsewhere: the honeypot and
+ * fill timer reject scripted submissions, every order is cash-on-delivery so a
+ * fake one costs review time rather than money, and cancelling a junk order
  * returns its stock automatically.
  */
-const RATE = { limit: 15, windowMs: 60 * 60 * 1000 } as const
+const RATE = { limit: 40, windowMs: 60 * 60 * 1000 } as const
 
 /** Nobody reads a checkout form and fills it honestly faster than this. */
 const MIN_FILL_MS = 4000

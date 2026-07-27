@@ -592,3 +592,30 @@ export interface PublicOrder {
   cancellationReason?: string
   estimatedDeliveryDays?: string
 }
+
+/**
+ * Exactly what ORDER_TRACK_QUERY returns.
+ *
+ * Separate from `PublicOrder` because it is the shape that crosses the network
+ * from Sanity — and the point of the whole exercise is that no PII is in it,
+ * so that even a raw dump of this response into an RSC flight chunk is
+ * harmless.
+ */
+export interface OrderTrackRow {
+  trackId: string
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  placedAt: string
+  customerName: string
+  phoneLast3?: string
+  deliveryMethod: DeliveryMethod
+  area?: string
+  city?: string
+  handoverPoint?: string
+  items: OrderItem[]
+  subtotal: number
+  deliveryFee: number
+  total: number
+  statusHistory?: OrderStatusEvent[]
+  cancellationReason?: string
+}

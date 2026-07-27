@@ -219,9 +219,18 @@ export const order = defineType({
       title: 'Phone',
       type: 'string',
       group: 'customer',
-      description: 'NEVER PUBLISHED in full — the track page shows the last 3 digits only.',
+      description: 'NEVER PUBLISHED — not even partially. See phoneLast3 below.',
       readOnly,
       validation: (R) => R.required().max(LIMITS.phone),
+    }),
+    defineField({
+      name: 'phoneLast3',
+      title: 'Phone — last 3 digits',
+      type: 'string',
+      group: 'customer',
+      readOnly,
+      description:
+        'Computed once, when the order is placed. The track page shows this so the buyer can confirm the order is theirs, and the public projection can therefore avoid selecting customerPhone at all — GROQ has no substring function, so masking in the query is not an option. Masking in React would be too late: the raw value would already have crossed into the page.',
     }),
 
     // ── Delivery — ADMIN ONLY ─────────────────────────────────

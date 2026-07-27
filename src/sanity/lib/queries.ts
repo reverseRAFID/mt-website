@@ -403,6 +403,42 @@ export const ORDER_BY_TRACK_ID_INTERNAL_QUERY = groq`
   }
 `
 
+/**
+ * The track page's projection — and the ONLY order query that is safe to render.
+ *
+ * Masking used to happen in TypeScript, after the full order had been fetched.
+ * That was too late. Next serialises fetch responses into the RSC flight
+ * payload embedded in the page, so the raw street address, postcode, phone
+ * number and email ended up in the page source even though nothing rendered
+ * them. Selecting them was the mistake, not displaying them.
+ *
+ * So this projection never selects them at all. `area` and `city` are lifted
+ * out of `deliveryAddress` individually rather than taking the object, and the
+ * phone comes from the `phoneLast3` value computed when the order was placed —
+ * GROQ has no substring function, so it cannot mask a phone number itself.
+ *
+ * Same lesson, same fix as APPROVED_DONATIONS_QUERY: resolve privacy inside
+ * Sanity, so what must not be published never leaves the dataset.
+ */
+export const ORDER_TRACK_QUERY = groq`
+  *[_type == "order" && trackId == $trackId][0] {
+    trackId, status, paymentStatus, placedAt,
+    customerName,
+    phoneLast3,
+    deliveryMethod,
+    "area": deliveryAddress.area,
+    "city": deliveryAddress.city,
+    "handoverPoint": campusDetails.handoverPoint,
+    items[] {
+      productTitle, variantLabel, sku, quantity, unitPrice, lineTotal,
+      productId, variantKey, productSlug, imageUrl
+    },
+    subtotal, deliveryFee, total,
+    statusHistory[] { status, at, note },
+    cancellationReason
+  }
+`
+
 /** Uniqueness probe for a freshly generated track ID. */
 export const TRACK_ID_EXISTS_INTERNAL_QUERY = groq`
   count(*[_type == "order" && trackId == $trackId]) > 0

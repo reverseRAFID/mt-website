@@ -94,7 +94,13 @@ const queries = exportedQueries(queriesSource)
     (q) => /_type\s*==\s*"order"/.test(q.body) || /\border-/.test(q.name.toLowerCase())
   )
 
+  // ORDER_TRACK_QUERY is the one order query that is *meant* to be public. It
+  // earns that by selecting no private field at all — which the inverse check
+  // below verifies rather than takes on trust.
+  const PUBLIC_ORDER_QUERIES = new Set(['ORDER_TRACK_QUERY'])
+
   for (const query of orderQueries) {
+    if (PUBLIC_ORDER_QUERIES.has(query.name)) continue
     if (!query.name.endsWith('_INTERNAL_QUERY')) {
       problems.push(
         `${query.name} reads order documents but is not named *_INTERNAL_QUERY.\n  ` +
@@ -104,11 +110,25 @@ const queries = exportedQueries(queriesSource)
   }
 
   // The inverse: a query NOT marked internal must not touch order PII.
+  //
+  // Selecting a specific safe SUBFIELD is the sanctioned pattern —
+  // `"area": deliveryAddress.area` publishes a district, whereas
+  // `deliveryAddress` publishes the street line and postcode with it. So the
+  // check is on the bare object, with the named-safe subfields stripped first.
+  const SAFE_SUBFIELDS = [
+    /deliveryAddress\.(area|city)/g,
+    /campusDetails\.handoverPoint/g,
+  ]
   for (const query of queries) {
     if (query.name.endsWith('_INTERNAL_QUERY')) continue
-    const leaked = PRIVATE_ORDER_FIELDS.filter((f) => new RegExp(`\\b${f}\\b`).test(query.body))
+    let body = query.body
+    for (const safe of SAFE_SUBFIELDS) body = body.replace(safe, '')
+    const leaked = PRIVATE_ORDER_FIELDS.filter((f) => new RegExp(`\\b${f}\\b`).test(body))
     if (leaked.length) {
-      problems.push(`${query.name} is public but projects: ${leaked.join(', ')}`)
+      problems.push(
+        `${query.name} is public but projects: ${leaked.join(', ')}.\n  ` +
+          `Select the specific safe subfield instead, e.g. \`"area": deliveryAddress.area\`.`
+      )
     }
   }
 
@@ -175,15 +195,18 @@ const queries = exportedQueries(queriesSource)
 // A regression here would be silent: the type still says `maskedPhone`, the
 // checks above still pass, and the full number ships anyway.
 {
-  const check = 'Masking helpers redact as documented'
+  const check = 'Private fields are never selected, and the redaction that remains still redacts'
   const source = readFileSync(join(SRC, 'lib/shop.ts'), 'utf8')
   const problems = []
 
-  const maskPhone = source.match(/export function maskPhone\(phone: string\): string \{([\s\S]*?)\n\}/)
-  if (!maskPhone) {
-    problems.push('maskPhone() not found in lib/shop.ts')
-  } else if (!/slice\(-3\)/.test(maskPhone[1]) || !/•/.test(maskPhone[1])) {
-    problems.push('maskPhone() no longer truncates to the last 3 digits behind bullets')
+  // The phone is protected by NOT being selected, not by being masked after the
+  // fact. Assert exactly that, since asserting on a masking helper the app no
+  // longer calls would be false assurance.
+  if (/\bcustomerPhone\b/.test(queries.find((q) => q.name === 'ORDER_TRACK_QUERY')?.body ?? '')) {
+    problems.push('ORDER_TRACK_QUERY selects customerPhone — it must use phoneLast3')
+  }
+  if (!/phoneLast3/.test(queriesSource)) {
+    problems.push('phoneLast3 is no longer projected — the track page would show no phone at all')
   }
 
   const maskAddress = source.match(
@@ -207,7 +230,7 @@ const queries = exportedQueries(queriesSource)
   }
 
   if (problems.length) fail(check, problems.join('\n  '))
-  else pass(check, 'maskPhone, maskAddress and toPublicOrder intact')
+  else pass(check, 'phone never selected, maskAddress and toPublicOrder intact')
 }
 
 // ── Summary ───────────────────────────────────────────────────

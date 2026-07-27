@@ -20,11 +20,13 @@ import {
   ORDER_BY_IDEMPOTENCY_KEY_INTERNAL_QUERY,
   ORDER_BY_TRACK_ID_INTERNAL_QUERY,
   ORDER_STOCK_STATE_INTERNAL_QUERY,
+  ORDER_TRACK_QUERY,
   PRODUCTS_BY_IDS_QUERY,
   TRACK_ID_EXISTS_INTERNAL_QUERY,
 } from '@/sanity/lib/queries'
 import type {
   OrderInternal,
+  OrderTrackRow,
   ProductForCart,
   ProductVariant,
   PublicOrder,
@@ -38,7 +40,6 @@ import {
   generateTrackId,
   isTrackIdShape,
   maskAddress,
-  maskPhone,
   normalizeTrackId,
   type DeliveryMethod,
 } from '@/lib/shop'
@@ -583,6 +584,11 @@ export async function reserveAndCreateOrder(
       customerName: input.customerName,
       customerEmail: input.customerEmail,
       customerPhone: input.customerPhone,
+      // Computed here, once, so the track page can show a recognisable tail
+      // without its query ever selecting the full number. GROQ has no substring
+      // function, and masking in React would be too late — the raw value would
+      // already have been fetched into the page.
+      phoneLast3: input.customerPhone.replace(/\D/g, '').slice(-3),
       deliveryMethod: input.deliveryMethod,
       // Only the fields belonging to the chosen method are stored. A campus
       // order therefore cannot carry a home address alongside its free
@@ -782,47 +788,36 @@ export async function restoreStockForOrder(orderId: string): Promise<RestoreResu
 // ── Public lookup ─────────────────────────────────────────────
 
 /**
- * Strip an order down to what a track-page visitor may see.
+ * Build the renderable order from the privacy-safe projection.
  *
- * Built field by field rather than by spreading and deleting. A spread would
- * mean every field added to the order schema in future is published by default
- * and has to be remembered about; this way the default is that a new field
- * stays private until someone deliberately adds it here.
+ * Note what this does NOT do: fetch the order and then drop fields. Masking
+ * after the fact was the original bug — Next serialises fetch responses into
+ * the RSC flight payload embedded in the page, so a street address the page
+ * never rendered was still sitting in its source. The fix is upstream, in
+ * ORDER_TRACK_QUERY: the private fields are never selected, so there is nothing
+ * here left to leak.
  */
-function toPublicOrder(order: OrderInternal, estimatedDeliveryDays?: string): PublicOrder {
+function toPublicOrder(row: OrderTrackRow, estimatedDeliveryDays?: string): PublicOrder {
   return {
-    trackId: order.trackId,
-    status: order.status,
-    paymentStatus: order.paymentStatus,
-    placedAt: order.placedAt,
+    trackId: row.trackId,
+    status: row.status,
+    paymentStatus: row.paymentStatus,
+    placedAt: row.placedAt,
     // Kept: the buyer has to recognise this as their own order.
-    customerName: order.customerName,
-    // Dropped entirely: customerEmail, deliveryAddress.line1/line2/postcode,
-    // campusDetails.bracuId, adminNotes, idempotencyKey.
-    maskedPhone: maskPhone(order.customerPhone ?? ''),
-    deliveryMethod: order.deliveryMethod,
+    customerName: row.customerName,
+    // `phoneLast3` was computed at order time precisely so the full number
+    // never has to be selected. Older orders predate it and show nothing.
+    maskedPhone: row.phoneLast3 ? `••••••${row.phoneLast3}` : '••••••',
+    deliveryMethod: row.deliveryMethod,
     maskedAddress:
-      order.deliveryMethod === 'campus'
-        ? 'BRACU campus'
-        : maskAddress(order.deliveryAddress?.area, order.deliveryAddress?.city),
-    campusHandoverPoint: order.campusDetails?.handoverPoint,
-    items: (order.items ?? []).map((item) => ({
-      productTitle: item.productTitle,
-      variantLabel: item.variantLabel,
-      sku: item.sku,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      lineTotal: item.lineTotal,
-      productId: item.productId,
-      variantKey: item.variantKey,
-      productSlug: item.productSlug,
-      imageUrl: item.imageUrl,
-    })),
-    subtotal: order.subtotal,
-    deliveryFee: order.deliveryFee,
-    total: order.total,
-    statusHistory: order.statusHistory ?? [],
-    cancellationReason: order.cancellationReason,
+      row.deliveryMethod === 'campus' ? 'BRACU campus' : maskAddress(row.area, row.city),
+    campusHandoverPoint: row.handoverPoint,
+    items: row.items ?? [],
+    subtotal: row.subtotal,
+    deliveryFee: row.deliveryFee,
+    total: row.total,
+    statusHistory: row.statusHistory ?? [],
+    cancellationReason: row.cancellationReason,
     estimatedDeliveryDays,
   }
 }
@@ -860,10 +855,12 @@ export async function getOrderByTrackId(
 
   if (!isTrackIdShape(trackId)) return null
 
-  const order = await getOrderInternalByTrackId(trackId)
-  if (!order) return null
+  // Deliberately NOT getOrderInternalByTrackId — that projection carries PII,
+  // and simply fetching it inside a page is enough to put it in the page source.
+  const row = await sanityFetch<OrderTrackRow | null>(ORDER_TRACK_QUERY, { trackId }, 0)
+  if (!row) return null
 
-  return toPublicOrder(order, config.estimatedDeliveryDays)
+  return toPublicOrder(row, config.estimatedDeliveryDays)
 }
 
 export { toPublicOrder }

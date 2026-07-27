@@ -7,7 +7,7 @@ import { TrackForm } from '@/components/shop/TrackForm'
 import { OrderTimeline } from '@/components/shop/OrderTimeline'
 import { OrderDetails } from '@/components/shop/OrderDetails'
 import { getOrderByTrackId } from '@/lib/orders'
-import { getShopConfigInternal } from '@/lib/shop-server'
+import { getShopConfig } from '@/lib/shop-server'
 import { rateLimit } from '@/lib/rate-limit'
 import { ORDER_STATUS_LABELS } from '@/lib/shop'
 
@@ -45,9 +45,13 @@ export default async function TrackDetailPage({ params, searchParams }: Props) {
   const ip = headerList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   const limited = rateLimit(`shop-track:${ip}`, RATE.limit, RATE.windowMs)
 
-  const config = await getShopConfigInternal()
-  // Everything this renders is already masked by getOrderByTrackId — the full
-  // address, phone and email never leave the server. See src/lib/orders.ts.
+  // Public config only. getShopConfigInternal() projects adminNotifyEmails,
+  // and merely fetching it inside a page is enough to put the team's inboxes
+  // into the RSC flight payload — the same mechanism that leaked the order.
+  const config = await getShopConfig()
+  // Reads through ORDER_TRACK_QUERY, which never selects the street line,
+  // postcode, full phone or email. They are not fetched, so they cannot end up
+  // in the page source. See src/lib/orders.ts.
   const order = limited.ok ? await getOrderByTrackId(trackId, config) : null
 
   return (
