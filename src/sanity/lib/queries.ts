@@ -413,7 +413,9 @@ export const TRACK_ID_EXISTS_QUERY = groq`
  * request can be answered with the original order instead of a duplicate.
  */
 export const ORDER_BY_IDEMPOTENCY_KEY_INTERNAL_QUERY = groq`
-  *[_type == "order" && idempotencyKey == $key][0] { _id, trackId }
+  *[_type == "order" && idempotencyKey == $key][0] {
+    _id, trackId, subtotal, deliveryFee, total
+  }
 `
 
 /** Everything the cancellation restore needs, and nothing more. */

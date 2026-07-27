@@ -82,9 +82,16 @@ export interface PricedLine {
   quantity: number
   lineTotal: number
   imageUrl?: string
-  /** `Infinity` when the product does not track inventory. */
-  available: number
-  /** Ceiling the quantity stepper should enforce. */
+  /**
+   * Units on the shelf, or `null` when the product does not track inventory.
+   *
+   * Null rather than `Infinity` because this crosses a JSON boundary, and
+   * `JSON.stringify(Infinity)` is `null` anyway — better to say so deliberately
+   * than to let the client receive a null it was not told to expect. Use
+   * `maxQuantity` for the stepper ceiling; it is always finite.
+   */
+  available: number | null
+  /** Ceiling the quantity stepper should enforce. Always a finite number. */
   maxQuantity: number
 }
 
@@ -234,7 +241,7 @@ export function priceCartFrom(
       quantity,
       lineTotal: unitPrice * quantity,
       imageUrl: imageUrlFor(product),
-      available,
+      available: Number.isFinite(available) ? available : null,
       maxQuantity,
     })
   }
@@ -407,14 +414,29 @@ function normalizeIdempotencyKey(key: string | undefined): string | undefined {
   return /^[A-Za-z0-9-]{8,64}$/.test(cleaned) ? cleaned : undefined
 }
 
-async function findOrderByIdempotencyKey(
-  key: string
-): Promise<{ _id: string; trackId: string } | null> {
-  return await sanityFetch<{ _id: string; trackId: string } | null>(
+type ExistingOrder = { _id: string; trackId: string } & Partial<OrderTotals>
+
+async function findOrderByIdempotencyKey(key: string): Promise<ExistingOrder | null> {
+  return await sanityFetch<ExistingOrder | null>(
     ORDER_BY_IDEMPOTENCY_KEY_INTERNAL_QUERY,
     { key },
     0
   )
+}
+
+/**
+ * Totals for a replayed order, taken from what was actually stored.
+ *
+ * A replay is answered with the original order, so it must also be answered
+ * with the original order's money. Returning zeroes would put "৳0" on the
+ * customer's confirmation screen for an order they genuinely owe for.
+ */
+function totalsOf(order: ExistingOrder): OrderTotals {
+  return {
+    subtotal: order.subtotal ?? 0,
+    deliveryFee: order.deliveryFee ?? 0,
+    total: order.total ?? 0,
+  }
 }
 
 /**
@@ -468,7 +490,7 @@ export async function reserveAndCreateOrder(
         ok: true,
         orderId: existing._id,
         trackId: existing.trackId,
-        totals: { subtotal: 0, deliveryFee: 0, total: 0 },
+        totals: totalsOf(existing),
         lines: [],
         replayed: true,
       }
@@ -636,7 +658,7 @@ export async function reserveAndCreateOrder(
             ok: true,
             orderId: existing._id,
             trackId: existing.trackId,
-            totals,
+            totals: totalsOf(existing),
             lines: cart.lines,
             replayed: true,
           }
