@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
 import { Counter } from '@/components/motion/Counter'
 import { CornerTicks } from '@/components/ui/CornerTicks'
+import { ghostStyle } from '@/lib/ghost-type'
 
 interface PageHeroProps {
   index?: string
@@ -15,8 +16,6 @@ interface PageHeroProps {
   stat?: { value: number; suffix?: string; label: string }
   /** Faded oversized word behind the title. Defaults to the title. */
   watermark?: string
-  /** Mono telemetry readout shown at the right of the top strip (desktop). */
-  coords?: string
   children?: ReactNode
 }
 
@@ -24,7 +23,7 @@ interface PageHeroProps {
  * Cinematic, reusable page header — the canonical header for every inner page.
  * The title reveals word-by-word on mount; a giant dimmed watermark sits behind
  * it and is scroll-scrubbed (parallax) for depth; a thin HUD telemetry strip
- * (blinking node + mono coordinates + scan sweep) adds the mission-control vibe.
+ * (blinking node + scan sweep) adds the mission-control vibe.
  * Degrades to static, fully-legible content under reduced-motion. Client island —
  * safe to drop inside server components.
  */
@@ -35,7 +34,6 @@ export function PageHero({
   description,
   stat,
   watermark,
-  coords = 'LAT 23.78°N · LON 90.41°E',
   children,
 }: PageHeroProps) {
   const rootRef = useRef<HTMLElement>(null)
@@ -90,7 +88,7 @@ export function PageHero({
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
       >
-        <span className="select-none whitespace-nowrap font-display text-[30vw] font-bold uppercase leading-[0.8] tracking-tighter text-text/[0.045] lg:text-[21vw]">
+        <span style={ghostStyle(mark)} className="ghost-word text-text/[0.045]">
           {mark}
         </span>
       </div>
@@ -109,13 +107,12 @@ export function PageHero({
         <div
           data-ph-strip
           aria-hidden
-          className="mb-6 flex items-center justify-between gap-4 border-b border-divider/70 pb-4 text-text-faint"
+          className="mb-6 flex items-center gap-4 border-b border-divider/70 pb-4 text-text-faint"
         >
           <span className="hud-label inline-flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-none bg-primary animate-blink" aria-hidden />
             {index ? `${index} //` : '// LIVE'}
           </span>
-          <span className="hud-label nums hidden sm:inline">{coords}</span>
         </div>
 
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">

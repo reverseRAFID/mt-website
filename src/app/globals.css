@@ -228,16 +228,29 @@ code, pre, .font-mono {
     font-family: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
     font-weight: 700;
     line-height: 0.78;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.05em;
     text-transform: uppercase;
     white-space: nowrap;
     user-select: none;
-    font-size: clamp(4.5rem, 16vw, 15rem);
     will-change: transform;
+
+    /* Full-bleed sizing. `--ghost-units` is the word's own width in em, handed
+       down by ghostStyle() — dividing the bleed target by it makes short and
+       long words alike run past both screen edges instead of each landing at a
+       different size. The ceiling stops three-letter words from swallowing the
+       viewport; the floor keeps very long ones from shrinking to a caption. */
+    --ghost-bleed: 122vw;
+    font-size: clamp(
+      3.5rem,
+      calc(var(--ghost-bleed) / var(--ghost-units, 5)),
+      min(46vw, 72vh)
+    );
   }
   .ghost-word-outline {
     color: transparent;
     -webkit-text-stroke: 1px var(--hairline);
+    /* Scale the stroke with the type, or it thins to a wisp at display size. */
+    -webkit-text-stroke-width: max(1px, 0.008em);
   }
 }
 

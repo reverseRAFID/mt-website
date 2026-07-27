@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
+import { ghostStyle } from '@/lib/ghost-type'
 import { Counter } from '@/components/motion/Counter'
 import { Magnetic } from '@/components/motion/Magnetic'
 import { CornerTicks } from '@/components/ui/CornerTicks'
@@ -121,7 +122,7 @@ export function Hero() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-[6%] z-0 flex justify-center overflow-hidden"
       >
-        <span className="select-none whitespace-nowrap font-display text-[17vw] font-bold leading-none tracking-tighter text-white/[0.035]">
+        <span style={ghostStyle('MONGOL-TORI')} className="ghost-word text-white/[0.035]">
           MONGOL-TORI
         </span>
       </div>
@@ -147,7 +148,6 @@ export function Hero() {
             <span className="h-1.5 w-1.5 rounded-none bg-primary animate-blink" aria-hidden />
             {'// SYS: NOMINAL'}
           </span>
-          <span className="hud-label nums hidden sm:inline">LAT 23.78 N&nbsp;&nbsp;LON 90.41 E</span>
           <span className="hud-label hidden md:inline text-white/30">MONGOL-TORI / BRAC UNIVERSITY</span>
         </div>
 

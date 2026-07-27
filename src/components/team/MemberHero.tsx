@@ -9,6 +9,7 @@ import { Counter } from '@/components/motion/Counter'
 import { Scramble } from '@/components/motion/Scramble'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SUBTEAM_COLORS } from '@/lib/subteam-style'
+import { ghostStyle } from '@/lib/ghost-type'
 
 export interface HeroStat {
   label: string
@@ -109,7 +110,7 @@ export function MemberHero({
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
       >
-        <span className="select-none whitespace-nowrap font-display text-[34vw] font-bold uppercase leading-[0.8] tracking-tighter text-text/[0.045] lg:text-[22vw]">
+        <span style={ghostStyle(firstName)} className="ghost-word text-text/[0.045]">
           {firstName}
         </span>
       </div>

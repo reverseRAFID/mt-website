@@ -226,7 +226,7 @@ export async function Footer() {
         text="MONGOL-TORI"
         anchor="bottom"
         drift="right"
-        className="text-[22vw] text-text/[0.025] translate-y-[14%]"
+        className="text-text/[0.025] translate-y-[14%]"
       />
     </footer>
   )

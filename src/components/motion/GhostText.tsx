@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
+import { ghostStyle } from '@/lib/ghost-type'
 import { cn } from '@/lib/utils'
 
 interface GhostTextProps {
@@ -25,11 +26,13 @@ const ANCHOR: Record<'top' | 'center' | 'bottom', string> = {
 }
 
 /**
- * Oversized low-opacity display word pinned behind a section's content — the
- * footer-wordmark pattern, animated. The word drifts horizontally as the
- * section scrolls through the viewport (GSAP scrub) and stays static under
- * reduced-motion. The host section only needs `relative`; the carrier clips
- * its own overflow so it can never cause horizontal scroll. Decorative only.
+ * Screen-filling low-opacity display word pinned behind a section's content —
+ * the footer-wordmark pattern, animated. The word is sized from its own letters
+ * so it runs past both screen edges whatever its length (see ghost-type), and
+ * drifts horizontally as the section scrolls through the viewport (GSAP scrub),
+ * staying static under reduced-motion. The host section only needs `relative`;
+ * the carrier clips its own overflow so it can never cause horizontal scroll.
+ * Decorative only.
  */
 export function GhostText({
   text,
@@ -74,6 +77,7 @@ export function GhostText({
     >
       <span
         ref={wordRef}
+        style={ghostStyle(text)}
         className={cn(
           'ghost-word',
           outline ? 'ghost-word-outline' : 'text-text/[0.035]',
