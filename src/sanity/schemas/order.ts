@@ -42,6 +42,13 @@ const orderItem = defineArrayMember({
     // Raw ids, kept as plain strings so they survive the product being deleted.
     defineField({ name: 'productId', title: 'Product ID', type: 'string' }),
     defineField({ name: 'variantKey', title: 'Variant Key', type: 'string' }),
+    defineField({
+      name: 'stockTaken',
+      title: 'Stock Was Deducted',
+      type: 'boolean',
+      description:
+        'Whether this line actually came off the shelf when the order was placed. Recorded per line because a cancellation must return exactly what was taken — if inventory tracking is switched on or off in between, asking the product what it does *now* would either strand the units or invent stock that never existed.',
+    }),
     defineField({ name: 'productSlug', title: 'Product Slug', type: 'string' }),
     defineField({ name: 'imageUrl', title: 'Image URL', type: 'url' }),
     defineField({

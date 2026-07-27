@@ -18,10 +18,18 @@ import { sanityFetch, urlFor } from '@/sanity/lib/client'
 import { sanityWriteClient } from '@/sanity/lib/writeClient'
 import {
   ORDER_BY_IDEMPOTENCY_KEY_INTERNAL_QUERY,
+  ORDER_BY_TRACK_ID_INTERNAL_QUERY,
+  ORDER_STOCK_STATE_INTERNAL_QUERY,
   PRODUCTS_BY_IDS_QUERY,
   TRACK_ID_EXISTS_QUERY,
 } from '@/sanity/lib/queries'
-import type { ProductForCart, ProductVariant, ShopConfigInternal } from '@/sanity/lib/types'
+import type {
+  OrderInternal,
+  ProductForCart,
+  ProductVariant,
+  PublicOrder,
+  ShopConfigInternal,
+} from '@/sanity/lib/types'
 import type { CartItem } from '@/lib/cart'
 import { isVariantKey, sanitizeCart } from '@/lib/cart'
 import { availableStock, findVariant, maxPurchasable, variantPrice } from '@/lib/product'
@@ -29,6 +37,9 @@ import {
   CAMPUS_DELIVERY_FEE,
   generateTrackId,
   isTrackIdShape,
+  maskAddress,
+  maskPhone,
+  normalizeTrackId,
   type DeliveryMethod,
 } from '@/lib/shop'
 
@@ -573,6 +584,9 @@ export async function reserveAndCreateOrder(
         productId: line.productId,
         variantKey: line.variantKey,
         productSlug: line.productSlug,
+        // Recorded now, so a later cancellation returns exactly what was taken
+        // regardless of how trackInventory is configured by then.
+        stockTaken: patches.has(line.productId),
         ...(line.imageUrl ? { imageUrl: line.imageUrl } : {}),
         product: { _type: 'reference' as const, _ref: line.productId, _weak: true },
       })),
@@ -651,3 +665,183 @@ export async function reserveAndCreateOrder(
 }
 
 export { isTrackIdShape }
+
+// ════════════════════════════════════════════════════════════════════════
+// CANCELLATION RESTORE + PUBLIC LOOKUP
+// ════════════════════════════════════════════════════════════════════════
+
+export type RestoreResult =
+  | { restored: true; units: number }
+  | {
+      restored: false
+      reason: 'not_found' | 'not_cancelled' | 'never_reserved' | 'already_restored' | 'busy'
+    }
+
+/**
+ * Return a cancelled order's stock to inventory. Exactly once, ever.
+ *
+ * The webhook that calls this can fire more than once for one cancellation:
+ * Sanity retries on a non-2xx, and an admin can re-save the document. Adding
+ * the same units back twice would invent inventory that does not exist and
+ * lead straight to overselling it.
+ *
+ * `stockRestoredAt` is the guard, and it is set inside the same transaction as
+ * the increments, under `ifRevisionId`. Two concurrent restores therefore
+ * cannot both commit — the loser's revision check fails, it re-reads, sees the
+ * timestamp, and stops.
+ *
+ * What gets returned comes from the order's own `stockTaken` flags, not from
+ * asking the product what it does now. If inventory tracking was toggled
+ * between the order and the cancellation, asking the product would either
+ * strand the units or conjure stock that was never taken.
+ */
+export async function restoreStockForOrder(orderId: string): Promise<RestoreResult> {
+  for (let attempt = 0; attempt < MAX_RESERVATION_ATTEMPTS; attempt++) {
+    const order = await sanityFetch<{
+      _id: string
+      _rev: string
+      status: string
+      stockReserved?: boolean
+      stockRestoredAt?: string | null
+      items?: { productId: string; variantKey: string; quantity: number; stockTaken?: boolean }[]
+    } | null>(ORDER_STOCK_STATE_INTERNAL_QUERY, { id: orderId }, 0)
+
+    if (!order) return { restored: false, reason: 'not_found' }
+    if (order.status !== 'cancelled') return { restored: false, reason: 'not_cancelled' }
+    if (order.stockReserved !== true) return { restored: false, reason: 'never_reserved' }
+    if (order.stockRestoredAt) return { restored: false, reason: 'already_restored' }
+
+    const lines = (order.items ?? []).filter(
+      (item) => item.stockTaken !== false && isVariantKey(item.variantKey) && item.quantity > 0
+    )
+
+    // Only products that still exist can be patched — a transaction naming a
+    // deleted document fails as a whole, which would block the restore of every
+    // other line in the order.
+    const products = await fetchCartProducts(lines.map((l) => l.productId))
+    const byId = new Map(products.map((p) => [p._id, p]))
+
+    const patches = new Map<string, { rev: string; increments: Record<string, number> }>()
+    let units = 0
+    for (const line of lines) {
+      const product = byId.get(line.productId)
+      if (!product) continue
+      const entry = patches.get(product._id) ?? { rev: product._rev, increments: {} }
+      const path = `variants[_key=="${line.variantKey}"].stock`
+      entry.increments[path] = (entry.increments[path] ?? 0) + line.quantity
+      patches.set(product._id, entry)
+      units += line.quantity
+    }
+
+    const txn = sanityWriteClient.transaction()
+    for (const [productId, { rev, increments }] of patches) {
+      txn.patch(productId, (patch) => patch.ifRevisionId(rev).inc(increments))
+    }
+    // Stamped in the same transaction as the increments. If this patch fails,
+    // no stock moved either.
+    txn.patch(order._id, (patch) =>
+      patch.ifRevisionId(order._rev).set({ stockRestoredAt: new Date().toISOString() })
+    )
+
+    try {
+      await txn.commit({ visibility: 'sync' })
+      return { restored: true, units }
+    } catch (err) {
+      if (attempt === MAX_RESERVATION_ATTEMPTS - 1) {
+        console.error('[shop] stock restore failed after retries', orderId, err)
+        return { restored: false, reason: 'busy' }
+      }
+      // Contention — loop, re-read, and let the guards decide again.
+    }
+  }
+  return { restored: false, reason: 'busy' }
+}
+
+// ── Public lookup ─────────────────────────────────────────────
+
+/**
+ * Strip an order down to what a track-page visitor may see.
+ *
+ * Built field by field rather than by spreading and deleting. A spread would
+ * mean every field added to the order schema in future is published by default
+ * and has to be remembered about; this way the default is that a new field
+ * stays private until someone deliberately adds it here.
+ */
+function toPublicOrder(order: OrderInternal, estimatedDeliveryDays?: string): PublicOrder {
+  return {
+    trackId: order.trackId,
+    status: order.status,
+    paymentStatus: order.paymentStatus,
+    placedAt: order.placedAt,
+    // Kept: the buyer has to recognise this as their own order.
+    customerName: order.customerName,
+    // Dropped entirely: customerEmail, deliveryAddress.line1/line2/postcode,
+    // campusDetails.bracuId, adminNotes, idempotencyKey.
+    maskedPhone: maskPhone(order.customerPhone ?? ''),
+    deliveryMethod: order.deliveryMethod,
+    maskedAddress:
+      order.deliveryMethod === 'campus'
+        ? 'BRACU campus'
+        : maskAddress(order.deliveryAddress?.area, order.deliveryAddress?.city),
+    campusHandoverPoint: order.campusDetails?.handoverPoint,
+    items: (order.items ?? []).map((item) => ({
+      productTitle: item.productTitle,
+      variantLabel: item.variantLabel,
+      sku: item.sku,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      lineTotal: item.lineTotal,
+      productId: item.productId,
+      variantKey: item.variantKey,
+      productSlug: item.productSlug,
+      imageUrl: item.imageUrl,
+    })),
+    subtotal: order.subtotal,
+    deliveryFee: order.deliveryFee,
+    total: order.total,
+    statusHistory: order.statusHistory ?? [],
+    cancellationReason: order.cancellationReason,
+    estimatedDeliveryDays,
+  }
+}
+
+/** SERVER ONLY — the unmasked order, for building emails. */
+export async function getOrderInternalByTrackId(trackId: string): Promise<OrderInternal | null> {
+  return await sanityFetch<OrderInternal | null>(
+    ORDER_BY_TRACK_ID_INTERNAL_QUERY,
+    { trackId },
+    0
+  )
+}
+
+/**
+ * Look up an order for the public track page.
+ *
+ * Accepts whatever the customer typed. The shape is validated before the
+ * dataset is touched so a junk string costs nothing, and a bare code with no
+ * prefix gets the configured one prepended — people copy the digits and leave
+ * the "MT-" behind more often than not.
+ *
+ * Returns null for both "no such order" and "that is not a track ID", so the
+ * page cannot be used to tell the difference.
+ */
+export async function getOrderByTrackId(
+  raw: string,
+  config: Pick<ShopConfigInternal, 'orderPrefix' | 'estimatedDeliveryDays'>
+): Promise<PublicOrder | null> {
+  const normalized = normalizeTrackId(raw ?? '')
+  if (!normalized) return null
+
+  const trackId = normalized.includes('-')
+    ? normalized
+    : `${config.orderPrefix}-${normalized}`
+
+  if (!isTrackIdShape(trackId)) return null
+
+  const order = await getOrderInternalByTrackId(trackId)
+  if (!order) return null
+
+  return toPublicOrder(order, config.estimatedDeliveryDays)
+}
+
+export { toPublicOrder }

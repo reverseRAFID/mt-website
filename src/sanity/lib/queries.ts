@@ -420,6 +420,6 @@ export const ORDER_BY_IDEMPOTENCY_KEY_INTERNAL_QUERY = groq`
 export const ORDER_STOCK_STATE_INTERNAL_QUERY = groq`
   *[_type == "order" && _id == $id][0] {
     _id, _rev, status, stockReserved, stockRestoredAt,
-    items[] { productId, variantKey, quantity }
+    items[] { productId, variantKey, quantity, stockTaken }
   }
 `

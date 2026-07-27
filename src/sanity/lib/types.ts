@@ -519,6 +519,8 @@ export interface OrderItem {
   variantKey: string
   productSlug?: string
   imageUrl?: string
+  /** Whether this line actually decremented inventory when the order was placed. */
+  stockTaken?: boolean
 }
 
 export interface OrderStatusEvent {
