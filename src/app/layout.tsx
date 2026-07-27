@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from '@/providers/ThemeProvider'
+import { CartProvider } from '@/providers/CartProvider'
 import { SiteFx } from '@/components/fx/SiteFx'
 import './globals.css'
 
@@ -51,8 +52,13 @@ export default function RootLayout({
       </head>
       <body className="antialiased" suppressHydrationWarning>
         <ThemeProvider>
-          <SiteFx />
-          {children}
+          {/* Wraps everything because the cart badge lives in the shared
+              Navbar, so any page can render it. State is localStorage-backed
+              and hydrates client-side — no data fetching happens here. */}
+          <CartProvider>
+            <SiteFx />
+            {children}
+          </CartProvider>
         </ThemeProvider>
       </body>
     </html>
