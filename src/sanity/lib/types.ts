@@ -2,6 +2,14 @@
 // Shared TypeScript types for Sanity documents
 // ============================================================
 
+import type {
+  DeliveryMethod,
+  OrderStatus,
+  PaymentMethod,
+  PaymentStatus,
+  ShopStatus,
+} from '@/lib/shop'
+
 export interface SanitySlug {
   current: string
 }
@@ -409,4 +417,205 @@ export interface PublicDonation {
 /** A `PublicDonation` with its 1-based position, derived from array index. */
 export interface Supporter extends PublicDonation {
   rank: number
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// SHOP
+//
+// PRIVACY — `PublicOrder` below is the ONLY order shape allowed to reach a
+// browser, and it is deliberately missing the customer's email, full phone
+// number and street address. If you find yourself widening it, that is the
+// moment to stop and read docs/shop-runbook.md instead.
+// ════════════════════════════════════════════════════════════════════════
+
+export interface ProductCategory {
+  _id: string
+  title: string
+  slug: SanitySlug
+  description?: string
+}
+
+/** A single sellable option. `stock` is meaningful only when the product tracks inventory. */
+export interface ProductVariant {
+  _key: string
+  label: string
+  sku?: string
+  stock: number
+  priceOverride?: number
+  isActive?: boolean
+}
+
+/** The card-sized projection used by the grid and the homepage teaser. */
+export interface ProductSummary {
+  _id: string
+  title: string
+  slug: SanitySlug
+  tagline?: string
+  basePrice: number
+  compareAtPrice?: number
+  featured?: boolean
+  trackInventory?: boolean
+  image?: SanityImage
+  imageCount?: number
+  category?: ProductCategory
+  variants?: ProductVariant[]
+}
+
+export interface Product extends ProductSummary {
+  description?: PortableTextBlock
+  variantAxisLabel?: string
+  maxPerOrder?: number
+  sizeGuide?: string
+  careInfo?: string
+  images?: (SanityImage & { _key: string; alt?: string })[]
+}
+
+/** PRODUCTS_BY_IDS_QUERY — carries `_rev` for the reservation compare-and-set. */
+export interface ProductForCart {
+  _id: string
+  _rev: string
+  title: string
+  slug: SanitySlug
+  basePrice: number
+  trackInventory?: boolean
+  isActive?: boolean
+  maxPerOrder?: number
+  image?: SanityImage
+  variants?: ProductVariant[]
+}
+
+export interface ShopConfig {
+  status: ShopStatus
+  closedMessage?: string
+  announcement?: string
+  standardDeliveryFee: number
+  campusDeliveryEnabled?: boolean
+  campusHandoverPoints?: string[]
+  requireBracuEmailForCampus?: boolean
+  estimatedDeliveryDays?: string
+  minOrderValue: number
+  maxQtyPerItem: number
+  maxItemsPerOrder: number
+  orderPrefix: string
+  supportEmail?: string
+  supportPhone?: string
+  shippingPolicy?: string
+  returnPolicy?: string
+}
+
+/** SERVER ONLY — adds the team inboxes. Never hand this to a component. */
+export interface ShopConfigInternal extends ShopConfig {
+  adminNotifyEmails?: string[]
+}
+
+export interface OrderItem {
+  productTitle: string
+  variantLabel: string
+  sku?: string
+  quantity: number
+  unitPrice: number
+  lineTotal: number
+  productId: string
+  variantKey: string
+  productSlug?: string
+  imageUrl?: string
+  /** Whether this line actually decremented inventory when the order was placed. */
+  stockTaken?: boolean
+}
+
+export interface OrderStatusEvent {
+  status: OrderStatus
+  at: string
+  note?: string
+}
+
+/** SERVER ONLY — the raw order, PII included. */
+export interface OrderInternal {
+  _id: string
+  trackId: string
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  paymentMethod?: PaymentMethod
+  placedAt: string
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  deliveryMethod: DeliveryMethod
+  deliveryAddress?: {
+    line1?: string
+    line2?: string
+    area?: string
+    city?: string
+    postcode?: string
+  }
+  campusDetails?: { handoverPoint?: string; bracuId?: string }
+  customerNote?: string
+  items: OrderItem[]
+  subtotal: number
+  deliveryFee: number
+  total: number
+  statusHistory?: OrderStatusEvent[]
+  notifiedStatuses?: string[]
+  emailStatus?: 'sent' | 'failed' | 'skipped'
+  /** Admin-set flag asking the webhook to re-send the confirmation. */
+  resendEmail?: boolean
+  stockReserved?: boolean
+  stockRestoredAt?: string | null
+  cancellationReason?: string
+}
+
+/**
+ * The masked order the track page renders.
+ *
+ * `customerName` survives because the buyer needs to recognise their own
+ * order; everything that could be used to find or contact them at home does
+ * not. There is no email, no street address, no postcode, and the phone is
+ * reduced to its last three digits.
+ */
+export interface PublicOrder {
+  trackId: string
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  placedAt: string
+  customerName: string
+  /** Already masked, e.g. "••••••789". Safe to render directly. */
+  maskedPhone: string
+  deliveryMethod: DeliveryMethod
+  /** Already coarsened to area + city, e.g. "Mirpur, Dhaka". */
+  maskedAddress: string
+  campusHandoverPoint?: string
+  items: OrderItem[]
+  subtotal: number
+  deliveryFee: number
+  total: number
+  statusHistory: OrderStatusEvent[]
+  cancellationReason?: string
+  estimatedDeliveryDays?: string
+}
+
+/**
+ * Exactly what ORDER_TRACK_QUERY returns.
+ *
+ * Separate from `PublicOrder` because it is the shape that crosses the network
+ * from Sanity — and the point of the whole exercise is that no PII is in it,
+ * so that even a raw dump of this response into an RSC flight chunk is
+ * harmless.
+ */
+export interface OrderTrackRow {
+  trackId: string
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  placedAt: string
+  customerName: string
+  phoneLast3?: string
+  deliveryMethod: DeliveryMethod
+  area?: string
+  city?: string
+  handoverPoint?: string
+  items: OrderItem[]
+  subtotal: number
+  deliveryFee: number
+  total: number
+  statusHistory?: OrderStatusEvent[]
+  cancellationReason?: string
 }

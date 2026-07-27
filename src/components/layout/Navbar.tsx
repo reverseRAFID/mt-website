@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useTheme } from 'next-themes'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { CartBadge } from '@/components/shop/CartBadge'
 
 const navLinks = [
   { href: '/about', label: 'About' },
@@ -16,6 +17,7 @@ const navLinks = [
   { href: '/news', label: 'News' },
   { href: '/sponsors', label: 'Sponsors' },
   { href: '/support', label: 'Support' },
+  { href: '/shop', label: 'Shop' },
 ]
 
 export function Navbar() {
@@ -139,6 +141,8 @@ export function Navbar() {
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </Link>
+
+          <CartBadge />
 
           <ThemeToggle />
 

@@ -11,6 +11,10 @@ import { recruitmentConfig } from './recruitmentConfig'
 import { application } from './application'
 import { crowdfundingConfig } from './crowdfundingConfig'
 import { donation } from './donation'
+import { productCategory } from './productCategory'
+import { product } from './product'
+import { shopConfig } from './shopConfig'
+import { order } from './order'
 
 export const schemaTypes = [
   // Documents
@@ -23,10 +27,15 @@ export const schemaTypes = [
   sponsor,
   testimonial,
   sarVideo,
+  // Shop catalogue
+  productCategory,
+  product,
   // Singletons
   recruitmentConfig,
   crowdfundingConfig,
+  shopConfig,
   // Form submissions
   application,
   donation,
+  order,
 ]

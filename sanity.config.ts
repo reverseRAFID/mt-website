@@ -141,6 +141,130 @@ export default defineConfig({
                       ),
                   ])
               ),
+            S.divider(),
+            // Merch shop — the order queue first, because that is the thing
+            // somebody has to work through daily. A customer is waiting at the
+            // other end of every row in "New Orders".
+            S.listItem()
+              .title('Shop')
+              .icon(() => '🛍️')
+              .child(
+                S.list()
+                  .title('Shop')
+                  .items([
+                    S.listItem()
+                      .title('New Orders')
+                      .icon(() => '🆕')
+                      .child(
+                        S.documentList()
+                          .title('New Orders — confirm these')
+                          .filter('_type == "order" && status == "placed"')
+                          .defaultOrdering([{ field: 'placedAt', direction: 'asc' }])
+                      ),
+                    S.listItem()
+                      .title('To Fulfil')
+                      .icon(() => '📦')
+                      .child(
+                        S.documentList()
+                          .title('To Fulfil — confirmed, packing, or on its way')
+                          .filter(
+                            '_type == "order" && status in ["confirmed", "processing", "dispatched"]'
+                          )
+                          .defaultOrdering([{ field: 'placedAt', direction: 'asc' }])
+                      ),
+                    S.listItem()
+                      .title('Awaiting Payment')
+                      .icon(() => '💵')
+                      .child(
+                        S.documentList()
+                          .title('Delivered but not yet marked paid')
+                          .filter(
+                            '_type == "order" && status == "delivered" && paymentStatus != "paid"'
+                          )
+                          .defaultOrdering([{ field: 'placedAt', direction: 'asc' }])
+                      ),
+                    S.listItem()
+                      .title('Delivered')
+                      .icon(() => '✅')
+                      .child(
+                        S.documentList()
+                          .title('Delivered')
+                          .filter('_type == "order" && status == "delivered"')
+                          .defaultOrdering([{ field: 'placedAt', direction: 'desc' }])
+                      ),
+                    S.listItem()
+                      .title('Cancelled')
+                      .icon(() => '⛔')
+                      .child(
+                        S.documentList()
+                          .title('Cancelled — stock returned to inventory')
+                          .filter('_type == "order" && status == "cancelled"')
+                          .defaultOrdering([{ field: 'placedAt', direction: 'desc' }])
+                      ),
+                    // Anything whose confirmation email did not go out. Left
+                    // unattended these are silent failures: the order is fine,
+                    // the customer just never heard about it.
+                    S.listItem()
+                      .title('Email Problems')
+                      .icon(() => '⚠️')
+                      .child(
+                        S.documentList()
+                          .title('Confirmation email failed or was skipped')
+                          .filter('_type == "order" && emailStatus in ["failed", "skipped"]')
+                          .defaultOrdering([{ field: 'placedAt', direction: 'desc' }])
+                      ),
+                    S.divider(),
+                    S.listItem()
+                      .title('All Orders')
+                      .icon(() => '📋')
+                      .child(
+                        S.documentTypeList('order')
+                          .title('All Orders')
+                          .defaultOrdering([{ field: 'placedAt', direction: 'desc' }])
+                      ),
+                    S.divider(),
+                    S.listItem()
+                      .title('Products')
+                      .icon(() => '👕')
+                      .child(
+                        S.documentTypeList('product')
+                          .title('Products')
+                          .defaultOrdering([{ field: 'order', direction: 'asc' }])
+                      ),
+                    S.listItem()
+                      .title('Categories')
+                      .icon(() => '🏷️')
+                      .child(
+                        S.documentTypeList('productCategory')
+                          .title('Categories')
+                          .defaultOrdering([{ field: 'order', direction: 'asc' }])
+                      ),
+                    // Any tracked product with a live variant at or below its
+                    // own alert threshold. coalesce() covers rows saved before
+                    // the threshold field existed.
+                    S.listItem()
+                      .title('Low Stock')
+                      .icon(() => '🪫')
+                      .child(
+                        S.documentList()
+                          .title('Low Stock — restock or hide')
+                          .filter(
+                            '_type == "product" && trackInventory != false && count(variants[isActive != false && stock <= coalesce(lowStockThreshold, 3)]) > 0'
+                          )
+                          .defaultOrdering([{ field: 'title', direction: 'asc' }])
+                      ),
+                    S.divider(),
+                    S.listItem()
+                      .title('Shop Settings')
+                      .icon(() => '⚙️')
+                      .child(
+                        S.document()
+                          .documentId('shop-config')
+                          .schemaType('shopConfig')
+                          .title('Shop Configuration')
+                      ),
+                  ])
+              ),
           ]),
     }),
   ],

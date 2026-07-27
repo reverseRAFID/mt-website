@@ -35,9 +35,11 @@ import { ResearchHighlights } from '@/components/sections/ResearchHighlights'
 import { CTASection } from '@/components/sections/CTASection'
 import { Testimonials } from '@/components/sections/Testimonials'
 import { CrowdfundingSection } from '@/components/sections/CrowdfundingSection'
+import { ShopTeaser } from '@/components/sections/ShopTeaser'
 import { SponsorsStrip } from '@/components/sections/SponsorsStrip'
 import { MARQUEE_SUBTEAMS } from '@/lib/subteams'
 import { getTopSupporters, getSupporterCount, getCrowdfundingConfig } from '@/lib/donations'
+import { getFeaturedProducts, getShopConfig } from '@/lib/shop-server'
 
 export default async function HomePage() {
   // Fetch all landing page data in parallel
@@ -52,6 +54,8 @@ export default async function HomePage() {
     topSupporters,
     supporterCount,
     crowdfunding,
+    featuredProducts,
+    shopConfig,
   ] = await Promise.all([
     sanityFetch<CompetitionCard | null>(LATEST_COMPETITION_QUERY),
     sanityFetch<RoverCard | null>(FEATURED_ROVER_QUERY),
@@ -63,6 +67,8 @@ export default async function HomePage() {
     getTopSupporters(),
     getSupporterCount(),
     getCrowdfundingConfig(),
+    getFeaturedProducts(4),
+    getShopConfig(),
   ])
 
   // Show only the 3 most recent research papers on the landing page
@@ -97,6 +103,10 @@ export default async function HomePage() {
             isOpen={crowdfunding.status === 'open'}
           />
         )}
+        {/* Hidden entirely while the shop is closed. A storefront that cannot
+            be bought from is a dead end, and it would compete for attention
+            with the crowdfunding ask directly above it. */}
+        {shopConfig.status === 'open' && <ShopTeaser products={featuredProducts} />}
         <CTASection />
         <SponsorsStrip sponsors={sponsors ?? []} />
       </main>

@@ -254,3 +254,210 @@ export const APPROVED_DONATION_COUNT_QUERY = groq`
 export const DONATION_TRX_EXISTS_QUERY = groq`
   count(*[_type == "donation" && transactionId == $transactionId]) > 0
 `
+
+// ════════════════════════════════════════════════════════════════════════
+// SHOP — PUBLIC PROJECTIONS
+//
+// Everything below this banner and above the SERVER-ONLY banner may reach a
+// browser. Products carry no personal data, so they project freely.
+//
+// ORDERS DO NOT BELONG IN THIS SECTION. An order holds a real name, an email
+// address, a mobile number and a home address. Any order projection lives
+// below, is suffixed `_INTERNAL_QUERY`, and must be masked by
+// `getOrderByTrackId()` before its result is rendered.
+//
+// `npm run check:privacy` enforces the split.
+// ════════════════════════════════════════════════════════════════════════
+
+/** Everything a shop page needs. Deliberately omits `adminNotifyEmails`. */
+export const SHOP_CONFIG_QUERY = groq`
+  *[_type == "shopConfig" && _id == "shop-config"][0] {
+    status, closedMessage, announcement,
+    standardDeliveryFee, campusDeliveryEnabled, campusHandoverPoints,
+    requireBracuEmailForCampus, estimatedDeliveryDays,
+    minOrderValue, maxQtyPerItem, maxItemsPerOrder, orderPrefix,
+    supportEmail, supportPhone,
+    shippingPolicy, returnPolicy
+  }
+`
+
+/** Just the gate — used where page content is irrelevant. */
+export const SHOP_STATUS_QUERY = groq`
+  *[_type == "shopConfig" && _id == "shop-config"][0].status
+`
+
+export const PRODUCT_CATEGORIES_QUERY = groq`
+  *[_type == "productCategory"] | order(order asc, title asc) {
+    _id, title, slug, description
+  }
+`
+
+/**
+ * The shop grid. Featured products lead, then manual order, then title.
+ *
+ * `variants` is projected without `sku` — an internal code is noise on a
+ * product card and there is no reason to ship it to every visitor.
+ */
+export const PRODUCTS_QUERY = groq`
+  *[_type == "product" && isActive == true] | order(featured desc, order asc, title asc) {
+    _id, title, slug, tagline, basePrice, compareAtPrice, featured, trackInventory,
+    "image": images[0],
+    "imageCount": count(images),
+    category-> { _id, title, slug },
+    variants[] { _key, label, stock, priceOverride, isActive }
+  }
+`
+
+export const FEATURED_PRODUCTS_QUERY = groq`
+  *[_type == "product" && isActive == true && featured == true]
+    | order(order asc, title asc)[0...$limit] {
+      _id, title, slug, tagline, basePrice, compareAtPrice, trackInventory,
+      "image": images[0],
+      category-> { _id, title, slug },
+      variants[] { _key, label, stock, priceOverride, isActive }
+    }
+`
+
+export const PRODUCT_BY_SLUG_QUERY = groq`
+  *[_type == "product" && slug.current == $slug && isActive == true][0] {
+    _id, title, slug, tagline, description, basePrice, compareAtPrice,
+    variantAxisLabel, trackInventory, maxPerOrder, sizeGuide, careInfo, featured,
+    images[] { _key, asset, hotspot, alt },
+    category-> { _id, title, slug },
+    variants[] { _key, label, sku, stock, priceOverride, isActive }
+  }
+`
+
+/** Slugs for generateStaticParams(). */
+export const PRODUCT_SLUGS_QUERY = groq`
+  *[_type == "product" && isActive == true && defined(slug.current)].slug.current
+`
+
+/** Same category, excluding the product being viewed. */
+export const RELATED_PRODUCTS_QUERY = groq`
+  *[_type == "product" && isActive == true && _id != $id && category._ref == $categoryId]
+    | order(featured desc, order asc)[0...$limit] {
+      _id, title, slug, tagline, basePrice, compareAtPrice, trackInventory,
+      "image": images[0],
+      category-> { _id, title, slug },
+      variants[] { _key, label, stock, priceOverride, isActive }
+    }
+`
+
+/**
+ * Resolve cart lines to live products.
+ *
+ * `_rev` comes back because the same shape feeds the stock reservation
+ * transaction, which uses it as a compare-and-set token. `isActive` is NOT
+ * filtered here: a withdrawn product must come back so the cart can say
+ * "this is no longer available" instead of silently dropping the line.
+ */
+export const PRODUCTS_BY_IDS_QUERY = groq`
+  *[_type == "product" && _id in $ids] {
+    _id, _rev, title, slug, basePrice, trackInventory, isActive, maxPerOrder,
+    "image": images[0],
+    variants[] { _key, label, sku, stock, priceOverride, isActive }
+  }
+`
+
+// ════════════════════════════════════════════════════════════════════════
+// SHOP — SERVER-ONLY PROJECTIONS
+//
+// These select customer PII. They may be used ONLY from route handlers and
+// server modules, and their results must be masked before rendering. Every
+// name here ends in `_INTERNAL_QUERY` so the privacy checker can tell them
+// apart from the public projections above.
+// ════════════════════════════════════════════════════════════════════════
+
+/**
+ * Config including the team notification addresses.
+ *
+ * Split from SHOP_CONFIG_QUERY so a page cannot accidentally publish the
+ * team's inboxes by reaching for the config it already had.
+ */
+export const SHOP_CONFIG_INTERNAL_QUERY = groq`
+  *[_type == "shopConfig" && _id == "shop-config"][0] {
+    status, closedMessage, announcement,
+    standardDeliveryFee, campusDeliveryEnabled, campusHandoverPoints,
+    requireBracuEmailForCampus, estimatedDeliveryDays,
+    minOrderValue, maxQtyPerItem, maxItemsPerOrder, orderPrefix,
+    supportEmail, supportPhone, adminNotifyEmails,
+    shippingPolicy, returnPolicy
+  }
+`
+
+/** The whole order. Mask via `getOrderByTrackId()` before it reaches a view. */
+export const ORDER_BY_TRACK_ID_INTERNAL_QUERY = groq`
+  *[_type == "order" && trackId == $trackId][0] {
+    _id, trackId, status, paymentStatus, paymentMethod, placedAt,
+    customerName, customerEmail, customerPhone,
+    deliveryMethod, deliveryAddress, campusDetails, customerNote,
+    items[] {
+      productTitle, variantLabel, sku, quantity, unitPrice, lineTotal,
+      productId, variantKey, productSlug, imageUrl
+    },
+    subtotal, deliveryFee, total,
+    statusHistory[] { status, at, note },
+    notifiedStatuses, emailStatus, resendEmail, stockReserved, stockRestoredAt,
+    cancellationReason
+  }
+`
+
+/**
+ * The track page's projection — and the ONLY order query that is safe to render.
+ *
+ * Masking used to happen in TypeScript, after the full order had been fetched.
+ * That was too late. Next serialises fetch responses into the RSC flight
+ * payload embedded in the page, so the raw street address, postcode, phone
+ * number and email ended up in the page source even though nothing rendered
+ * them. Selecting them was the mistake, not displaying them.
+ *
+ * So this projection never selects them at all. `area` and `city` are lifted
+ * out of `deliveryAddress` individually rather than taking the object, and the
+ * phone comes from the `phoneLast3` value computed when the order was placed —
+ * GROQ has no substring function, so it cannot mask a phone number itself.
+ *
+ * Same lesson, same fix as APPROVED_DONATIONS_QUERY: resolve privacy inside
+ * Sanity, so what must not be published never leaves the dataset.
+ */
+export const ORDER_TRACK_QUERY = groq`
+  *[_type == "order" && trackId == $trackId][0] {
+    trackId, status, paymentStatus, placedAt,
+    customerName,
+    phoneLast3,
+    deliveryMethod,
+    "area": deliveryAddress.area,
+    "city": deliveryAddress.city,
+    "handoverPoint": campusDetails.handoverPoint,
+    items[] {
+      productTitle, variantLabel, sku, quantity, unitPrice, lineTotal,
+      productId, variantKey, productSlug, imageUrl
+    },
+    subtotal, deliveryFee, total,
+    statusHistory[] { status, at, note },
+    cancellationReason
+  }
+`
+
+/** Uniqueness probe for a freshly generated track ID. */
+export const TRACK_ID_EXISTS_INTERNAL_QUERY = groq`
+  count(*[_type == "order" && trackId == $trackId]) > 0
+`
+
+/**
+ * Double-submit guard. Returns the existing order's track ID so a retried
+ * request can be answered with the original order instead of a duplicate.
+ */
+export const ORDER_BY_IDEMPOTENCY_KEY_INTERNAL_QUERY = groq`
+  *[_type == "order" && idempotencyKey == $key][0] {
+    _id, trackId, subtotal, deliveryFee, total
+  }
+`
+
+/** Everything the cancellation restore needs, and nothing more. */
+export const ORDER_STOCK_STATE_INTERNAL_QUERY = groq`
+  *[_type == "order" && _id == $id][0] {
+    _id, _rev, status, stockReserved, stockRestoredAt,
+    items[] { productId, variantKey, quantity, stockTaken }
+  }
+`
