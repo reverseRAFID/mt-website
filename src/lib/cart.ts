@@ -73,6 +73,22 @@ function isUsableId(id: unknown): id is string {
 }
 
 /**
+ * Sanity `_key` values are generated ids — letters, digits, dashes.
+ *
+ * Constrained deliberately rather than accepting any short string. The key is
+ * later interpolated into a GROQ-style patch path
+ * (`variants[_key=="…"].stock`) when stock is decremented, and a value
+ * containing a quote would change the shape of that expression. The reservation
+ * path uses a key read back from Sanity rather than this one, so this is the
+ * second of two independent guards, not the only one.
+ */
+const VARIANT_KEY_RE = /^[A-Za-z0-9_-]{1,64}$/
+
+export function isVariantKey(value: unknown): value is string {
+  return typeof value === 'string' && VARIANT_KEY_RE.test(value)
+}
+
+/**
  * Coerce anything at all into a valid cart.
  *
  * The input is whatever `JSON.parse` returned for a localStorage key that the
@@ -97,7 +113,7 @@ export function sanitizeCart(input: unknown, maxQtyPerItem: number): CartItem[] 
     const { productId, variantKey, quantity } = entry as Partial<CartItem>
 
     if (!isUsableId(productId)) continue
-    if (typeof variantKey !== 'string' || !variantKey || variantKey.length > 64) continue
+    if (!isVariantKey(variantKey)) continue
 
     // Number.isSafeInteger rejects NaN, Infinity, floats and 1e999 in one go.
     if (!Number.isSafeInteger(quantity) || (quantity as number) < 1) continue
@@ -151,7 +167,7 @@ export function addItem(
   quantity: number,
   maxQtyPerItem: number
 ): CartItem[] {
-  if (!isUsableId(productId) || !variantKey) return items
+  if (!isUsableId(productId) || !isVariantKey(variantKey)) return items
   if (!Number.isSafeInteger(quantity) || quantity < 1) return items
 
   const index = items.findIndex((i) => sameLine(i, { productId, variantKey }))
