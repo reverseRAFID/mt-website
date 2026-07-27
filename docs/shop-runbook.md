@@ -185,7 +185,33 @@ publishes it.
 
 `npm run check:privacy` fails the build if an order query loses its
 `_INTERNAL_QUERY` suffix, if a client component imports the server layer, if
-`PublicOrder` grows a private field, or if the masking helpers stop masking.
+`PublicOrder` grows a private field, or if `ORDER_TRACK_QUERY` starts selecting
+something it should not.
+
+### Why the masking happens in GROQ and not in React
+
+This caught us once, so it is worth stating plainly.
+
+The first version fetched the whole order and masked it in TypeScript. The page
+rendered only the masked values — and the full street address, postcode, phone
+number and email were still in the page source. Next serialises `fetch()`
+responses into the RSC flight payload embedded in the HTML, so the raw Sanity
+response was sitting in `self.__next_f.push(...)` regardless of what was
+rendered. It was caught by `scripts/test-shop-flow.mjs`, which greps the actual
+served HTML for values it knows should not be there.
+
+**Selecting a private field inside a page is enough to publish it.** Not
+rendering it does not help. So `ORDER_TRACK_QUERY` never selects one: `area` and
+`city` are lifted out of `deliveryAddress` individually, and the phone tail
+comes from `phoneLast3`, computed once when the order is written because GROQ
+has no substring function.
+
+This is the same lesson `APPROVED_DONATIONS_QUERY` already encodes for
+crowdfunding — resolve privacy inside Sanity, so what must not be published
+never leaves the dataset.
+
+If you add a field to the track page: add it to `ORDER_TRACK_QUERY`, not to a
+projection that already had it.
 
 ---
 
