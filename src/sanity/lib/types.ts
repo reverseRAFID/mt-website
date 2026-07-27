@@ -557,6 +557,8 @@ export interface OrderInternal {
   statusHistory?: OrderStatusEvent[]
   notifiedStatuses?: string[]
   emailStatus?: 'sent' | 'failed' | 'skipped'
+  /** Admin-set flag asking the webhook to re-send the confirmation. */
+  resendEmail?: boolean
   stockReserved?: boolean
   stockRestoredAt?: string | null
   cancellationReason?: string

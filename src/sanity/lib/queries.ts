@@ -398,7 +398,7 @@ export const ORDER_BY_TRACK_ID_INTERNAL_QUERY = groq`
     },
     subtotal, deliveryFee, total,
     statusHistory[] { status, at, note },
-    notifiedStatuses, emailStatus, stockReserved, stockRestoredAt,
+    notifiedStatuses, emailStatus, resendEmail, stockReserved, stockRestoredAt,
     cancellationReason
   }
 `
