@@ -81,7 +81,7 @@ export function Accordion({
               )}
             >
               <div className="overflow-hidden">
-                <p className="px-5 pb-5 text-sm leading-relaxed text-text-muted text-pretty sm:px-6 sm:pb-6 sm:text-base">
+                <p className="whitespace-pre-line px-5 pb-5 text-sm leading-relaxed text-text-muted text-pretty sm:px-6 sm:pb-6 sm:text-base">
                   {item.answer}
                 </p>
               </div>
