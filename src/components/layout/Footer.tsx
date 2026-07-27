@@ -31,6 +31,10 @@ const footerLinks = {
     { href: '/join/apply', label: 'Apply Now' },
     { href: '/sponsors', label: 'Sponsor Us' },
     { href: '/support', label: 'Support Us' },
+    { href: '/shop', label: 'Merch Store' },
+    // Sits with the shop rather than under a support heading: someone hunting
+    // for this has already ordered and just wants to know where it is.
+    { href: '/shop/track', label: 'Track an Order' },
   ],
 }
 
