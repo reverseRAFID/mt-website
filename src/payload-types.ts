@@ -111,8 +111,16 @@ export interface Config {
     defaultIDType: string;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    recruitment: Recruitment;
+    crowdfunding: Crowdfunding;
+    shop: Shop;
+  };
+  globalsSelect: {
+    recruitment: RecruitmentSelect<false> | RecruitmentSelect<true>;
+    crowdfunding: CrowdfundingSelect<false> | CrowdfundingSelect<true>;
+    shop: ShopSelect<false> | ShopSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -1481,6 +1489,275 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Controls whether /join/apply accepts applications.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recruitment".
+ */
+export interface Recruitment {
+  id: string;
+  /**
+   * Enforced server-side by /api/apply — anything but Open rejects submissions even when posted to directly.
+   */
+  status: 'open' | 'under-review' | 'closed';
+  openingMessage?: string | null;
+  closingDate?: string | null;
+  faqItems?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * The /support campaign — its gate, its copy, and the accounts donors send to.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "crowdfunding".
+ */
+export interface Crowdfunding {
+  id: string;
+  /**
+   * Enforced server-side by /api/donate — a closed campaign rejects submissions even when posted to directly.
+   */
+  status: 'open' | 'paused' | 'closed';
+  headline?: string | null;
+  /**
+   * Why the team needs support. Shown under the page hero.
+   */
+  pitch?: string | null;
+  /**
+   * Shown in place of the form when the campaign is not open.
+   */
+  closedMessage?: string | null;
+  /**
+   * Drives the "N days left" line on every support CTA. Passing it only stops the countdown — it does NOT close the campaign, so set the status too.
+   */
+  deadline?: string | null;
+  /**
+   * Sets the "we verify within N hours" promise shown to donors.
+   */
+  verificationHours?: number | null;
+  /**
+   * How many people contributed. Never a monetary figure — amounts are published nowhere on the site.
+   */
+  showSupporterCount?: boolean | null;
+  /**
+   * The receiving accounts donors copy from /support. PUBLIC by design — do not put a personal account here unless the team means it to be public.
+   */
+  channels?:
+    | {
+        method: 'bKash' | 'Nagad' | 'Rocket' | 'Upay' | 'Bank Transfer' | 'Other';
+        accountType?: ('Personal' | 'Merchant' | 'Agent' | 'Current' | 'Savings') | null;
+        /**
+         * Exactly as the donor should type it into their app.
+         */
+        accountNumber: string;
+        /**
+         * So donors can confirm they are sending to the right place.
+         */
+        accountName?: string | null;
+        note?: string | null;
+        bankName?: string | null;
+        branch?: string | null;
+        routingNumber?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Leave empty to use the built-in four-step explanation.
+   */
+  steps?:
+    | {
+        title: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Leave empty to use the built-in FAQ.
+   */
+  faqItems?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * The shop gate, delivery, order limits and policies.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shop".
+ */
+export interface Shop {
+  id: string;
+  /**
+   * Enforced server-side by /api/shop/order — a paused or closed shop rejects orders even when posted to directly.
+   */
+  status: 'open' | 'paused' | 'closed';
+  /**
+   * Shown in place of the checkout button. Say when you expect to reopen.
+   */
+  closedMessage?: string | null;
+  /**
+   * Optional banner across the shop pages. Empty hides it.
+   */
+  announcement?: string | null;
+  /**
+   * Flat courier charge on home-delivery orders. Campus handover is always free and is not configurable.
+   */
+  standardDeliveryFee: number;
+  /**
+   * Turn off during holidays when nobody is on campus.
+   */
+  campusDeliveryEnabled?: boolean | null;
+  /**
+   * The pick-up spots offered at checkout. Empty lets the customer type their own.
+   */
+  campusHandoverPoints?: string[] | null;
+  /**
+   * OFF by design — free handover is open to anyone. Turn ON only if it starts being abused: it then requires a @bracu.ac.bd address, enforced server-side, and locks out alumni and guests.
+   */
+  requireBracuEmailForCampus?: boolean | null;
+  /**
+   * Free text shown at checkout and in the confirmation email.
+   */
+  estimatedDeliveryDays?: string | null;
+  /**
+   * Subtotal before delivery. 0 means no minimum.
+   */
+  minOrderValue: number;
+  /**
+   * Stops one person clearing out a size in a single order.
+   */
+  maxQtyPerItem: number;
+  /**
+   * Total units across the whole cart.
+   */
+  maxItemsPerOrder: number;
+  /**
+   * Leads every track ID, e.g. "MT" gives MT-7K4QX2ZP. Changing it does not rewrite IDs already issued — old ones keep working.
+   */
+  orderPrefix: string;
+  /**
+   * PUBLISHED — the reply-to shown to customers for order questions.
+   */
+  supportEmail?: string | null;
+  /**
+   * PUBLISHED — shown on the order confirmation.
+   */
+  supportPhone?: string | null;
+  /**
+   * NEVER PUBLISHED. Team inboxes alerted on each new order. Leave empty to disable alerts.
+   */
+  adminNotifyEmails?: string[] | null;
+  /**
+   * Shown in an accordion on every product page and at checkout.
+   */
+  shippingPolicy?: string | null;
+  /**
+   * Be explicit about what can be returned and by when — it prevents disputes.
+   */
+  returnPolicy?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recruitment_select".
+ */
+export interface RecruitmentSelect<T extends boolean = true> {
+  status?: T;
+  openingMessage?: T;
+  closingDate?: T;
+  faqItems?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "crowdfunding_select".
+ */
+export interface CrowdfundingSelect<T extends boolean = true> {
+  status?: T;
+  headline?: T;
+  pitch?: T;
+  closedMessage?: T;
+  deadline?: T;
+  verificationHours?: T;
+  showSupporterCount?: T;
+  channels?:
+    | T
+    | {
+        method?: T;
+        accountType?: T;
+        accountNumber?: T;
+        accountName?: T;
+        note?: T;
+        bankName?: T;
+        branch?: T;
+        routingNumber?: T;
+        id?: T;
+      };
+  steps?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  faqItems?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shop_select".
+ */
+export interface ShopSelect<T extends boolean = true> {
+  status?: T;
+  closedMessage?: T;
+  announcement?: T;
+  standardDeliveryFee?: T;
+  campusDeliveryEnabled?: T;
+  campusHandoverPoints?: T;
+  requireBracuEmailForCampus?: T;
+  estimatedDeliveryDays?: T;
+  minOrderValue?: T;
+  maxQtyPerItem?: T;
+  maxItemsPerOrder?: T;
+  orderPrefix?: T;
+  supportEmail?: T;
+  supportPhone?: T;
+  adminNotifyEmails?: T;
+  shippingPolicy?: T;
+  returnPolicy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

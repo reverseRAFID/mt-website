@@ -21,6 +21,9 @@ import { SarVideos } from './src/payload/collections/SarVideos'
 import { Sponsors } from './src/payload/collections/Sponsors'
 import { Testimonials } from './src/payload/collections/Testimonials'
 import { Users } from './src/payload/collections/Users'
+import { Crowdfunding } from './src/payload/globals/Crowdfunding'
+import { Recruitment } from './src/payload/globals/Recruitment'
+import { Shop } from './src/payload/globals/Shop'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -78,6 +81,8 @@ export default buildConfig({
     // Settings
     Users,
   ],
+
+  globals: [Recruitment, Crowdfunding, Shop],
 
   editor: lexicalEditor(),
 
