@@ -9,10 +9,10 @@
  * TODO(team): tweak the copy to match the current rover's standout features.
  */
 
-import type { RoverCard } from '@/sanity/lib/types'
+import type { Rover } from '@/lib/cms/types'
 
 /** Spec fields actually projected onto the featured-rover card. */
-type CardSpecKey = keyof NonNullable<RoverCard['specs']>
+type CardSpecKey = keyof NonNullable<Rover['specs']>
 
 export interface Capability {
   icon: 'arm' | 'cpu' | 'beaker' | 'wheel' | 'signal' | 'bolt'

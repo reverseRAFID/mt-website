@@ -1,4 +1,4 @@
-import type { FaqItem } from '@/sanity/lib/types'
+import type { FaqItem } from '@/lib/cms/types'
 import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Accordion } from '@/components/ui/Accordion'

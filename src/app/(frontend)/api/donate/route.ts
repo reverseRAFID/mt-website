@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
-import { sanityWriteClient } from '@/sanity/lib/writeClient'
-import { sanityFetch } from '@/sanity/lib/client'
-import { CROWDFUNDING_STATUS_QUERY, DONATION_TRX_EXISTS_QUERY } from '@/sanity/lib/queries'
+import { createDonation, getCampaignStatus, transactionIdExists } from '@/lib/cms/donations'
 import { rateLimit, clientIp } from '@/lib/rate-limit'
 import {
   isPaymentMethod,
@@ -11,7 +9,7 @@ import {
   LIMITS,
 } from '@/lib/crowdfunding'
 
-// Declarations are written straight to Sanity and gated on live campaign
+// Declarations are written straight to the database and gated on live campaign
 // status, so this must never be prerendered or cached.
 export const dynamic = 'force-dynamic'
 
@@ -33,22 +31,15 @@ function bad(error: string, status = 400) {
  * Accepts a donor's payment declaration.
  *
  * Writes it as `status: 'pending'` and nothing more — no amount, no public
- * listing. A team member matches it against the bank statement in Sanity
- * Studio, records the verified amount, and approves it. Only then does the
- * donor appear on /support.
+ * listing. A team member matches it against the bank statement in the CMS,
+ * records the verified amount, and approves it. Only then does the donor
+ * appear on /support.
  *
  * The endpoint deliberately cannot set `amount`, `status` or `approvedAt`:
  * those are admin-only, so a crafted payload cannot self-approve or buy a rank.
  */
 export async function POST(req: Request) {
   try {
-    // Writes require an Editor token. Fail clearly rather than 401-ing deep in
-    // the Sanity client when the env var is missing.
-    if (!process.env.SANITY_API_TOKEN) {
-      console.error('[donate] SANITY_API_TOKEN is not set — cannot accept declarations')
-      return bad('Donations are temporarily unavailable. Please try again later.', 503)
-    }
-
     const limited = rateLimit(`donate:${clientIp(req)}`, RATE.limit, RATE.windowMs)
     if (!limited.ok) {
       return NextResponse.json(
@@ -119,8 +110,7 @@ export async function POST(req: Request) {
     // ── Campaign gate ─────────────────────────────────────────
     // Server-side so the endpoint is defended even when someone posts to it
     // directly rather than through the page.
-    const status = await sanityFetch<string | null>(CROWDFUNDING_STATUS_QUERY, {}, 0)
-    if (status !== 'open') {
+    if ((await getCampaignStatus()) !== 'open') {
       return bad('The crowdfunding campaign is not accepting declarations right now.', 403)
     }
 
@@ -128,20 +118,11 @@ export async function POST(req: Request) {
     // Only when a transaction ID is supplied — it is the one field that is
     // genuinely unique per transfer. Two people can share a wallet, and one
     // person can legitimately donate twice from the same number.
-    if (transactionId) {
-      const exists = await sanityFetch<boolean>(
-        DONATION_TRX_EXISTS_QUERY,
-        { transactionId },
-        0
-      )
-      if (exists) {
-        return bad('That transaction ID has already been submitted.', 409)
-      }
+    if (transactionId && (await transactionIdExists(transactionId))) {
+      return bad('That transaction ID has already been submitted.', 409)
     }
 
-    await sanityWriteClient.create({
-      _type: 'donation',
-      status: 'pending',
+    await createDonation({
       donorName,
       isAnonymous,
       affiliation: affiliation || undefined,
@@ -151,7 +132,6 @@ export async function POST(req: Request) {
       transactionId: transactionId || undefined,
       contactEmail: contactEmail || undefined,
       contactPhone: contactPhone || undefined,
-      donatedAt: new Date().toISOString(),
     })
 
     return NextResponse.json({ ok: true })

@@ -6,7 +6,7 @@ import { CornerTicks } from '@/components/ui/CornerTicks'
 import { PaymentChannels } from '@/components/support/PaymentChannels'
 import { SupportForm } from '@/components/support/SupportForm'
 import { SupportTrustPanel } from '@/components/support/SupportTrustPanel'
-import { getCrowdfundingConfig, getSupporterCount } from '@/lib/donations'
+import { getCrowdfundingConfig, getSupporterCount } from '@/lib/cms/donations'
 import { DEFAULT_VERIFICATION_HOURS } from '@/lib/crowdfunding'
 import { SUPPORT_HREF, SUPPORTERS_HREF, urgencyLabel } from '@/lib/support-cta'
 

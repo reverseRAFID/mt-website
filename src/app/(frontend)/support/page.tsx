@@ -10,7 +10,7 @@ import { HowItWorks } from '@/components/support/HowItWorks'
 import { SupportFaq } from '@/components/support/SupportFaq'
 import { SupportersHonourRoll } from '@/components/support/SupportersHonourRoll'
 import { SupportTrustPanel } from '@/components/support/SupportTrustPanel'
-import { getSupportPageData } from '@/lib/donations'
+import { getSupportPageData } from '@/lib/cms/donations'
 import { DEFAULT_VERIFICATION_HOURS } from '@/lib/crowdfunding'
 import { DONATE_HREF, urgencyLabel, socialProofLabel } from '@/lib/support-cta'
 

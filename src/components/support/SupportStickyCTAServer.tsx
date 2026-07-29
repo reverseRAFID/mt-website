@@ -1,5 +1,5 @@
 import { SupportStickyCTA } from '@/components/support/SupportStickyCTA'
-import { getSupportCtaData } from '@/lib/donations'
+import { getSupportCtaData } from '@/lib/cms/donations'
 import { urgencyLabel } from '@/lib/support-cta'
 
 /**

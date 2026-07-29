@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
-import { sanityWriteClient } from '@/sanity/lib/writeClient'
-import { sanityClient } from '@/sanity/lib/client'
-import { RECRUITMENT_CONFIG_QUERY } from '@/sanity/lib/queries'
-import type { RecruitmentConfig } from '@/sanity/lib/types'
+import { createApplication, getRecruitmentStatus } from '@/lib/cms/recruitment'
 import { isApplySubteam } from '@/lib/subteams'
+
+// Writes to the database and reads the live recruitment gate, so it must never
+// be prerendered or cached.
+export const dynamic = 'force-dynamic'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -16,16 +17,6 @@ function str(v: unknown): string {
 
 export async function POST(req: Request) {
   try {
-    // Writes require an Editor token. Fail clearly rather than 401-ing deep in
-    // the Sanity client when the env var is missing.
-    if (!process.env.SANITY_API_TOKEN) {
-      console.error('[apply] SANITY_API_TOKEN is not set — cannot accept submissions')
-      return NextResponse.json(
-        { error: 'Submissions are temporarily unavailable. Please try again later.' },
-        { status: 503 }
-      )
-    }
-
     const body = await req.json().catch(() => null)
     if (!body || typeof body !== 'object') {
       return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
@@ -50,7 +41,13 @@ export async function POST(req: Request) {
     if (!EMAIL_RE.test(email)) {
       return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 })
     }
-    if (!isApplySubteam(subteam1) || (subteam2 && !isApplySubteam(subteam2))) {
+    // Checked separately rather than as one boolean so the type guard actually
+    // narrows both values — a combined `||` tells TypeScript nothing about the
+    // second one, and the sub-team then reaches the CMS as a bare string.
+    if (!isApplySubteam(subteam1)) {
+      return NextResponse.json({ error: 'Invalid sub-team selection.' }, { status: 400 })
+    }
+    if (subteam2 && !isApplySubteam(subteam2)) {
       return NextResponse.json({ error: 'Invalid sub-team selection.' }, { status: 400 })
     }
     if (subteam2 && subteam2 === subteam1) {
@@ -66,15 +63,13 @@ export async function POST(req: Request) {
     }
 
     // Recruitment must be open (server-side gate — defends the endpoint even if
-    // the page is reached directly).
-    const recruitment = await sanityClient.fetch<RecruitmentConfig | null>(RECRUITMENT_CONFIG_QUERY)
-    if (recruitment?.status !== 'open') {
+    // the page is reached directly). Read uncached: a recruitment drive that
+    // closed a minute ago must not still take applications.
+    if ((await getRecruitmentStatus()) !== 'open') {
       return NextResponse.json({ error: 'Applications are currently closed.' }, { status: 403 })
     }
 
-    await sanityWriteClient.create({
-      _type: 'application',
-      status: 'new',
+    await createApplication({
       name,
       email,
       phone: phone || undefined,
@@ -82,11 +77,10 @@ export async function POST(req: Request) {
       department,
       year,
       subteam1,
-      subteam2: subteam2 || undefined,
+      subteam2: isApplySubteam(subteam2) ? subteam2 : undefined,
       whyJoin,
       experience: experience || undefined,
       portfolio: portfolio || undefined,
-      submittedAt: new Date().toISOString(),
     })
 
     return NextResponse.json({ ok: true })

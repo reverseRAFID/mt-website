@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
-import { getSupportCtaData } from '@/lib/donations'
+import { getSupportCtaData } from '@/lib/cms/donations'
 import {
   SUPPORT_CTA_COPY,
   DONATE_HREF,

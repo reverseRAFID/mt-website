@@ -1,9 +1,7 @@
 import type { ReactNode } from 'react'
 import { PageLayout } from '@/components/layout/PageLayout'
 import type { Metadata } from 'next'
-import { sanityFetch } from '@/sanity/lib/client'
-import { RECRUITMENT_CONFIG_QUERY } from '@/sanity/lib/queries'
-import type { RecruitmentConfig } from '@/sanity/lib/types'
+import { getRecruitmentConfig } from '@/lib/cms/content'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
@@ -141,7 +139,7 @@ const SUBTEAMS: { name: ApplySubteam; icon: ReactNode; description: string }[] =
 ]
 
 export default async function JoinPage() {
-  const recruitment = await sanityFetch<RecruitmentConfig | null>(RECRUITMENT_CONFIG_QUERY)
+  const recruitment = await getRecruitmentConfig()
 
   const status = recruitment?.status ?? 'closed'
   const config = STATUS_CONFIG[status]

@@ -5,9 +5,7 @@ import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { ApplyForm } from '@/components/join/ApplyForm'
-import { sanityFetch } from '@/sanity/lib/client'
-import { RECRUITMENT_CONFIG_QUERY } from '@/sanity/lib/queries'
-import type { RecruitmentConfig } from '@/sanity/lib/types'
+import { getRecruitmentConfig } from '@/lib/cms/content'
 import { APPLY_SUBTEAMS } from '@/lib/subteams'
 
 export const metadata: Metadata = { title: 'Apply to Join' }
@@ -34,7 +32,7 @@ const STATUS_CONFIG = {
 } as const
 
 export default async function ApplyPage() {
-  const recruitment = await sanityFetch<RecruitmentConfig | null>(RECRUITMENT_CONFIG_QUERY)
+  const recruitment = await getRecruitmentConfig()
   const status = recruitment?.status ?? 'closed'
   const isOpen = status === 'open'
   const config = STATUS_CONFIG[status]

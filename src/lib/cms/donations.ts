@@ -38,6 +38,8 @@ import {
   HIGHLIGHT_RANKS,
 } from '@/lib/crowdfunding'
 
+import type { Donation } from '@/payload-types'
+
 import { cachedRead } from './cache'
 import { getCms } from './client'
 
@@ -211,3 +213,72 @@ export const getSupportCtaData = cache(async (): Promise<SupportCtaData> => {
     return { isOpen: false, supporterCount: 0, showSupporterCount: false }
   }
 })
+
+// ── Write path ────────────────────────────────────────────────
+
+/**
+ * The campaign gate. UNCACHED, deliberately.
+ *
+ * `getCrowdfundingConfig()` above is cached because it feeds a page. This is
+ * the check /api/donate makes before accepting a declaration, and a campaign
+ * that closed a minute ago must not still be collecting them.
+ *
+ * Fails CLOSED, so a database problem cannot reopen a finished campaign.
+ */
+export async function getCampaignStatus(): Promise<'open' | 'paused' | 'closed'> {
+  try {
+    const cms = await getCms()
+    const config = await cms.findGlobal({ slug: 'crowdfunding', depth: 0 })
+    return (config?.status as 'open' | 'paused' | 'closed') ?? 'closed'
+  } catch (err) {
+    console.error('[crowdfunding] status read failed — treating as closed:', err)
+    return 'closed'
+  }
+}
+
+/**
+ * Duplicate guard for /api/donate.
+ *
+ * Returns a boolean and nothing else, so a probe cannot be used to enumerate
+ * transaction IDs — the same reason the GROQ version wrapped its result in
+ * `count(...) > 0`.
+ */
+export async function transactionIdExists(transactionId: string): Promise<boolean> {
+  const cms = await getCms()
+  const { totalDocs } = await cms.count({
+    collection: 'donations',
+    where: { transactionId: { equals: transactionId } },
+  })
+  return totalDocs > 0
+}
+
+export interface DonationInput {
+  donorName: string
+  isAnonymous: boolean
+  affiliation?: string
+  message?: string
+  paymentMethod: string
+  senderAccount: string
+  transactionId?: string
+  contactEmail?: string
+  contactPhone?: string
+}
+
+/**
+ * Record a donor's declaration.
+ *
+ * Deliberately cannot set `amount`, `status` or `approvedAt` — those are
+ * admin-only, so no crafted payload can self-approve or buy a rank. The
+ * declaration lands as `pending` and stays invisible until a human matches it
+ * against the bank statement.
+ */
+export async function createDonation(input: DonationInput): Promise<void> {
+  const cms = await getCms()
+  const data: Partial<Donation> = {
+    status: 'pending',
+    ...input,
+    paymentMethod: input.paymentMethod as Donation['paymentMethod'],
+    donatedAt: new Date().toISOString(),
+  }
+  await cms.create({ collection: 'donations', data: data as Donation })
+}
