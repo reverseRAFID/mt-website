@@ -751,9 +751,9 @@ export interface Product {
    */
   compareAtPrice?: number | null;
   /**
-   * The first image is used on cards and in the order email.
+   * The first image is used on cards and in the order email. Strongly recommended — a product card without one shows a placeholder.
    */
-  images: (string | Media)[];
+  images?: (string | Media)[] | null;
   /**
    * What the picker is called on the product page — "Size", "Colour", "Option".
    */

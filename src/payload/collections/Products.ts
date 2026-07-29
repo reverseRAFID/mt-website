@@ -117,12 +117,23 @@ export const Products: CollectionConfig = {
               type: 'upload',
               relationTo: 'media',
               hasMany: true,
-              required: true,
-              minRows: 1,
               maxRows: 8,
               admin: {
-                description: 'The first image is used on cards and in the order email.',
+                description:
+                  'The first image is used on cards and in the order email. Strongly recommended — a product card without one shows a placeholder.',
               },
+              // NOT required, deliberately.
+              //
+              // The Sanity schema demanded at least one image, but Sanity does
+              // not validate on write and six seeded products went in with none.
+              // Enforcing it here meant those six could not be imported at all —
+              // the CMS refused to hold data the team already had, which is a
+              // worse failure than a product card with a placeholder on it.
+              //
+              // Both surfaces already degrade properly (ProductCard renders a
+              // labelled placeholder, ProductGallery renders "No image"), so the
+              // cost of allowing it is visible and small, and the team can fix
+              // it by uploading an image rather than by re-running a script.
             },
           ],
         },

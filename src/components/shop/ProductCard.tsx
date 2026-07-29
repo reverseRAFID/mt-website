@@ -46,9 +46,9 @@ export function ProductCard({ product }: { product: Product }) {
             }`}
           />
         ) : (
-          // The schema requires an image, so this only shows for a document
-          // saved before that rule or fetched mid-upload. Better a labelled
-          // placeholder than a broken image icon.
+          // Images are recommended, not required — see the note in the
+          // Products collection. Better a labelled placeholder than a broken
+          // image icon.
           <div className="flex h-full w-full items-center justify-center bg-surface-2">
             <span className="hud-label text-text-faint">No image</span>
           </div>

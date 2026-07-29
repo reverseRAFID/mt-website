@@ -29,7 +29,16 @@ export const cacheTagFor = (collection: string) => `cms:${collection}`
  */
 function bust(collection: string): void {
   try {
-    revalidateTag(cacheTagFor(collection), 'max')
+    // `{ expire: 0 }` rather than a named profile such as 'max'.
+    //
+    // A named profile gives stale-while-revalidate: the next request after a
+    // save is served the OLD page while the new one regenerates behind it. For
+    // most caches that is the right trade, but this cache is a CMS — the person
+    // who just hit Save is the most likely next visitor, and showing them their
+    // previous draft is indistinguishable from the save not having worked.
+    //
+    // Expiring immediately costs that one request a regeneration instead.
+    revalidateTag(cacheTagFor(collection), { expire: 0 })
   } catch {
     // No Next request scope — a CLI script. Nothing is cached, so nothing to do.
   }

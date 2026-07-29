@@ -624,6 +624,23 @@ async function main() {
     })
   }
 
+  // ── Unreferenced assets ─────────────────────────────────────
+  // Everything above imports the assets a DOCUMENT points at. Sanity also
+  // accumulates uploads nothing references — a logo variant that was never
+  // wired up, an old `featured.jpg` replaced by a newer one. They are still
+  // files the team uploaded, and a migration that silently drops them is a
+  // migration that loses data, so they come across too and are identifiable by
+  // their original filename.
+  const orphans = await sanity.fetch<Array<{ _id: string; originalFilename?: string }>>(
+    `*[_type in ["sanity.imageAsset", "sanity.fileAsset"] && count(*[references(^._id)]) == 0]{
+      _id, originalFilename
+    }`
+  )
+  log(`\n── unreferenced assets: ${orphans.length}`)
+  for (const asset of orphans) {
+    await importAsset(cms, asset._id, asset.originalFilename ?? 'Unused upload')
+  }
+
   // ── Globals ─────────────────────────────────────────────────
   log('\n── globals')
   const [recruitment] = await sanity.fetch<any[]>(`*[_type == "recruitmentConfig"]`)
