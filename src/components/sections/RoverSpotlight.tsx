@@ -65,7 +65,7 @@ export function RoverSpotlight({ rover }: RoverSpotlightProps) {
                           </svg>
                         </div>
                         <p className="text-sm text-text-faint">{rover.name}</p>
-                        <p className="text-xs text-text-faint mt-1">Add a gallery photo in Sanity CMS</p>
+                        <p className="text-xs text-text-faint mt-1">Add a gallery photo in the CMS</p>
                       </div>
                     </div>
                   )}

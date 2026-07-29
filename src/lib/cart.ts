@@ -13,7 +13,7 @@
 // localStorage is attacker-controlled: it is a text field the customer can
 // edit in devtools. If a price lived here, "make the tee cost 1 taka" would be
 // a two-second edit. Because the client can only ever say *which* variant and
-// *how many*, every figure on the invoice is resolved server-side from Sanity
+// *how many*, every figure on the invoice is resolved server-side from the CMS
 // at cart-hydration and again at order time. A tampered cart can at worst
 // order the wrong thing at the right price.
 //
@@ -24,7 +24,7 @@
 import { CART_MAX_LINES } from './shop'
 
 export interface CartItem {
-  /** Sanity `_id` of the product. */
+  /** The product's CMS id. */
   productId: string
   /** `_key` of the variant inside that product's `variants[]`. */
   variantKey: string
@@ -59,7 +59,8 @@ export function sameLine(a: CartItem, b: Pick<CartItem, 'productId' | 'variantKe
 /**
  * True when `id` is a usable published-document reference.
  *
- * Sanity prefixes unpublished documents with `drafts.`. Those must never enter
+ * A `drafts.`-prefixed id is the shape a cart saved before the CMS migration
+ * would carry, and it can never name a live product. Those must never enter
  * a cart: the public site cannot read them, so hydration would silently drop
  * the line and the customer would watch their cart empty itself.
  */
@@ -73,13 +74,13 @@ function isUsableId(id: unknown): id is string {
 }
 
 /**
- * Sanity `_key` values are generated ids — letters, digits, dashes.
+ * Variant keys are generated ids — letters, digits, dashes.
  *
  * Constrained deliberately rather than accepting any short string. The key is
  * later interpolated into a GROQ-style patch path
  * (`variants[_key=="…"].stock`) when stock is decremented, and a value
  * containing a quote would change the shape of that expression. The reservation
- * path uses a key read back from Sanity rather than this one, so this is the
+ * path uses a key read back from the CMS rather than this one, so this is the
  * second of two independent guards, not the only one.
  */
 const VARIANT_KEY_RE = /^[A-Za-z0-9_-]{1,64}$/

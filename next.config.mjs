@@ -40,7 +40,6 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'cdn.sanity.io' },
       { protocol: 'https', hostname: 'img.youtube.com' },
       // Vercel Blob, when object storage is configured.
       { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },

@@ -1,16 +1,16 @@
 // ============================================================
 // Merch shop domain constants.
 //
-// Single source of truth shared by the Sanity `product` / `shopConfig` /
-// `order` schemas, the /api/shop/* validators, and the /shop UI. The schemas
+// Single source of truth shared by the `products` / `shop` / `orders`
+// collections, the /api/shop/* validators, and the /shop UI. The collections
 // import this with a RELATIVE path (not the @/ alias) so the module resolves
-// under both the Next bundler and the Sanity CLI — same convention as
+// under both the Next bundler and the Payload CLI — same convention as
 // src/lib/crowdfunding.ts.
 //
-// ISOMORPHIC — this file is bundled into the browser (Sanity Studio and the
+// ISOMORPHIC — this file is bundled into the browser (the admin UI and the
 // shop's client components both pull it in). It must therefore never import a
 // Node built-in and never hold a secret. Anything needing `node:*`, a token, or
-// dataset access belongs in src/lib/orders.ts or src/lib/shop-server.ts.
+// database access belongs in src/lib/orders.ts or src/lib/cms/shop.ts.
 //
 // PRIVACY NOTE — nothing here may reference customer PII. Order documents carry
 // names, phone numbers and home addresses; see docs/shop-runbook.md.
@@ -20,7 +20,7 @@
 // Every monetary value in the shop is an INTEGER number of taka. Bangladesh
 // prices merch in whole taka, and integers sidestep the classic float bug where
 // 0.1 + 0.2 !== 0.3 quietly corrupts an invoice total. There is no minor unit
-// anywhere in this system — not in Sanity, not in the API, not in email.
+// anywhere in this system — not in the database, not in the API, not in email.
 
 export const CURRENCY_CODE = 'BDT'
 export const CURRENCY_SYMBOL = '৳'
@@ -66,7 +66,7 @@ export function isOrderStatus(value: unknown): value is OrderStatus {
   return typeof value === 'string' && (ORDER_STATUSES as readonly string[]).includes(value)
 }
 
-/** Admin-facing labels (Sanity Studio). */
+/** Admin-facing labels. */
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   placed: '🆕 Placed',
   confirmed: '✅ Confirmed',
@@ -200,7 +200,7 @@ export function timelineLabel(status: OrderStatus, method: DeliveryMethod): stri
 // ── Defaults ──────────────────────────────────────────────────
 // Fallbacks used when the `shopConfig` singleton has not been filled in yet, so
 // the shop is never a broken page. The delivery fee is the seed value the team
-// asked for — it is admin-editable in Studio → Shop → Shop Settings.
+// asked for — it is admin-editable in the CMS → Settings → Shop Settings.
 
 export const DEFAULT_STANDARD_DELIVERY_FEE = 120
 export const DEFAULT_MIN_ORDER_VALUE = 0

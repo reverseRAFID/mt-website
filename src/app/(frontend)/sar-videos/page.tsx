@@ -34,7 +34,7 @@ export default async function SarVideosPage() {
         <div className="section-container relative">
           {!videos?.length ? (
             <div className="rounded-card border border-divider bg-surface-raised py-20 text-center text-text-muted">
-              No videos yet — add them in Sanity CMS → SAR Videos.
+              No videos yet — add them in the CMS → SAR Videos.
             </div>
           ) : (
             <Reveal stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

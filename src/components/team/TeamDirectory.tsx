@@ -124,7 +124,7 @@ export function TeamDirectory({ members }: { members: Member[] }) {
         <CornerTicks className="text-primary/25" size="md" />
         <span className="hud-label text-primary">No Crew On Record</span>
         <p className="mt-4 text-pretty leading-relaxed text-text-muted">
-          The crew manifest is empty. Add members in Sanity CMS &rarr; Team Members to populate the directory.
+          The crew manifest is empty. Add members in the CMS &rarr; Team to populate the directory.
         </p>
       </div>
     )

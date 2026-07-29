@@ -1,7 +1,7 @@
 /**
- * Sponsorship content model (editorial — not in Sanity).
+ * Sponsorship content model (editorial — not in the CMS).
  *
- * The Sanity `sponsor` document stores who our partners are (name, logo, tier,
+ * The `sponsors` collection stores who our partners are (name, logo, tier,
  * website, startYear). What each tier *offers*, why a brand should sponsor us,
  * where the money goes, and the FAQ are marketing copy that lives here so the
  * team can edit it without a CMS migration.
@@ -117,7 +117,7 @@ export const VALUE_PROPS: ValueProp[] = [
    SPONSORSHIP TIERS — benefits only (pricing handled 1:1)
    ============================================================ */
 export interface SponsorTier {
-  /** Matches the Sanity sponsor `tier` enum. */
+  /** Matches the `sponsors.tier` option list. */
   id: Sponsor['tier']
   label: string
   tagline: string

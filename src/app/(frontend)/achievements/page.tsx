@@ -86,7 +86,7 @@ export default async function AchievementsPage() {
         <div className="section-container relative">
           {!competitions?.length ? (
             <div className="py-12 text-center text-text-muted">
-              No competitions yet — add them in Sanity CMS → Competitions.
+              No competitions yet — add them in the CMS → Competitions.
             </div>
           ) : (
             <>

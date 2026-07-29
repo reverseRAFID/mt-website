@@ -7,7 +7,7 @@ import { gsap, ScrollTrigger, prefersReducedMotion } from '@/lib/gsap'
 /**
  * Lenis momentum scrolling, driven by the GSAP ticker and kept in sync with
  * ScrollTrigger. No-ops under reduced-motion (native scroll is preserved).
- * Mounted once globally; the caller skips it on /studio.
+ * Mounted once globally; the caller skips it on /admin.
  */
 export function SmoothScroll() {
   useEffect(() => {

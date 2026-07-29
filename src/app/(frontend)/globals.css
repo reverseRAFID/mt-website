@@ -176,7 +176,7 @@ h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
 }
 
-/* Embedded Sanity Studio keeps its own typography — admin UI, not site chrome. */
+/* The Payload admin keeps its own typography — admin UI, not site chrome. */
 .studio-reset h1,
 .studio-reset h2,
 .studio-reset h3,

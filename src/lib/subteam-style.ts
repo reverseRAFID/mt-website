@@ -2,7 +2,8 @@
 // Sub-team badge styling — single source of truth.
 //
 // Keys match the Sub-Team option values in the member schema
-// (src/sanity/schemas/member.ts). Used by the team directory, the
+// (src/payload/collections/Members.ts, via src/payload/fields/subteam.ts).
+// Used by the team directory, the
 // member dossier, and any badge that colours a sub-team.
 // ============================================================
 

@@ -2,7 +2,7 @@
  * Rover capabilities / innovation reel (editorial).
  *
  * These describe the subsystems every competitive Mars-rover team builds for
- * URC/ERC/IRC missions. Where the featured rover has a matching spec in Sanity
+ * URC/ERC/IRC missions. Where the featured rover has a matching spec in the CMS
  * (`specKey`), the real value is surfaced on the card; otherwise the card still
  * reads correctly without it.
  *
