@@ -8,16 +8,16 @@ import { Reveal } from '@/components/motion/Reveal'
 import { Scramble } from '@/components/motion/Scramble'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionEyebrow } from './SectionEyebrow'
-import { urlFor, getFileUrl } from '@/sanity/lib/client'
-import type { SanityImage, SanityFile, DiagramAnnotation } from '@/sanity/lib/types'
+import { file, media } from '@/lib/cms/media'
+import type { DiagramAnnotation, Media, UploadedFile } from '@/lib/cms/types'
 import { pad2 } from './roverHelpers'
 
 const clamp = (n: number) => Math.max(0, Math.min(100, n))
 
 interface RoverBlueprintProps {
-  diagrams?: SanityImage[]
-  annotations?: DiagramAnnotation[]
-  cadModel?: SanityFile
+  diagrams?: (string | Media)[] | null
+  annotations?: DiagramAnnotation[] | null
+  cadModel?: string | UploadedFile | null
   name: string
   year: number
   index?: string
@@ -57,7 +57,7 @@ export function RoverBlueprint({
   const nodeRefs = useRef<Array<HTMLButtonElement | null>>([])
   const touringRef = useRef(false)
 
-  const cadUrl = cadModel?.asset?._ref ? getFileUrl(cadModel.asset._ref) : undefined
+  const cadUrl = file(cadModel)?.url ?? undefined
   const interactive = plates.length > 0 && notes.length > 0
 
   // ── Leader line: connect the active node to the readout panel (desktop) ──
@@ -221,7 +221,7 @@ export function RoverBlueprint({
           <div>
             <div className="scanlines relative aspect-[16/10] w-full overflow-hidden rounded-card border border-divider bg-surface-2">
               <Image
-                src={urlFor(plates[plate]).width(1400).height(875).fit('max').url()}
+                src={media(plates[plate])?.url ?? ''}
                 alt={`${name} schematic${plates.length > 1 ? ` ${plate + 1}` : ''}`}
                 fill
                 className="object-contain"

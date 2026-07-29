@@ -2,9 +2,9 @@ import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
-import { sanityFetch, urlFor } from '@/sanity/lib/client'
-import { ROVERS_QUERY } from '@/sanity/lib/queries'
-import type { RoverCard } from '@/sanity/lib/types'
+import { getRovers } from '@/lib/cms/content'
+import { media } from '@/lib/cms/media'
+import { roverHeroImage } from '@/components/rover/roverHelpers'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
@@ -14,7 +14,7 @@ import { SupportCTA } from '@/components/support/SupportCTA'
 export const metadata: Metadata = { title: 'Our Rovers' }
 
 export default async function RoversPage() {
-  const rovers = await sanityFetch<RoverCard[]>(ROVERS_QUERY)
+  const rovers = await getRovers()
 
   return (
     <PageLayout>
@@ -29,23 +29,27 @@ export default async function RoversPage() {
         <GhostText text="HANGAR" drift="right" />
         <div className="section-container relative">
           {rovers?.length === 0 ? (
-            <EmptyState message="No rovers yet — add one in Sanity CMS → Rovers." />
+            <EmptyState message="No rovers yet — add one in the CMS under Rovers." />
           ) : (
             <Reveal stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {rovers?.map((rover) => (
+              {rovers?.map((rover) => {
+                const hero = media(roverHeroImage(rover))
+                const competition =
+                  typeof rover.competition === 'object' ? rover.competition : null
+                return (
                 <Link
-                  key={rover._id}
-                  href={`/rovers/${rover.slug.current}`}
+                  key={rover.id}
+                  href={`/rovers/${rover.slug}`}
                   className="group relative flex flex-col rounded-card border border-divider bg-surface-raised p-4 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
                 >
                   <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
 
                   {/* Framed telemetry media panel */}
                   <div className="relative aspect-[16/10] rounded-none bg-surface-2 overflow-hidden">
-                    {rover.heroImage ? (
+                    {hero?.url ? (
                       <Image
-                        src={urlFor(rover.heroImage).width(600).height(375).url()}
-                        alt={rover.name}
+                        src={hero.url}
+                        alt={hero.alt || rover.name}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -64,10 +68,10 @@ export default async function RoversPage() {
                     )}
                     <CornerTicks className="text-primary/40" />
 
-                    {rover.competition && (
+                    {competition && (
                       <div className="absolute left-3 top-3 z-10 inline-flex items-center rounded-none bg-primary px-2.5 py-1 shadow-lg">
                         <span className="hud-label text-on-accent nums">
-                          {rover.competition.shortName} {rover.competition.year}
+                          {competition.shortName} {competition.year}
                         </span>
                       </div>
                     )}
@@ -95,7 +99,7 @@ export default async function RoversPage() {
                             <div className="font-mono text-xs font-medium text-text nums">{rover.specs.driveSystem}</div>
                           </div>
                         )}
-                        {rover.specs.dof !== undefined && (
+                        {rover.specs.dof != null && (
                           <div className="rounded-none border border-divider bg-surface p-2.5">
                             <div className="hud-label text-text-faint mb-1">Arm DOF</div>
                             <div className="font-mono text-xs font-medium text-text nums">{rover.specs.dof}-DOF</div>
@@ -105,7 +109,8 @@ export default async function RoversPage() {
                     )}
                   </div>
                 </Link>
-              ))}
+                )
+              })}
             </Reveal>
           )}
         </div>

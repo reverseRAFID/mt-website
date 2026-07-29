@@ -8,7 +8,7 @@ import { gsap, prefersReducedMotion, isFinePointer } from '@/lib/gsap'
 import { Scramble } from '@/components/motion/Scramble'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { BlueprintBackdrop } from './BlueprintBackdrop'
-import type { RoverSpecs } from '@/sanity/lib/types'
+import type { Competition, RoverSpecs } from '@/lib/cms/types'
 
 interface HeroStat {
   label: string
@@ -18,30 +18,23 @@ interface HeroStat {
 interface RoverHeroProps {
   name: string
   year: number
-  tagline?: string
-  overview?: string
-  isFlagship?: boolean
-  teamLead?: string
+  tagline?: string | null
+  overview?: string | null
+  isFlagship?: boolean | null
+  teamLead?: string | null
   imageUrl?: string
-  specs?: RoverSpecs
-  competition?: {
-    shortName: string
-    year: number
-    location?: string
-    result?: string
-    rank?: number
-    slug?: { current: string }
-  }
+  specs?: RoverSpecs | null
+  competition?: Competition | null
   pdfUrl?: string
   hasVideo?: boolean
 }
 
-function buildStats(specs?: RoverSpecs): HeroStat[] {
+function buildStats(specs?: RoverSpecs | null): HeroStat[] {
   if (!specs) return []
   const out: HeroStat[] = []
   if (specs.weight) out.push({ label: 'Mass', value: specs.weight })
   if (specs.driveSystem) out.push({ label: 'Drive', value: specs.driveSystem })
-  if (specs.dof !== undefined) out.push({ label: 'Arm', value: `${specs.dof}-DOF` })
+  if (specs.dof != null) out.push({ label: 'Arm', value: `${specs.dof}-DOF` })
   if (specs.payload) out.push({ label: 'Payload', value: specs.payload })
   if (specs.autonomy) out.push({ label: 'Autonomy', value: specs.autonomy })
   return out.slice(0, 4)
@@ -235,7 +228,7 @@ export function RoverHero({
           {competition?.slug && (
             <Link
               data-hero-cta
-              href={`/competitions/${competition.slug.current}`}
+              href={`/competitions/${competition.slug}`}
               className="group inline-flex items-center gap-2 rounded-none border border-border px-5 py-3 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
             >
               Competition

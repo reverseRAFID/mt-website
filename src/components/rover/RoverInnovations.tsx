@@ -1,7 +1,7 @@
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionEyebrow } from './SectionEyebrow'
-import type { RoverInnovation } from '@/sanity/lib/types'
+import type { RoverInnovation } from '@/lib/cms/types'
 import { pad2 } from './roverHelpers'
 
 export function RoverInnovations({

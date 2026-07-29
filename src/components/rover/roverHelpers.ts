@@ -1,6 +1,7 @@
 // ============================================================
 // Shared helpers for the rover product-landing components.
 // ============================================================
+import type { MediaRef } from '@/lib/cms/media'
 import { SUBTEAM_COLORS, labelFor } from '@/lib/subteam-style'
 
 export { SUBTEAM_COLORS, labelFor }
@@ -31,3 +32,19 @@ export function parseStat(value: string): {
 
 /** A short, glanceable label for a subteam used on section eyebrows. */
 export const subteamLabel = (key?: string) => (key ? labelFor(key) : 'System')
+
+/**
+ * The image that represents a rover: its featured shot, or the first gallery
+ * photo when none was chosen.
+ *
+ * Sanity did this with `coalesce(featuredImage, gallery[0])` inside the query.
+ * Payload has no query-level coalesce, so it happens here — in one place, so
+ * the fleet grid, the hero, the OG card and the sibling strip cannot disagree
+ * about which photo a rover is known by.
+ */
+export function roverHeroImage(rover: {
+  featuredImage?: unknown
+  gallery?: unknown[] | null
+}): MediaRef {
+  return (rover.featuredImage as MediaRef) ?? ((rover.gallery?.[0] as MediaRef) ?? null)
+}

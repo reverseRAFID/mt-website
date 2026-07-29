@@ -2,30 +2,21 @@
 
 import Link from 'next/link'
 import type { ReactNode } from 'react'
-import { PortableText } from '@portabletext/react'
+import { RichTextBody } from '@/lib/cms/richtext'
 import { Reveal } from '@/components/motion/Reveal'
 import { Scramble } from '@/components/motion/Scramble'
 import { Magnetic } from '@/components/motion/Magnetic'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionEyebrow } from './SectionEyebrow'
-import type { PortableTextBlock } from '@/sanity/lib/types'
-
-interface BriefCompetition {
-  shortName: string
-  year: number
-  location?: string
-  result?: string
-  rank?: number
-  totalTeams?: number
-  slug?: { current: string }
-}
+import type { RichTextValue } from '@/lib/cms/richtext'
+import type { Competition } from '@/lib/cms/types'
 
 interface RoverBriefProps {
-  overview?: string
-  description?: PortableTextBlock
-  competition?: BriefCompetition
+  overview?: string | null
+  description?: RichTextValue
+  competition?: Competition | null
   year: number
-  teamLead?: string
+  teamLead?: string | null
   pdfUrl?: string
   slug: string
 }
@@ -50,7 +41,7 @@ export function RoverBrief({
       label: 'Competition',
       value: competition.slug ? (
         <Link
-          href={`/competitions/${competition.slug.current}`}
+          href={`/competitions/${competition.slug}`}
           className="text-text transition-colors hover:text-primary"
         >
           {competition.shortName} {competition.year}
@@ -91,11 +82,10 @@ export function RoverBrief({
                 className="block max-w-2xl text-balance font-display text-xl font-medium leading-snug tracking-tight text-text sm:text-2xl lg:text-3xl"
               />
             )}
-            {description && (
-              <div className="prose prose-sm mt-7 max-w-none leading-relaxed text-text-muted">
-                <PortableText value={description} />
-              </div>
-            )}
+            <RichTextBody
+              value={description}
+              className="prose prose-sm mt-7 max-w-none leading-relaxed text-text-muted"
+            />
           </div>
         </Reveal>
 

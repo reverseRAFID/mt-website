@@ -1,9 +1,9 @@
 import { PageLayout } from '@/components/layout/PageLayout'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { sanityFetch, urlFor, getFileUrl, getYouTubeID } from '@/sanity/lib/client'
-import { ROVER_BY_SLUG_QUERY, ROVERS_QUERY } from '@/sanity/lib/queries'
-import type { RoverFull, RoverCard } from '@/sanity/lib/types'
+import { getRoverBySlug, getRoverSlugs, getSiblingRovers } from '@/lib/cms/content'
+import { file, getYouTubeID, media, ogImageUrl } from '@/lib/cms/media'
+import { roverHeroImage } from '@/components/rover/roverHelpers'
 import { RoverHero } from '@/components/rover/RoverHero'
 import { RoverBrief } from '@/components/rover/RoverBrief'
 import { RoverInnovations } from '@/components/rover/RoverInnovations'
@@ -23,43 +23,49 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const rovers = await sanityFetch<RoverCard[]>(ROVERS_QUERY)
-  return rovers?.filter((r) => r?.slug?.current).map((r) => ({ slug: r.slug.current })) ?? []
+  return (await getRoverSlugs()).map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const rover = await sanityFetch<RoverFull | null>(ROVER_BY_SLUG_QUERY, { slug })
+  const rover = await getRoverBySlug(slug)
   if (!rover) return { title: 'Rover' }
-  const hero = rover.featuredImage ?? rover.gallery?.[0]
+  // The stored 1200x630 crop, absolute: a scraper cannot call the image
+  // optimiser and has no idea what origin a relative path was relative to.
+  const og = ogImageUrl(roverHeroImage(rover))
   return {
     title: `${rover.name} — Rover`,
-    description: rover.tagline ?? rover.overview,
+    description: rover.tagline ?? rover.overview ?? undefined,
     openGraph: {
       title: `${rover.name} · BRACU Mongol-Tori`,
       description: rover.tagline ?? rover.overview ?? undefined,
-      images: hero ? [urlFor(hero).width(1200).height(630).fit('crop').url()] : undefined,
+      images: og ? [og] : undefined,
     },
   }
 }
 
 export default async function RoverPage({ params }: Props) {
   const { slug } = await params
-  const rover = await sanityFetch<RoverFull | null>(ROVER_BY_SLUG_QUERY, { slug })
+  const rover = await getRoverBySlug(slug)
   if (!rover) notFound()
 
-  // Resolve hero media: explicit featured image, else first gallery shot.
-  const heroSource = rover.featuredImage ?? rover.gallery?.[0]
-  const heroUrl = heroSource ? urlFor(heroSource).width(2000).height(1300).fit('crop').url() : undefined
-  // Avoid repeating the hero shot in the gallery grid when it came from gallery[0].
-  const galleryImages = rover.featuredImage ? rover.gallery ?? [] : (rover.gallery ?? []).slice(1)
-  const pdfUrl = rover.technicalPdf?.asset?._ref ? getFileUrl(rover.technicalPdf.asset._ref) : undefined
+  const [siblings] = await Promise.all([getSiblingRovers(rover.id)])
 
-  const comp = rover.competition
+  // Resolve hero media: explicit featured image, else first gallery shot.
+  const heroUrl = media(roverHeroImage(rover))?.url ?? undefined
+  // Avoid repeating the hero shot in the gallery grid when it came from gallery[0].
+  const galleryImages = rover.featuredImage ? (rover.gallery ?? []) : (rover.gallery ?? []).slice(1)
+  const pdfUrl = file(rover.technicalPdf)?.url ?? undefined
+
+  const comp = typeof rover.competition === 'object' ? rover.competition : null
   // Gate the SAR section on the SAME predicate the component renders on, so the
   // hero "Watch SAR Video" CTA can never point at a section that returns null.
   const hasVideo = Boolean(rover.sarVideoUrl && getYouTubeID(rover.sarVideoUrl))
-  const validCrew = (rover.crew ?? []).filter((c) => c?.member?.slug?.current)
+  // A crew row whose member did not come back populated cannot be rendered —
+  // the card links to their profile and shows their face.
+  const validCrew = (rover.crew ?? []).filter(
+    (c) => typeof c?.member === 'object' && c.member?.slug
+  )
 
   // Number ONLY the sections that will actually render (each `show` mirrors the
   // component's own null-guard), so an unseeded section never leaves a gap in
@@ -108,7 +114,7 @@ export default async function RoverPage({ params }: Props) {
         year={rover.year}
         teamLead={rover.teamLead}
         pdfUrl={pdfUrl}
-        slug={rover.slug.current}
+        slug={rover.slug}
       />
 
       <RoverInnovations innovations={rover.keyInnovations ?? []} roverName={rover.name} index={idx.innovations} />
@@ -125,8 +131,8 @@ export default async function RoverPage({ params }: Props) {
       <RoverMissions missions={rover.missions ?? []} index={idx.missions} />
       <RoverSarVideo url={rover.sarVideoUrl} roverName={rover.name} year={rover.year} index={idx.sar} />
       <RoverGallery images={galleryImages} roverName={rover.name} index={idx.gallery} />
-      <RoverCrew crew={rover.crew ?? []} roverName={rover.name} index={idx.crew} />
-      <RoverFleetStrip rovers={rover.siblings} />
+      <RoverCrew crew={validCrew} roverName={rover.name} index={idx.crew} />
+      <RoverFleetStrip rovers={siblings} />
       <SupportCTA copy="roverDetail" />
     </PageLayout>
   )

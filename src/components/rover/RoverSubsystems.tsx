@@ -9,8 +9,8 @@ import { Reveal } from '@/components/motion/Reveal'
 import { TiltCard } from '@/components/motion/TiltCard'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionEyebrow } from './SectionEyebrow'
-import { urlFor } from '@/sanity/lib/client'
-import type { RoverSubsystem } from '@/sanity/lib/types'
+import { media } from '@/lib/cms/media'
+import type { RoverSubsystem } from '@/lib/cms/types'
 import { SUBTEAM_COLORS, labelFor, pad2 } from './roverHelpers'
 
 function SubsystemRow({ subsystem, index }: { subsystem: RoverSubsystem; index: number }) {
@@ -58,7 +58,7 @@ function SubsystemRow({ subsystem, index }: { subsystem: RoverSubsystem; index: 
             {subsystem.image ? (
               <Parallax speed={0.22} className="absolute -inset-y-[11%] inset-x-0">
                 <Image
-                  src={urlFor(subsystem.image).width(900).height(760).url()}
+                  src={media(subsystem.image)?.url ?? ''}
                   alt={subsystem.name}
                   fill
                   className="object-cover"

@@ -7,7 +7,7 @@ import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionEyebrow } from '@/components/rover/SectionEyebrow'
 import { gsap, ScrollTrigger, prefersReducedMotion } from '@/lib/gsap'
-import type { KeySpec } from '@/sanity/lib/types'
+import type { KeySpec } from '@/lib/cms/types'
 import { parseStat } from './roverHelpers'
 
 function SpecValue({ value }: { value: string }) {
@@ -62,8 +62,8 @@ export function RoverSpecReadout({
   namedComponents,
   index = '04',
 }: {
-  keySpecs?: KeySpec[]
-  namedComponents?: string[]
+  keySpecs?: KeySpec[] | null
+  namedComponents?: string[] | null
   index?: string
 }) {
   const specs = keySpecs ?? []
