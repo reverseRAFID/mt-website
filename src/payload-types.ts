@@ -69,6 +69,8 @@ export interface Config {
   collections: {
     announcements: Announcement;
     members: Member;
+    rovers: Rover;
+    competitions: Competition;
     media: Media;
     documents: Document;
     users: User;
@@ -81,6 +83,8 @@ export interface Config {
   collectionsSelect: {
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
+    rovers: RoversSelect<false> | RoversSelect<true>;
+    competitions: CompetitionsSelect<false> | CompetitionsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -315,6 +319,239 @@ export interface Media {
   };
 }
 /**
+ * The fleet. Mark exactly one as the current flagship.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rovers".
+ */
+export interface Rover {
+  id: string;
+  /**
+   * The URL for this page. Generated from the name if left empty. Changing it breaks any link already shared.
+   */
+  slug: string;
+  /**
+   * The codename, e.g. "Taurus", "Hypersonic".
+   */
+  name: string;
+  year: number;
+  /**
+   * The team’s current rover. Highlighted across the site.
+   */
+  isFlagship?: boolean | null;
+  /**
+   * A short product-style line, e.g. "The rover that learned to think on Martian terrain."
+   */
+  tagline?: string | null;
+  /**
+   * Two to four sentences on this rover and what made the build notable. Shown in the hero.
+   */
+  overview?: string | null;
+  /**
+   * Lead engineer for this build cycle.
+   */
+  teamLead?: string | null;
+  /**
+   * The competition this rover was built for, e.g. URC 2026.
+   */
+  competition?: (string | null) | Competition;
+  /**
+   * System Acceptance Review video. Paste the full watch or youtu.be link — it is embedded on the page.
+   */
+  sarVideoUrl?: string | null;
+  /**
+   * The hero shot. Falls back to the first gallery image when empty.
+   */
+  featuredImage?: (string | null) | Media;
+  /**
+   * Captions live on the image itself now (Media → Caption), so fixing one fixes it everywhere it appears.
+   */
+  gallery?: (string | Media)[] | null;
+  diagrams?: (string | Media)[] | null;
+  /**
+   * Hotspots overlaid on the first diagram, positioned by percentage.
+   */
+  diagramAnnotations?:
+    | {
+        label: string;
+        description?: string | null;
+        xPercent: number;
+        yPercent: number;
+        id?: string | null;
+      }[]
+    | null;
+  cadModel?: (string | null) | Document;
+  technicalPdf?: (string | null) | Document;
+  /**
+   * The structured specs shown on the fleet cards.
+   */
+  specs?: {
+    weight?: string | null;
+    dimensions?: string | null;
+    driveSystem?: string | null;
+    payload?: string | null;
+    dof?: number | null;
+    autonomy?: string | null;
+  };
+  /**
+   * Free-form telemetry for the detail page, e.g. "Comms Range" → "3.3 km NLoS".
+   */
+  keySpecs?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Notable named hardware and software — "Jetson Orin", "ZED 2i", "ROS2 Humble", "YOLO11n".
+   */
+  namedComponents?: string[] | null;
+  /**
+   * The headline breakthroughs. Drives the feature reel on the page.
+   */
+  keyInnovations?:
+    | {
+        title: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Mechanical, Controls & Software, Electronics, Network & Vision, Autonomy, Science. Each becomes a feature section.
+   */
+  subsystems?:
+    | {
+        name: string;
+        /**
+         * Colours the section accent and links it to a sub-team.
+         */
+        subTeam?:
+          | (
+              | 'uav'
+              | 'rnd'
+              | 'autonomous'
+              | 'controls'
+              | 'mechanical'
+              | 'electronics'
+              | 'science'
+              | 'network'
+              | 'management'
+            )
+          | null;
+        summary: string;
+        /**
+         * Concrete bullets — named parts, numbers, techniques.
+         */
+        highlights?: string[] | null;
+        image?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * How this rover tackles each competition mission — Delivery, Equipment Servicing, Autonomous Navigation, Science.
+   */
+  missions?:
+    | {
+        name: string;
+        summary: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Who built this rover. Their sub-team drives the tab filter on the page.
+   */
+  crew?:
+    | {
+        member: string | Member;
+        /**
+         * What they worked on here, e.g. "Lead — manipulator & IK".
+         */
+        contribution?: string | null;
+        /**
+         * Only if their contribution to THIS rover differs from their primary sub-team. Otherwise the member’s own sub-team is used.
+         */
+        subTeamOverride?:
+          | (
+              | 'uav'
+              | 'rnd'
+              | 'autonomous'
+              | 'controls'
+              | 'mechanical'
+              | 'electronics'
+              | 'science'
+              | 'network'
+              | 'management'
+            )
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Every competition the team has entered, with its result and roster.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "competitions".
+ */
+export interface Competition {
+  id: string;
+  /**
+   * The URL for this page. Generated from the name if left empty. Changing it breaks any link already shared.
+   */
+  slug: string;
+  name: string;
+  shortName: string;
+  year: number;
+  location?: string | null;
+  result?: string | null;
+  rank?: number | null;
+  totalTeams?: number | null;
+  rover?: (string | null) | Rover;
+  teamMembers?:
+    | {
+        member: string | Member;
+        competitionRole?:
+          | (
+              | 'Driver'
+              | 'Science Lead'
+              | 'Systems Integrator'
+              | 'Operator'
+              | 'Arm Operator'
+              | 'Autonomy Lead'
+              | 'Team Lead'
+              | 'Support'
+            )
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  sarVideo?: string | null;
+  gallery?: (string | Media)[] | null;
+  reportPdf?: (string | null) | Document;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "documents".
  */
@@ -397,6 +634,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'members';
         value: string | Member;
+      } | null)
+    | ({
+        relationTo: 'rovers';
+        value: string | Rover;
+      } | null)
+    | ({
+        relationTo: 'competitions';
+        value: string | Competition;
       } | null)
     | ({
         relationTo: 'media';
@@ -510,6 +755,117 @@ export interface MembersSelect<T extends boolean = true> {
   linkedin?: T;
   github?: T;
   website?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rovers_select".
+ */
+export interface RoversSelect<T extends boolean = true> {
+  slug?: T;
+  name?: T;
+  year?: T;
+  isFlagship?: T;
+  tagline?: T;
+  overview?: T;
+  teamLead?: T;
+  competition?: T;
+  sarVideoUrl?: T;
+  featuredImage?: T;
+  gallery?: T;
+  diagrams?: T;
+  diagramAnnotations?:
+    | T
+    | {
+        label?: T;
+        description?: T;
+        xPercent?: T;
+        yPercent?: T;
+        id?: T;
+      };
+  cadModel?: T;
+  technicalPdf?: T;
+  specs?:
+    | T
+    | {
+        weight?: T;
+        dimensions?: T;
+        driveSystem?: T;
+        payload?: T;
+        dof?: T;
+        autonomy?: T;
+      };
+  keySpecs?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  namedComponents?: T;
+  keyInnovations?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  subsystems?:
+    | T
+    | {
+        name?: T;
+        subTeam?: T;
+        summary?: T;
+        highlights?: T;
+        image?: T;
+        id?: T;
+      };
+  missions?:
+    | T
+    | {
+        name?: T;
+        summary?: T;
+        id?: T;
+      };
+  crew?:
+    | T
+    | {
+        member?: T;
+        contribution?: T;
+        subTeamOverride?: T;
+        id?: T;
+      };
+  description?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "competitions_select".
+ */
+export interface CompetitionsSelect<T extends boolean = true> {
+  slug?: T;
+  name?: T;
+  shortName?: T;
+  year?: T;
+  location?: T;
+  result?: T;
+  rank?: T;
+  totalTeams?: T;
+  rover?: T;
+  teamMembers?:
+    | T
+    | {
+        member?: T;
+        competitionRole?: T;
+        id?: T;
+      };
+  sarVideo?: T;
+  gallery?: T;
+  reportPdf?: T;
   legacySanityId?: T;
   updatedAt?: T;
   createdAt?: T;

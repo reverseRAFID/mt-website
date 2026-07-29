@@ -8,9 +8,11 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Announcements } from './src/payload/collections/Announcements'
+import { Competitions } from './src/payload/collections/Competitions'
 import { Documents } from './src/payload/collections/Documents'
 import { Media } from './src/payload/collections/Media'
 import { Members } from './src/payload/collections/Members'
+import { Rovers } from './src/payload/collections/Rovers'
 import { Users } from './src/payload/collections/Users'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -52,6 +54,9 @@ export default buildConfig({
     Announcements,
     // Team
     Members,
+    // Rovers & competitions
+    Rovers,
+    Competitions,
     // Media
     Media,
     Documents,
