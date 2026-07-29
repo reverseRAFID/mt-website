@@ -8,10 +8,13 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Announcements } from './src/payload/collections/Announcements'
+import { Applications } from './src/payload/collections/Applications'
 import { Competitions } from './src/payload/collections/Competitions'
+import { Donations } from './src/payload/collections/Donations'
 import { Documents } from './src/payload/collections/Documents'
 import { Media } from './src/payload/collections/Media'
 import { Members } from './src/payload/collections/Members'
+import { Orders } from './src/payload/collections/Orders'
 import { Posts } from './src/payload/collections/Posts'
 import { ProductCategories } from './src/payload/collections/ProductCategories'
 import { Products } from './src/payload/collections/Products'
@@ -75,6 +78,11 @@ export default buildConfig({
     // Shop
     Products,
     ProductCategories,
+    Orders,
+    // Crowdfunding
+    Donations,
+    // Recruitment
+    Applications,
     // Media
     Media,
     Documents,

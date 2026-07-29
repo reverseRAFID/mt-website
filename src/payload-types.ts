@@ -78,6 +78,9 @@ export interface Config {
     'sar-videos': SarVideo;
     products: Product;
     'product-categories': ProductCategory;
+    orders: Order;
+    donations: Donation;
+    applications: Application;
     media: Media;
     documents: Document;
     users: User;
@@ -99,6 +102,9 @@ export interface Config {
     'sar-videos': SarVideosSelect<false> | SarVideosSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     'product-categories': ProductCategoriesSelect<false> | ProductCategoriesSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    donations: DonationsSelect<false> | DonationsSelect<true>;
+    applications: ApplicationsSelect<false> | ApplicationsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -885,6 +891,256 @@ export interface ProductCategory {
   createdAt: string;
 }
 /**
+ * Work the queue oldest-first. Changing the status emails the customer once; cancelling returns the stock.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: string;
+  /**
+   * Changing this emails the customer — once per status, however many times you save. Cancelling returns the reserved stock to inventory.
+   */
+  status: 'placed' | 'confirmed' | 'processing' | 'dispatched' | 'delivered' | 'cancelled';
+  /**
+   * Cash on delivery — mark Paid once the money is actually in hand.
+   */
+  paymentStatus: 'unpaid' | 'paid' | 'refunded';
+  /**
+   * Included in the cancellation email, so write it for the customer to read.
+   */
+  cancellationReason?: string | null;
+  /**
+   * Tick and save to send the order confirmation again — use when Email Status shows failed or skipped. Clears itself once sent.
+   */
+  resendEmail?: boolean | null;
+  /**
+   * NEVER PUBLISHED and never emailed. Courier reference, who packed it, anything.
+   */
+  adminNotes?: string | null;
+  customerName: string;
+  /**
+   * NEVER PUBLISHED. Where every order email goes.
+   */
+  customerEmail: string;
+  /**
+   * NEVER PUBLISHED — not even partially. See “Phone — last 3”.
+   */
+  customerPhone: string;
+  /**
+   * Computed once, when the order is placed. The track page shows this so the buyer can confirm the order is theirs — which is what lets the public read avoid selecting customerPhone at all. Masking in React would be too late: the raw value would already have crossed into the page.
+   */
+  phoneLast3?: string | null;
+  deliveryMethod: 'standard' | 'campus';
+  /**
+   * NEVER PUBLISHED. Home delivery only — empty for campus handover.
+   */
+  deliveryAddress?: {
+    line1?: string | null;
+    line2?: string | null;
+    area?: string | null;
+    city?: string | null;
+    postcode?: string | null;
+  };
+  campusDetails?: {
+    handoverPoint?: string | null;
+    bracuId?: string | null;
+  };
+  /**
+   * Anything they typed at checkout — landmarks, timing, sizing worries.
+   */
+  customerNote?: string | null;
+  /**
+   * A snapshot taken when the order was placed. Renaming, repricing or deleting a product never changes what is recorded here.
+   */
+  items: {
+    productTitle?: string | null;
+    variantLabel?: string | null;
+    sku?: string | null;
+    quantity?: number | null;
+    unitPrice?: number | null;
+    lineTotal?: number | null;
+    productId?: string | null;
+    variantKey?: string | null;
+    productSlug?: string | null;
+    imageUrl?: string | null;
+    /**
+     * Whether this line came off the shelf when the order was placed. Recorded per line because a cancellation must return exactly what was taken — if inventory tracking is switched on or off in between, asking the product what it does NOW would either strand the units or invent stock that never existed.
+     */
+    stockTaken?: boolean | null;
+    id?: string | null;
+  }[];
+  subtotal: number;
+  /**
+   * Always 0 for campus handover.
+   */
+  deliveryFee: number;
+  /**
+   * What the customer pays on delivery. It has been invoiced.
+   */
+  total: number;
+  /**
+   * What the customer types into /shop/track.
+   */
+  trackId: string;
+  placedAt: string;
+  paymentMethod?: string | null;
+  /**
+   * Appended automatically each time the status changes.
+   */
+  statusHistory?:
+    | {
+        status?: string | null;
+        at?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Guarantees one email per status. Saving the order five times cannot send five emails.
+   */
+  notifiedStatuses?: string[] | null;
+  /**
+   * If this is not “Sent”, tick “Re-send the confirmation email”.
+   */
+  emailStatus?: ('sent' | 'failed' | 'skipped') | null;
+  /**
+   * True once the order has taken its units out of inventory.
+   */
+  stockReserved?: boolean | null;
+  /**
+   * Set when a cancellation put the units back. Its presence is what stops a repeated hook restoring the same stock twice.
+   */
+  stockRestoredAt?: string | null;
+  /**
+   * Sent by the checkout form. Stops a double-click or a retried request creating two orders.
+   */
+  idempotencyKey?: string | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The verification queue. A donation is invisible on the site until it is approved, and its amount is never shown at all.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donations".
+ */
+export interface Donation {
+  id: string;
+  status: 'pending' | 'approved' | 'rejected';
+  /**
+   * NEVER PUBLISHED. Sets this donor’s position on the public roll — the roll shows the rank, never the figure. Required to approve.
+   */
+  amount?: number | null;
+  /**
+   * Shown publicly as the verified date, and breaks ties between equal amounts.
+   */
+  approvedAt?: string | null;
+  /**
+   * Who checked the statement. Internal only.
+   */
+  verifiedBy?: string | null;
+  /**
+   * Never shown publicly. Use it when replying to the donor by hand.
+   */
+  rejectionReason?: string | null;
+  /**
+   * Never shown publicly.
+   */
+  adminNotes?: string | null;
+  paymentMethod?: ('bKash' | 'Nagad' | 'Rocket' | 'Upay' | 'Bank Transfer' | 'Other') | null;
+  donatedAt?: string | null;
+  /**
+   * NEVER PUBLISHED. Match this against the statement.
+   */
+  senderAccount?: string | null;
+  /**
+   * NEVER PUBLISHED. The fastest way to confirm a transfer.
+   */
+  transactionId?: string | null;
+  /**
+   * NEVER PUBLISHED.
+   */
+  contactEmail?: string | null;
+  /**
+   * NEVER PUBLISHED.
+   */
+  contactPhone?: string | null;
+  /**
+   * Always recorded so payments can be matched. Replaced by “Anonymous” in the public roll when the donor asked to stay anonymous — the real name is never sent to a browser.
+   */
+  donorName?: string | null;
+  /**
+   * The donor’s choice.
+   */
+  isAnonymous?: boolean | null;
+  /**
+   * e.g. “BRACU CSE ’22”. Suppressed publicly when anonymous.
+   */
+  affiliation?: string | null;
+  /**
+   * Shown on the supporters roll. Editable — trim anything unsuitable before approving.
+   */
+  message?: string | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Submissions from /join/apply. Never shown on the website.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "applications".
+ */
+export interface Application {
+  id: string;
+  status?: ('new' | 'shortlisted' | 'interview' | 'accepted' | 'rejected') | null;
+  /**
+   * Never visible to the applicant.
+   */
+  reviewerNotes?: string | null;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  studentId?: string | null;
+  year?: string | null;
+  department?: string | null;
+  subteam1?:
+    | (
+        | 'Mechanical & CAD'
+        | 'Electronics'
+        | 'Controls & Software'
+        | 'Network & Vision'
+        | 'AI & Autonomous'
+        | 'Astrobio & Science'
+        | 'Unmanned Aerial Vehicles'
+        | 'Management & Outreach'
+        | 'Research & Documentation'
+      )
+    | null;
+  subteam2?:
+    | (
+        | 'Mechanical & CAD'
+        | 'Electronics'
+        | 'Controls & Software'
+        | 'Network & Vision'
+        | 'AI & Autonomous'
+        | 'Astrobio & Science'
+        | 'Unmanned Aerial Vehicles'
+        | 'Management & Outreach'
+        | 'Research & Documentation'
+      )
+    | null;
+  whyJoin?: string | null;
+  experience?: string | null;
+  portfolio?: string | null;
+  submittedAt?: string | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -981,6 +1237,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'product-categories';
         value: string | ProductCategory;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: string | Order;
+      } | null)
+    | ({
+        relationTo: 'donations';
+        value: string | Donation;
+      } | null)
+    | ({
+        relationTo: 'applications';
+        value: string | Application;
       } | null)
     | ({
         relationTo: 'media';
@@ -1340,6 +1608,124 @@ export interface ProductCategoriesSelect<T extends boolean = true> {
   title?: T;
   description?: T;
   order?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  status?: T;
+  paymentStatus?: T;
+  cancellationReason?: T;
+  resendEmail?: T;
+  adminNotes?: T;
+  customerName?: T;
+  customerEmail?: T;
+  customerPhone?: T;
+  phoneLast3?: T;
+  deliveryMethod?: T;
+  deliveryAddress?:
+    | T
+    | {
+        line1?: T;
+        line2?: T;
+        area?: T;
+        city?: T;
+        postcode?: T;
+      };
+  campusDetails?:
+    | T
+    | {
+        handoverPoint?: T;
+        bracuId?: T;
+      };
+  customerNote?: T;
+  items?:
+    | T
+    | {
+        productTitle?: T;
+        variantLabel?: T;
+        sku?: T;
+        quantity?: T;
+        unitPrice?: T;
+        lineTotal?: T;
+        productId?: T;
+        variantKey?: T;
+        productSlug?: T;
+        imageUrl?: T;
+        stockTaken?: T;
+        id?: T;
+      };
+  subtotal?: T;
+  deliveryFee?: T;
+  total?: T;
+  trackId?: T;
+  placedAt?: T;
+  paymentMethod?: T;
+  statusHistory?:
+    | T
+    | {
+        status?: T;
+        at?: T;
+        note?: T;
+        id?: T;
+      };
+  notifiedStatuses?: T;
+  emailStatus?: T;
+  stockReserved?: T;
+  stockRestoredAt?: T;
+  idempotencyKey?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donations_select".
+ */
+export interface DonationsSelect<T extends boolean = true> {
+  status?: T;
+  amount?: T;
+  approvedAt?: T;
+  verifiedBy?: T;
+  rejectionReason?: T;
+  adminNotes?: T;
+  paymentMethod?: T;
+  donatedAt?: T;
+  senderAccount?: T;
+  transactionId?: T;
+  contactEmail?: T;
+  contactPhone?: T;
+  donorName?: T;
+  isAnonymous?: T;
+  affiliation?: T;
+  message?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "applications_select".
+ */
+export interface ApplicationsSelect<T extends boolean = true> {
+  status?: T;
+  reviewerNotes?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  studentId?: T;
+  year?: T;
+  department?: T;
+  subteam1?: T;
+  subteam2?: T;
+  whyJoin?: T;
+  experience?: T;
+  portfolio?: T;
+  submittedAt?: T;
   legacySanityId?: T;
   updatedAt?: T;
   createdAt?: T;
