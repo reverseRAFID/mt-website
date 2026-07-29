@@ -76,6 +76,8 @@ export interface Config {
     rovers: Rover;
     competitions: Competition;
     'sar-videos': SarVideo;
+    products: Product;
+    'product-categories': ProductCategory;
     media: Media;
     documents: Document;
     users: User;
@@ -95,6 +97,8 @@ export interface Config {
     rovers: RoversSelect<false> | RoversSelect<true>;
     competitions: CompetitionsSelect<false> | CompetitionsSelect<true>;
     'sar-videos': SarVideosSelect<false> | SarVideosSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    'product-categories': ProductCategoriesSelect<false> | ProductCategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -739,6 +743,140 @@ export interface SarVideo {
   createdAt: string;
 }
 /**
+ * The catalogue. Stock lives on each variant and moves by itself as orders come in.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  /**
+   * The /shop/… URL. Changing it breaks any link already shared.
+   */
+  slug: string;
+  title: string;
+  category: string | ProductCategory;
+  /**
+   * One line under the name on the product card.
+   */
+  tagline?: string | null;
+  /**
+   * Whole taka — this shop has no minor unit.
+   */
+  basePrice: number;
+  /**
+   * Optional. Shown struck through, so it must be HIGHER than the price.
+   */
+  compareAtPrice?: number | null;
+  /**
+   * The first image is used on cards and in the order email.
+   */
+  images: (string | Media)[];
+  /**
+   * What the picker is called on the product page — "Size", "Colour", "Option".
+   */
+  variantAxisLabel?: string | null;
+  /**
+   * On: the shop refuses to oversell and stock counts down with each order. Off: unlimited — for made-to-order or pre-order items.
+   */
+  trackInventory?: boolean | null;
+  /**
+   * Every product has at least one. A product with no real options keeps the single "Standard" row — that is what holds its stock.
+   */
+  variants: {
+    /**
+     * What the customer picks, e.g. "M". Two axes can be one label: "M / Black".
+     */
+    label: string;
+    /**
+     * Optional. Printed on the invoice when set.
+     */
+    sku?: string | null;
+    /**
+     * Moves by itself as orders are placed and cancelled. Edit only to record a real physical recount.
+     */
+    stock: number;
+    /**
+     * Flagged in Shop → Low Stock at or below this.
+     */
+    lowStockThreshold?: number | null;
+    /**
+     * Only if this variant costs more than the base price. Empty = product price.
+     */
+    priceOverride?: number | null;
+    /**
+     * Turn off to hide this variant without deleting it. Deleting a row orphans the stock accounting of any order that bought it.
+     */
+    isActive?: boolean | null;
+    id?: string | null;
+  }[];
+  /**
+   * Optional cap for this product on top of the shop-wide limit. For scarce items.
+   */
+  maxPerOrder?: number | null;
+  /**
+   * The main product copy. Materials, fit, what it is.
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Shown in an accordion. Plain text — one measurement per line reads best.
+   */
+  sizeGuide?: string | null;
+  careInfo?: string | null;
+  /**
+   * Off withdraws it from sale. Existing orders keep their own copy of the details, so order history does not change.
+   */
+  isActive?: boolean | null;
+  /**
+   * Featured products lead the shop grid and appear in the homepage teaser.
+   */
+  featured?: boolean | null;
+  /**
+   * Lower numbers come first.
+   */
+  order?: number | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-categories".
+ */
+export interface ProductCategory {
+  id: string;
+  /**
+   * Used in the /shop filter URL. Changing it breaks existing links.
+   */
+  slug: string;
+  title: string;
+  /**
+   * Optional one-liner under the category heading.
+   */
+  description?: string | null;
+  /**
+   * Lower numbers come first in the filter bar.
+   */
+  order?: number | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -827,6 +965,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'sar-videos';
         value: string | SarVideo;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: string | Product;
+      } | null)
+    | ({
+        relationTo: 'product-categories';
+        value: string | ProductCategory;
       } | null)
     | ({
         relationTo: 'media';
@@ -1137,6 +1283,55 @@ export interface SarVideosSelect<T extends boolean = true> {
   youtubeUrl?: T;
   thumbnail?: T;
   description?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  slug?: T;
+  title?: T;
+  category?: T;
+  tagline?: T;
+  basePrice?: T;
+  compareAtPrice?: T;
+  images?: T;
+  variantAxisLabel?: T;
+  trackInventory?: T;
+  variants?:
+    | T
+    | {
+        label?: T;
+        sku?: T;
+        stock?: T;
+        lowStockThreshold?: T;
+        priceOverride?: T;
+        isActive?: T;
+        id?: T;
+      };
+  maxPerOrder?: T;
+  description?: T;
+  sizeGuide?: T;
+  careInfo?: T;
+  isActive?: T;
+  featured?: T;
+  order?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-categories_select".
+ */
+export interface ProductCategoriesSelect<T extends boolean = true> {
+  slug?: T;
+  title?: T;
+  description?: T;
+  order?: T;
   legacySanityId?: T;
   updatedAt?: T;
   createdAt?: T;
