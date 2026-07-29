@@ -1,0 +1,44 @@
+# Local MongoDB for development.
+#
+# A single-node REPLICA SET, not a standalone `mongod`. The shop's no-oversell
+# guarantee is built on multi-document transactions (stock decrement + order
+# insert, all or nothing), and a standalone server refuses to start a session
+# transaction at all. Developing against one would mean the guarantee is only
+# ever exercised in production, which is the one place you do not want to find
+# out it does not work.
+#
+#   docker compose up -d      start (auto-initiates the replica set)
+#   docker compose down       stop, keeping data
+#   docker compose down -v    stop and wipe the database
+#
+# Production uses MongoDB Atlas — every Atlas tier is a replica set, so the same
+# code path applies. Point DATABASE_URI at it and nothing else changes.
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: mt-mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    command: ['--replSet', 'rs0', '--bind_ip_all']
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      # Doubles as the replica-set initiator: rs.status() throws until the set
+      # exists, and the catch initiates it. Idempotent, so it is safe to run on
+      # every health check for the life of the container.
+      test: >
+        mongosh --quiet --eval "
+          try { rs.status().ok }
+          catch (e) {
+            rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'localhost:27017' }] }).ok
+          }
+        "
+      interval: 5s
+      timeout: 30s
+      start_period: 10s
+      retries: 30
+
+volumes:
+  mongo-data:

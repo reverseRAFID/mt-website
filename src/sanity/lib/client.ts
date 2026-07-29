@@ -1,4 +1,8 @@
-import { createClient } from 'next-sanity'
+// TRANSITIONAL — this module is deleted once the Payload migration lands.
+// See docs/payload-migration-plan.md. It reads from `@sanity/client` directly
+// rather than `next-sanity`, which peer-depends on Next 15 and so cannot be
+// installed alongside the Next 16 that Payload requires.
+import { createClient } from '@sanity/client'
 import imageUrlBuilder from '@sanity/image-url'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? 'replace-me'

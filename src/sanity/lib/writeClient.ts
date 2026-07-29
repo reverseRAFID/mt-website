@@ -1,4 +1,4 @@
-import { createClient } from 'next-sanity'
+import { createClient } from '@sanity/client'
 
 // ── Server-only Sanity write client ────────────────────────────
 // Authenticated with SANITY_API_TOKEN (an "Editor" token). This MUST

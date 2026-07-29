@@ -1,4 +1,8 @@
-import { groq } from 'next-sanity'
+// `groq` is a no-op template tag — it exists so editors syntax-highlight the
+// query and so the strings are greppable. next-sanity used to supply it; it is
+// inlined here because that package cannot be installed alongside Next 16.
+const groq = (strings: TemplateStringsArray, ...values: unknown[]): string =>
+  strings.reduce((out, s, i) => out + s + (i < values.length ? String(values[i]) : ''), '')
 
 // ── Announcements ─────────────────────────────────────────────
 export const ACTIVE_ANNOUNCEMENTS_QUERY = groq`
