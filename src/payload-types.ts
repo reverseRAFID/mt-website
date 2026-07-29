@@ -68,9 +68,14 @@ export interface Config {
   blocks: {};
   collections: {
     announcements: Announcement;
+    posts: Post;
+    research: Research;
+    sponsors: Sponsor;
     members: Member;
+    testimonials: Testimonial;
     rovers: Rover;
     competitions: Competition;
+    'sar-videos': SarVideo;
     media: Media;
     documents: Document;
     users: User;
@@ -82,9 +87,14 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    research: ResearchSelect<false> | ResearchSelect<true>;
+    sponsors: SponsorsSelect<false> | SponsorsSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     rovers: RoversSelect<false> | RoversSelect<true>;
     competitions: CompetitionsSelect<false> | CompetitionsSelect<true>;
+    'sar-videos': SarVideosSelect<false> | SarVideosSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -164,6 +174,46 @@ export interface Announcement {
    * Lower numbers are shown first.
    */
   priority?: number | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Everything on /news.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: string;
+  /**
+   * The URL for this page. Generated from the name if left empty. Changing it breaks any link already shared.
+   */
+  slug: string;
+  title: string;
+  publishedAt?: string | null;
+  category: 'competition-update' | 'rover-reveal' | 'research-highlight' | 'outreach' | 'team-news';
+  author?: (string | null) | Member;
+  featuredImage?: (string | null) | Media;
+  /**
+   * The summary on cards and in link previews. Written to stand alone — it is often all anyone reads.
+   */
+  excerpt: string;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   legacySanityId?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -317,6 +367,124 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * Publications. Authors are team members, so profiles list them automatically.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "research".
+ */
+export interface Research {
+  id: string;
+  /**
+   * The URL for this page. Generated from the name if left empty. Changing it breaks any link already shared.
+   */
+  slug: string;
+  title: string;
+  /**
+   * In citation order. Each author’s profile links back to this paper.
+   */
+  authors?: (string | Member)[] | null;
+  year: number;
+  status: 'published' | 'preprint' | 'under-review';
+  conference?: string | null;
+  abstract: string;
+  doi?: string | null;
+  pdfFile?: (string | null) | Document;
+  /**
+   * Drives the filter on /research.
+   */
+  topics?: string[] | null;
+  citation?: string | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface Document {
+  id: string;
+  /**
+   * What this file is, in words a person would search for — e.g. "Taurus SAR report 2024". Used as the download link label.
+   */
+  title: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Shown on /sponsors and in the strip across the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sponsors".
+ */
+export interface Sponsor {
+  id: string;
+  name: string;
+  tier: 'title' | 'gold' | 'silver' | 'bronze' | 'in-kind';
+  /**
+   * The dark-mark version, which reads on white backgrounds.
+   */
+  logoLight?: (string | null) | Media;
+  /**
+   * The light-mark version, which reads on dark backgrounds.
+   */
+  logoDark?: (string | null) | Media;
+  /**
+   * Fallback for older entries. Prefer the two theme-specific logos above.
+   */
+  logo?: (string | null) | Media;
+  website?: string | null;
+  startYear?: number | null;
+  isActive?: boolean | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Only featured testimonials are shown on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: string;
+  name: string;
+  role?: string | null;
+  organization?: string | null;
+  /**
+   * Keep it punchy — one to three sentences.
+   */
+  quote: string;
+  /**
+   * A square-ish headshot reads best.
+   */
+  photo?: (string | null) | Media;
+  /**
+   * LinkedIn, faculty page or personal site. Makes the name clickable.
+   */
+  link?: string | null;
+  /**
+   * Off means invisible. Tick to publish it to Home and About.
+   */
+  featured?: boolean | null;
+  /**
+   * Lower shows first. Ties fall back to name.
+   */
+  order?: number | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * The fleet. Mark exactly one as the current flagship.
@@ -553,25 +721,22 @@ export interface Competition {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents".
+ * via the `definition` "sar-videos".
  */
-export interface Document {
+export interface SarVideo {
   id: string;
-  /**
-   * What this file is, in words a person would search for — e.g. "Taurus SAR report 2024". Used as the download link label.
-   */
   title: string;
+  competition: string | Competition;
+  year: number;
+  youtubeUrl: string;
+  /**
+   * Optional — YouTube’s own thumbnail is used when empty.
+   */
+  thumbnail?: (string | null) | Media;
+  description?: string | null;
+  legacySanityId?: string | null;
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -632,8 +797,24 @@ export interface PayloadLockedDocument {
         value: string | Announcement;
       } | null)
     | ({
+        relationTo: 'posts';
+        value: string | Post;
+      } | null)
+    | ({
+        relationTo: 'research';
+        value: string | Research;
+      } | null)
+    | ({
+        relationTo: 'sponsors';
+        value: string | Sponsor;
+      } | null)
+    | ({
         relationTo: 'members';
         value: string | Member;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: string | Testimonial;
       } | null)
     | ({
         relationTo: 'rovers';
@@ -642,6 +823,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'competitions';
         value: string | Competition;
+      } | null)
+    | ({
+        relationTo: 'sar-videos';
+        value: string | SarVideo;
       } | null)
     | ({
         relationTo: 'media';
@@ -716,6 +901,60 @@ export interface AnnouncementsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  slug?: T;
+  title?: T;
+  publishedAt?: T;
+  category?: T;
+  author?: T;
+  featuredImage?: T;
+  excerpt?: T;
+  body?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "research_select".
+ */
+export interface ResearchSelect<T extends boolean = true> {
+  slug?: T;
+  title?: T;
+  authors?: T;
+  year?: T;
+  status?: T;
+  conference?: T;
+  abstract?: T;
+  doi?: T;
+  pdfFile?: T;
+  topics?: T;
+  citation?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sponsors_select".
+ */
+export interface SponsorsSelect<T extends boolean = true> {
+  name?: T;
+  tier?: T;
+  logoLight?: T;
+  logoDark?: T;
+  logo?: T;
+  website?: T;
+  startYear?: T;
+  isActive?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "members_select".
  */
 export interface MembersSelect<T extends boolean = true> {
@@ -755,6 +994,23 @@ export interface MembersSelect<T extends boolean = true> {
   linkedin?: T;
   github?: T;
   website?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  organization?: T;
+  quote?: T;
+  photo?: T;
+  link?: T;
+  featured?: T;
+  order?: T;
   legacySanityId?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -866,6 +1122,21 @@ export interface CompetitionsSelect<T extends boolean = true> {
   sarVideo?: T;
   gallery?: T;
   reportPdf?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sar-videos_select".
+ */
+export interface SarVideosSelect<T extends boolean = true> {
+  title?: T;
+  competition?: T;
+  year?: T;
+  youtubeUrl?: T;
+  thumbnail?: T;
+  description?: T;
   legacySanityId?: T;
   updatedAt?: T;
   createdAt?: T;

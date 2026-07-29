@@ -12,7 +12,12 @@ import { Competitions } from './src/payload/collections/Competitions'
 import { Documents } from './src/payload/collections/Documents'
 import { Media } from './src/payload/collections/Media'
 import { Members } from './src/payload/collections/Members'
+import { Posts } from './src/payload/collections/Posts'
+import { Research } from './src/payload/collections/Research'
 import { Rovers } from './src/payload/collections/Rovers'
+import { SarVideos } from './src/payload/collections/SarVideos'
+import { Sponsors } from './src/payload/collections/Sponsors'
+import { Testimonials } from './src/payload/collections/Testimonials'
 import { Users } from './src/payload/collections/Users'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -52,11 +57,16 @@ export default buildConfig({
   collections: [
     // Content
     Announcements,
+    Posts,
+    Research,
+    Sponsors,
     // Team
     Members,
+    Testimonials,
     // Rovers & competitions
     Rovers,
     Competitions,
+    SarVideos,
     // Media
     Media,
     Documents,
