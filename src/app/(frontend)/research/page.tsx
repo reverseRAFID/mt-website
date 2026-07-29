@@ -1,9 +1,7 @@
 import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { sanityFetch } from '@/sanity/lib/client'
-import { RESEARCH_QUERY } from '@/sanity/lib/queries'
-import type { ResearchCard } from '@/sanity/lib/types'
+import { getResearch } from '@/lib/cms/content'
 import { Reveal } from '@/components/motion/Reveal'
 import { Counter } from '@/components/motion/Counter'
 import { GhostText } from '@/components/motion/GhostText'
@@ -17,7 +15,7 @@ import { SupportCTA } from '@/components/support/SupportCTA'
 export const metadata: Metadata = { title: 'Research & Publications' }
 
 export default async function ResearchPage() {
-  const papers = (await sanityFetch<ResearchCard[]>(RESEARCH_QUERY)) ?? []
+  const papers = await getResearch()
 
   const featured = papers.find((p) => p.status === 'published') ?? papers[0]
   const publishedCount = papers.filter((p) => p.status === 'published').length

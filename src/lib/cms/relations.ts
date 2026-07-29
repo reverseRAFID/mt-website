@@ -20,3 +20,21 @@ export function rels<T extends object>(
 ): T[] {
   return (refs ?? []).map((r) => rel<T>(r)).filter((r): r is T => r !== null)
 }
+
+/**
+ * Author names off a research paper.
+ *
+ * GROQ projected this as a field — `"authorNames": authors[]->name` — so
+ * components received a plain string[]. Payload returns the populated author
+ * documents instead, so the projection happens here, in one place, rather than
+ * in each of the three components that render a byline.
+ *
+ * Unpopulated authors are dropped rather than rendered as an id.
+ */
+export function authorNames(paper: {
+  authors?: (string | number | { name?: string | null })[] | null
+}): string[] {
+  return rels<{ name?: string | null }>(paper.authors)
+    .map((a) => a.name)
+    .filter((n): n is string => Boolean(n))
+}

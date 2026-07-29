@@ -3,9 +3,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { sanityFetch, urlFor, getFileUrl } from '@/sanity/lib/client'
-import { COMPETITION_BY_SLUG_QUERY } from '@/sanity/lib/queries'
-import type { CompetitionFull } from '@/sanity/lib/types'
+import { getCompetitionBySlug, getCompetitionSlugs } from '@/lib/cms/content'
+import { file, media } from '@/lib/cms/media'
+import { rel } from '@/lib/cms/relations'
+import type { Member, Rover } from '@/lib/cms/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { Counter } from '@/components/motion/Counter'
 import { GhostText } from '@/components/motion/GhostText'
@@ -17,9 +18,13 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
+export async function generateStaticParams() {
+  return (await getCompetitionSlugs()).map((slug) => ({ slug }))
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const comp = await sanityFetch<CompetitionFull | null>(COMPETITION_BY_SLUG_QUERY, { slug })
+  const comp = await getCompetitionBySlug(slug)
   return { title: comp ? `${comp.name} ${comp.year}` : 'Competition' }
 }
 
@@ -33,10 +38,17 @@ function getYouTubeEmbedUrl(url: string): string | null {
 
 export default async function CompetitionPage({ params }: Props) {
   const { slug } = await params
-  const comp = await sanityFetch<CompetitionFull | null>(COMPETITION_BY_SLUG_QUERY, { slug })
+  const comp = await getCompetitionBySlug(slug)
   if (!comp) notFound()
 
   const embedUrl = comp.sarVideo ? getYouTubeEmbedUrl(comp.sarVideo) : null
+  const rover = rel<Rover>(comp.rover)
+  const reportUrl = file(comp.reportPdf)?.url
+  // A roster row whose member did not come back cannot be rendered — the row is
+  // a link to their profile with their face on it.
+  const roster = (comp.teamMembers ?? [])
+    .map((entry) => ({ entry, member: rel<Member>(entry.member) }))
+    .filter((row): row is { entry: typeof row.entry; member: Member } => row.member !== null)
 
   return (
     <PageLayout>
@@ -161,7 +173,7 @@ export default async function CompetitionPage({ params }: Props) {
                           className="group relative aspect-[4/3] rounded-none overflow-hidden border border-divider bg-surface-2"
                         >
                           <Image
-                            src={urlFor(img).width(400).height(300).url()}
+                            src={media(img)?.url ?? ''}
                             alt={`${comp.name} ${comp.year} photo ${i + 1}`}
                             fill
                             className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -179,17 +191,17 @@ export default async function CompetitionPage({ params }: Props) {
             {/* Sidebar */}
             <div className="flex flex-col gap-6">
               {/* Rover */}
-              {comp.rover && (
+              {rover && (
                 <Reveal>
                   <Link
-                    href={`/rovers/${comp.rover.slug.current}`}
+                    href={`/rovers/${rover.slug}`}
                     className="group relative block rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                   >
                     <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />
                     <div className="hud-label text-text-faint mb-3">Rover</div>
                     <div className="flex items-center justify-between gap-3">
                       <span className="font-display font-bold text-lg text-text group-hover:text-primary transition-colors">
-                        {comp.rover.name}
+                        {rover.name}
                       </span>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-text-faint transition-transform group-hover:translate-x-0.5 group-hover:text-primary" aria-hidden>
                         <path d="M5 12h14M12 5l7 7-7 7" />
@@ -200,10 +212,10 @@ export default async function CompetitionPage({ params }: Props) {
               )}
 
               {/* Post-Competition Report */}
-              {comp.reportPdf && (
+              {reportUrl && (
                 <Reveal>
                   <a
-                    href={getFileUrl(comp.reportPdf.asset._ref)}
+                    href={reportUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group relative flex items-center justify-between gap-3 rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
@@ -223,24 +235,24 @@ export default async function CompetitionPage({ params }: Props) {
               )}
 
               {/* Team Roster */}
-              {comp.teamMembers && comp.teamMembers.length > 0 && (
+              {roster.length > 0 && (
                 <Reveal>
                   <div className="rounded-card border border-divider bg-surface-raised p-5">
                     <div className="hud-label text-text-faint mb-4">
-                      Team ({comp.teamMembers.length})
+                      Team ({roster.length})
                     </div>
                     <div className="flex flex-col gap-3">
-                      {comp.teamMembers.map((entry, i) => (
+                      {roster.map(({ entry, member }, i) => (
                         <Link
                           key={i}
-                          href={`/team/${entry.member.slug.current}`}
+                          href={`/team/${member.slug}`}
                           className="group flex items-center gap-3 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
                         >
                           <div className="relative w-9 h-9 rounded-none overflow-hidden border border-divider bg-surface-2 shrink-0">
-                            {entry.member.photo ? (
+                            {member.photo ? (
                               <Image
-                                src={urlFor(entry.member.photo).width(36).height(36).url()}
-                                alt={entry.member.name}
+                                src={media(member.photo)?.url ?? ''}
+                                alt={member.name}
                                 fill
                                 className="object-cover"
                               />
@@ -255,7 +267,7 @@ export default async function CompetitionPage({ params }: Props) {
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-medium text-text group-hover:text-primary transition-colors truncate">
-                              {entry.member.name}
+                              {member.name}
                             </p>
                             {entry.competitionRole && (
                               <p className="hud-label text-text-faint truncate">{entry.competitionRole}</p>

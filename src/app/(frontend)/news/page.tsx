@@ -2,9 +2,8 @@ import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
-import { sanityFetch, urlFor } from '@/sanity/lib/client'
-import { POSTS_QUERY } from '@/sanity/lib/queries'
-import type { PostCard } from '@/sanity/lib/types'
+import { getPosts } from '@/lib/cms/content'
+import { media } from '@/lib/cms/media'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
@@ -22,7 +21,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 }
 
 export default async function NewsPage() {
-  const posts = await sanityFetch<PostCard[]>(POSTS_QUERY)
+  const posts = await getPosts()
 
   return (
     <PageLayout>
@@ -99,8 +98,8 @@ export default async function NewsPage() {
               <Reveal stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {posts.map((post, i) => (
                   <Link
-                    key={post._id}
-                    href={`/news/${post.slug.current}`}
+                    key={post.id}
+                    href={`/news/${post.slug}`}
                     className="group surface-lift relative flex flex-col overflow-hidden rounded-card border border-divider bg-surface-raised hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     <CornerTicks className="z-10 text-primary/0 transition-colors group-hover:text-primary/40" />
@@ -108,7 +107,7 @@ export default async function NewsPage() {
                     {post.featuredImage ? (
                       <div className="relative aspect-[16/9] overflow-hidden bg-surface-2">
                         <Image
-                          src={urlFor(post.featuredImage).width(600).height(338).url()}
+                          src={media(post.featuredImage)?.url ?? ''}
                           alt={post.title}
                           fill
                           className="object-cover transition-transform duration-500 group-hover:scale-105"

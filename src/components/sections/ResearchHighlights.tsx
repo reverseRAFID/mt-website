@@ -1,11 +1,12 @@
 import Link from 'next/link'
-import type { ResearchCard } from '@/sanity/lib/types'
+import { authorNames } from '@/lib/cms/relations'
+import type { Research } from '@/lib/cms/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 
 interface ResearchHighlightsProps {
-  papers: ResearchCard[]
+  papers: Research[]
 }
 
 const STATUS_STYLE: Record<string, string> = {
@@ -59,8 +60,8 @@ export function ResearchHighlights({ papers }: ResearchHighlightsProps) {
         >
           {papers.map((paper, i) => (
             <Link
-              key={paper._id}
-              href={`/research/${paper.slug.current}`}
+              key={paper.id}
+              href={`/research/${paper.slug}`}
               className="group relative flex flex-col gap-4 border-b border-divider py-6 transition-colors duration-200 hover:bg-bg sm:flex-row sm:items-start sm:gap-6"
             >
               {/* hover accent rail */}
@@ -88,9 +89,9 @@ export function ResearchHighlights({ papers }: ResearchHighlightsProps) {
                 <h3 className="font-display text-lg font-bold text-text transition-colors duration-150 group-hover:text-primary text-balance">
                   {paper.title}
                 </h3>
-                {paper.authorNames && (
+                {authorNames(paper) && (
                   <p className="mt-1.5 text-sm text-text-muted">
-                    {paper.authorNames.join(', ')}
+                    {authorNames(paper).join(', ')}
                   </p>
                 )}
               </div>

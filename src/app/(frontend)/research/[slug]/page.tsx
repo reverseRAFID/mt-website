@@ -3,9 +3,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { sanityFetch, urlFor, getFileUrl } from '@/sanity/lib/client'
-import { RESEARCH_BY_SLUG_QUERY } from '@/sanity/lib/queries'
-import type { ResearchFull } from '@/sanity/lib/types'
+import { getResearchBySlug, getResearchSlugs } from '@/lib/cms/content'
+import { file, media } from '@/lib/cms/media'
+import { rels } from '@/lib/cms/relations'
+import type { Member } from '@/lib/cms/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SupportCTA } from '@/components/support/SupportCTA'
@@ -14,9 +15,13 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
+export async function generateStaticParams() {
+  return (await getResearchSlugs()).map((slug) => ({ slug }))
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const paper = await sanityFetch<ResearchFull | null>(RESEARCH_BY_SLUG_QUERY, { slug })
+  const paper = await getResearchBySlug(slug)
   return {
     title: paper?.title ?? 'Research',
     description: paper?.abstract?.slice(0, 160),
@@ -35,8 +40,11 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default async function ResearchPage({ params }: Props) {
   const { slug } = await params
-  const paper = await sanityFetch<ResearchFull | null>(RESEARCH_BY_SLUG_QUERY, { slug })
+  const paper = await getResearchBySlug(slug)
   if (!paper) notFound()
+
+  const authors = rels<Member>(paper.authors)
+  const pdfUrl = file(paper.pdfFile)?.url
 
   return (
     <PageLayout>
@@ -74,18 +82,18 @@ export default async function ResearchPage({ params }: Props) {
             )}
 
             {/* Authors */}
-            {paper.authors && paper.authors.length > 0 && (
+            {authors.length > 0 && (
               <div className="flex flex-wrap gap-3 mb-8">
-                {paper.authors.map((author) => (
+                {authors.map((author) => (
                   <Link
-                    key={author._id}
-                    href={`/team/${author.slug.current}`}
+                    key={author.id}
+                    href={`/team/${author.slug}`}
                     className="group inline-flex items-center gap-2 rounded-none border border-divider bg-surface-raised py-1 pl-1 pr-3 transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                   >
                     <span className="w-7 h-7 rounded-none overflow-hidden relative border border-divider bg-surface-2 shrink-0">
                       {author.photo ? (
                         <Image
-                          src={urlFor(author.photo).width(28).height(28).url()}
+                          src={media(author.photo)?.url ?? ''}
                           alt={author.name}
                           fill
                           sizes="28px"
@@ -106,7 +114,7 @@ export default async function ResearchPage({ params }: Props) {
             )}
 
             {/* Actions */}
-            {paper.doi || paper.pdfFile ? (
+            {paper.doi || pdfUrl ? (
               <div className="flex flex-wrap gap-3">
                 {paper.doi && (
                   <a
@@ -121,9 +129,9 @@ export default async function ResearchPage({ params }: Props) {
                     </svg>
                   </a>
                 )}
-                {paper.pdfFile && (
+                {pdfUrl && (
                   <a
-                    href={getFileUrl(paper.pdfFile.asset._ref)}
+                    href={pdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group inline-flex min-h-[44px] items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"

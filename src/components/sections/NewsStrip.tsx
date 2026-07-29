@@ -1,12 +1,12 @@
 import Link from 'next/link'
-import type { PostCard } from '@/sanity/lib/types'
+import type { Post } from '@/lib/cms/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 interface NewsStripProps {
-  posts: PostCard[]
+  posts: Post[]
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -62,8 +62,8 @@ export function NewsStrip({ posts }: NewsStripProps) {
         <Reveal stagger className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
             <Link
-              key={post._id}
-              href={`/news/${post.slug.current}`}
+              key={post.id}
+              href={`/news/${post.slug}`}
               className="group relative flex flex-col rounded-card border border-divider bg-surface-raised p-6 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
             >
               <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />

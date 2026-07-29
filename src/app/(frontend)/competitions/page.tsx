@@ -1,9 +1,7 @@
 import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { sanityFetch } from '@/sanity/lib/client'
-import { COMPETITIONS_QUERY } from '@/sanity/lib/queries'
-import type { CompetitionCard } from '@/sanity/lib/types'
+import { getCompetitions } from '@/lib/cms/content'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
@@ -16,7 +14,7 @@ const SERIES_BADGE =
   'inline-flex items-center rounded-none border border-divider bg-surface-2 px-2.5 py-1 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-text-muted'
 
 export default async function CompetitionsPage() {
-  const competitions = await sanityFetch<CompetitionCard[]>(COMPETITIONS_QUERY)
+  const competitions = await getCompetitions()
 
   return (
     <PageLayout>
@@ -81,8 +79,8 @@ export default async function CompetitionsPage() {
               <Reveal stagger className="flex flex-col gap-4">
               {competitions.map((comp) => (
                 <Link
-                  key={comp._id}
-                  href={`/competitions/${comp.slug.current}`}
+                  key={comp.id}
+                  href={`/competitions/${comp.slug}`}
                   className="group relative flex flex-col gap-4 rounded-card border border-divider bg-surface-raised p-6 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg sm:flex-row sm:items-center sm:justify-between"
                 >
                   <CornerTicks className="text-primary/0 group-hover:text-primary/40 transition-colors" />

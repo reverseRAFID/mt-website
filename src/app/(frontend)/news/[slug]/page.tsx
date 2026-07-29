@@ -3,10 +3,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { sanityFetch, urlFor } from '@/sanity/lib/client'
-import { POST_BY_SLUG_QUERY } from '@/sanity/lib/queries'
-import type { PostFull } from '@/sanity/lib/types'
-import { PortableText } from '@portabletext/react'
+import { getPostBySlug, getPostSlugs } from '@/lib/cms/content'
+import { media, ogImageUrl } from '@/lib/cms/media'
+import { rel } from '@/lib/cms/relations'
+import { RichTextBody } from '@/lib/cms/richtext'
+import type { Member } from '@/lib/cms/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SupportCTA } from '@/components/support/SupportCTA'
@@ -15,12 +16,18 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
+export async function generateStaticParams() {
+  return (await getPostSlugs()).map((slug) => ({ slug }))
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const post = await sanityFetch<PostFull | null>(POST_BY_SLUG_QUERY, { slug })
+  const post = await getPostBySlug(slug)
+  const og = post ? ogImageUrl(post.featuredImage) : undefined
   return {
     title: post?.title ?? 'Post',
     description: post?.excerpt,
+    openGraph: og ? { images: [og] } : undefined,
   }
 }
 
@@ -34,8 +41,10 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 export default async function PostPage({ params }: Props) {
   const { slug } = await params
-  const post = await sanityFetch<PostFull | null>(POST_BY_SLUG_QUERY, { slug })
+  const post = await getPostBySlug(slug)
   if (!post) notFound()
+
+  const author = rel<Member>(post.author)
 
   const publishedLabel = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString('en-US', {
@@ -84,16 +93,16 @@ export default async function PostPage({ params }: Props) {
             </p>
           )}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-divider pt-6">
-            {post.author && (
+            {author && (
               <Link
-                href={`/team/${post.author.slug.current}`}
+                href={`/team/${author.slug}`}
                 className="group inline-flex items-center gap-2.5 text-sm font-medium text-text-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
-                {post.author.photo && (
+                {author.photo && (
                   <span className="relative block h-8 w-8 overflow-hidden rounded-none border border-divider transition-colors group-hover:border-primary/40">
                     <Image
-                      src={urlFor(post.author.photo).width(32).height(32).url()}
-                      alt={post.author.name}
+                      src={media(author.photo)?.url ?? ''}
+                      alt={author.name}
                       fill
                       sizes="32px"
                       className="object-cover"
@@ -102,16 +111,16 @@ export default async function PostPage({ params }: Props) {
                 )}
                 <span className="inline-flex flex-col leading-tight">
                   <span className="hud-label text-text-faint">Filed by</span>
-                  <span>{post.author.name}</span>
+                  <span>{author.name}</span>
                 </span>
               </Link>
             )}
-            {post.author && publishedLabel && (
+            {author && publishedLabel && (
               <span className="h-1 w-1 rotate-45 bg-text-faint/50" aria-hidden />
             )}
             {publishedLabel && (
               <time
-                dateTime={post.publishedAt}
+                dateTime={post.publishedAt ?? undefined}
                 className="hud-label nums text-text-faint"
               >
                 {publishedLabel}
@@ -126,7 +135,7 @@ export default async function PostPage({ params }: Props) {
             <figure className="relative mb-12 inset-glow rounded-card border border-divider bg-surface-raised p-2">
               <div className="relative aspect-[16/9] overflow-hidden rounded-none bg-surface-2">
                 <Image
-                  src={urlFor(post.featuredImage).width(1200).height(675).url()}
+                  src={media(post.featuredImage)?.url ?? ''}
                   alt={post.title}
                   fill
                   className="object-cover"
@@ -145,7 +154,7 @@ export default async function PostPage({ params }: Props) {
             as="div"
             className="max-w-none text-pretty text-base leading-relaxed text-text-muted sm:text-lg [&_p]:my-5 [&_p]:leading-relaxed [&_h2]:mt-12 [&_h2]:mb-4 [&_h2]:text-balance [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-text [&_h3]:mt-10 [&_h3]:mb-3 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_h3]:tracking-tight [&_h3]:text-text [&_h4]:mt-8 [&_h4]:mb-2 [&_h4]:font-display [&_h4]:text-lg [&_h4]:font-bold [&_h4]:text-text [&_a]:text-primary [&_a]:underline [&_a]:decoration-primary/40 [&_a]:underline-offset-4 [&_a:hover]:decoration-primary [&_strong]:font-bold [&_strong]:text-text [&_ul]:my-5 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6 [&_ol]:my-5 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_li]:pl-1.5 [&_li]:marker:text-primary [&_blockquote]:my-7 [&_blockquote]:border-l-2 [&_blockquote]:border-l-primary [&_blockquote]:pl-5 [&_blockquote]:font-display [&_blockquote]:text-lg [&_blockquote]:font-medium [&_blockquote]:text-text [&_code]:bg-surface-2 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-sm [&_code]:text-primary [&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:border [&_pre]:border-divider [&_pre]:bg-surface-2 [&_pre]:p-4 [&_pre]:text-sm [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-text [&_hr]:my-10 [&_hr]:border-divider [&_img]:my-7 [&_img]:rounded-none [&_img]:border [&_img]:border-divider [&>p:first-of-type]:first-letter:float-left [&>p:first-of-type]:first-letter:mr-3 [&>p:first-of-type]:first-letter:mt-1 [&>p:first-of-type]:first-letter:font-display [&>p:first-of-type]:first-letter:text-6xl [&>p:first-of-type]:first-letter:font-bold [&>p:first-of-type]:first-letter:leading-[0.7] [&>p:first-of-type]:first-letter:text-primary"
           >
-            <PortableText value={post.body} />
+            <RichTextBody value={post.body} />
           </Reveal>
         )}
 

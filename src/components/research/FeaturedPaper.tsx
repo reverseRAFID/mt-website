@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import type { ResearchCard } from '@/sanity/lib/types'
+import { authorNames } from '@/lib/cms/relations'
+import type { Research } from '@/lib/cms/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
@@ -11,11 +12,11 @@ const STATUS_LABEL: Record<string, string> = {
 
 /**
  * Spotlight for the team's most significant paper (most recent published, or
- * the newest paper overall). Uses only ResearchCard fields, so it works
+ * the newest paper overall). Uses only Research fields, so it works
  * without touching the existing query.
  */
-export function FeaturedPaper({ paper }: { paper: ResearchCard }) {
-  const slug = `/research/${paper.slug.current}`
+export function FeaturedPaper({ paper }: { paper: Research }) {
+  const slug = `/research/${paper.slug}`
 
   return (
     <Reveal y={32}>
@@ -46,8 +47,8 @@ export function FeaturedPaper({ paper }: { paper: ResearchCard }) {
             {paper.title}
           </h2>
 
-          {paper.authorNames && paper.authorNames.length > 0 && (
-            <p className="mt-4 text-text-muted">{paper.authorNames.join(', ')}</p>
+          {authorNames(paper) && authorNames(paper).length > 0 && (
+            <p className="mt-4 text-text-muted">{authorNames(paper).join(', ')}</p>
           )}
 
           {paper.topics && paper.topics.length > 0 && (
