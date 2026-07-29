@@ -3,9 +3,9 @@
 Production team website for **BRACU Mongol-Tori**, BRAC University's Mars Rover Team.
 A content-managed, statically-rendered site built to survive yearly team handovers.
 
-**Live:** https://mt-website-liart.vercel.app · **Studio (CMS):** https://mt-website-liart.vercel.app/studio
+**Live:** https://mt-website-liart.vercel.app · **Admin (CMS):** https://mt-website-liart.vercel.app/admin
 
-**Stack:** Next.js 15 (App Router) · React 19 · Sanity v3 CMS · Tailwind CSS v4 · Neon (Serverless Postgres) · Vercel
+**Stack:** Next.js 16 (App Router) · React 19 · Payload 3 CMS · MongoDB · Tailwind CSS v4 · Vercel
 
 ---
 
@@ -14,14 +14,19 @@ A content-managed, statically-rendered site built to survive yearly team handove
 ```bash
 npm install
 cp .env.local.example .env.local   # then fill in the values (see below)
+npm run db:up                      # MongoDB (Docker) — a single-node replica set
 npm run dev
 ```
 
-- App → http://localhost:3000
-- CMS Studio → http://localhost:3000/studio
+- Site → http://localhost:3000
+- Admin → http://localhost:3000/admin (first visit creates the first account)
 
-> **Minimum to boot:** `NEXT_PUBLIC_SANITY_PROJECT_ID` and `NEXT_PUBLIC_SANITY_DATASET`.
-> Without them the site renders against a placeholder project and Sanity reads return 404s.
+> **Minimum to boot:** `DATABASE_URI` and `PAYLOAD_SECRET`. An empty database is
+> a working site — every page renders its empty state.
+>
+> The database must be a **replica set**, which `npm run db:up` gives you.
+> Checkout reserves stock and writes the order in one transaction, and a
+> standalone `mongod` cannot start one.
 
 ---
 
@@ -29,11 +34,15 @@ npm run dev
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Start the dev server (Turbopack-free `next dev`) |
-| `npm run build` | Production build (`next build`) — runs ESLint + type-check |
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build (Turbopack) |
 | `npm start` | Serve the production build |
-| `npm run lint` | ESLint only |
-| `npx tsc --noEmit` | Type-check only (also gated in CI) |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` — the CI gate |
+| `npm run db:up` / `db:down` | Start / stop the local MongoDB |
+| `npm run generate:types` | Regenerate `src/payload-types.ts` after a collection change |
+| `npm run check:privacy` | Static privacy and access guards |
+| `npm run test:shop` | End-to-end access + checkout test against a running server |
 
 ---
 
@@ -43,14 +52,14 @@ Copy `.env.local.example` → `.env.local`. See [docs/DEVELOPMENT.md](docs/DEVEL
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | **Yes** | Sanity project id (from sanity.io/manage) |
-| `NEXT_PUBLIC_SANITY_DATASET` | **Yes** | Usually `production` |
-| `NEXT_PUBLIC_SITE_URL` | Recommended | Canonical/OG URL |
-| `SANITY_API_TOKEN` | For writes | Editor token (server-side use) |
-| `DATABASE_URL` | For the apply form | Neon Postgres connection string |
+| `DATABASE_URI` | **Yes** | MongoDB. Must be a replica set. |
+| `PAYLOAD_SECRET` | **Yes** | Signs admin sessions. Unique per environment. |
+| `NEXT_PUBLIC_SITE_URL` | **Yes** | Canonical/OG URLs **and every upload URL** — must match the environment it runs in. |
+| `BLOB_READ_WRITE_TOKEN` | Production | Object storage. Without it, uploads vanish on the next deploy. |
+| `RESEND_API_KEY` | Optional | Order emails. Orders are still taken without it. |
 
 `NEXT_PUBLIC_*` vars are baked into the client bundle at build time and are **not** secret.
-`SANITY_API_TOKEN` and `DATABASE_URL` are server-only secrets.
+Everything else is a server-only secret.
 
 ---
 
@@ -59,8 +68,10 @@ Copy `.env.local.example` → `.env.local`. See [docs/DEVELOPMENT.md](docs/DEVEL
 | Doc | Contents |
 |---|---|
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Tech stack, directory layout, rendering/ISR strategy, data flow, key modules |
-| [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md) | Every Sanity schema, its fields, and how content types relate |
-| [docs/CONTENT-EDITING.md](docs/CONTENT-EDITING.md) | Editor's guide to the `/studio` CMS (for non-developers) |
+| [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md) | Every collection, its fields, and how content types relate |
+| [docs/CONTENT-EDITING.md](docs/CONTENT-EDITING.md) | Editor's guide to the `/admin` CMS (for non-developers) |
+| [docs/privacy-runbook.md](docs/privacy-runbook.md) | What must never be published, and the two controls that keep it that way |
+| [docs/shop-runbook.md](docs/shop-runbook.md) | Running the merch shop: orders, stock, email, retention |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Vercel + GitHub Actions deploy, env/secrets setup, troubleshooting |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Local setup, branching/PR workflow, conventions, common tasks |
 
@@ -70,12 +81,15 @@ Copy `.env.local.example` → `.env.local`. See [docs/DEVELOPMENT.md](docs/DEVEL
 
 ```
 src/
-├─ app/            Next.js App Router — pages, /api routes, /studio mount
-├─ components/     layout/ (nav, footer, announcement), sections/, ui/
-├─ sanity/         schemas/ (content types), lib/ (client, queries, types)
-├─ lib/            db.ts (Neon), utils.ts
+├─ app/(frontend)/ The website — pages and /api routes
+├─ app/(payload)/  The admin (/admin) and CMS REST API (/payload-api)
+├─ payload/        collections/, globals/, fields/, access/, hooks/
+├─ lib/cms/        The read layer — the only place that talks to the CMS
+├─ lib/            orders.ts (checkout), domain constants, utils
+├─ components/     layout/, sections/, ui/, rover/, shop/, support/, team/
 └─ providers/      ThemeProvider (light/dark)
-sanity.config.ts   Studio config + desk structure
+payload.config.ts  CMS root config
+docker-compose.yml Local MongoDB
 vercel.json        Pins framework = nextjs
 .github/workflows/ deploy.yml (GitHub Actions → Vercel)
 ```
@@ -110,8 +124,9 @@ PRs should get **1 review** before merging to `main`. Details in [docs/DEVELOPME
 ## Yearly Handover
 
 - Transfer the **Vercel** project (account tied to `mongoltori.web@g.bracu.ac.bd`).
-- Add the new team lead to the **Sanity** project at sanity.io/manage.
-- Re-issue secrets (`VERCEL_TOKEN`, `SANITY_API_TOKEN`, `DATABASE_URL`) on the new machine — never commit them.
+- Create a CMS account for the new team lead at `/admin` and give them `admin`.
+- Re-issue secrets (`VERCEL_TOKEN`, `PAYLOAD_SECRET`, `RESEND_API_KEY`) — never commit them.
+- Transfer the **MongoDB Atlas** cluster and rotate the database password.
 - Hand over the GitHub repository ownership/access.
 
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#yearly-handover-checklist) for the full checklist.

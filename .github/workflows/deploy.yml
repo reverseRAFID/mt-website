@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main      # Production deploy
-      - develop   # Preview deploy
 
 jobs:
   deploy:
@@ -29,8 +28,19 @@ jobs:
         # build uses `npm install` for the same reason.
         run: npm install --no-audit --no-fund
 
-      - name: Run type check
-        run: npx tsc --noEmit
+      - name: Type check
+        run: npm run typecheck
+
+      # `next build` no longer runs ESLint (Next 16 removed it), so lint is its
+      # own step or it stops being checked at all.
+      - name: Lint
+        run: npm run lint
+
+      # Static privacy and access guards. These read source, not a database, so
+      # they need nothing provisioned — and they are the cheapest possible place
+      # to catch a collection shipped without an access block.
+      - name: Privacy and access guards
+        run: npm run check:privacy
 
       # Deploy with the current Vercel CLI directly. The old amondnet/vercel-action
       # pinned Vercel CLI 25.x, which Vercel's API now rejects ("requires version
