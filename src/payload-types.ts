@@ -340,6 +340,7 @@ export interface Media {
    * Photographer or source, where one needs crediting.
    */
   credit?: string | null;
+  legacySanityId?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -428,6 +429,7 @@ export interface Document {
    * What this file is, in words a person would search for — e.g. "Taurus SAR report 2024". Used as the download link label.
    */
   title: string;
+  legacySanityId?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1738,6 +1740,7 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   credit?: T;
+  legacySanityId?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1800,6 +1803,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface DocumentsSelect<T extends boolean = true> {
   title?: T;
+  legacySanityId?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, staff } from '../access'
+import { legacySanityId } from '../fields/slug'
 
 /**
  * Images.
@@ -72,5 +73,6 @@ export const Media: CollectionConfig = {
       type: 'text',
       admin: { description: 'Photographer or source, where one needs crediting.' },
     },
+    legacySanityId,
   ],
 }

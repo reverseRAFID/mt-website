@@ -15,7 +15,9 @@
     "generate:types": "npm run payload -- generate:types",
     "generate:importmap": "npm run payload -- generate:importmap",
     "check:privacy": "node scripts/check-shop-privacy.mjs; s=$?; node scripts/check-donation-privacy.mjs; d=$?; exit $((s|d))",
-    "check:shop": "node scripts/check-shop-privacy.mjs"
+    "check:shop": "node scripts/check-shop-privacy.mjs",
+    "migrate:sanity": "npm run payload -- run scripts/migrate-from-sanity.ts",
+    "migrate:sanity:dry": "MIGRATE_DRY=1 npm run payload -- run scripts/migrate-from-sanity.ts"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, staff } from '../access'
+import { legacySanityId } from '../fields/slug'
 
 /**
  * Non-image uploads — technical PDFs, competition reports, research papers and
@@ -38,5 +39,6 @@ export const Documents: CollectionConfig = {
           'What this file is, in words a person would search for — e.g. "Taurus SAR report 2024". Used as the download link label.',
       },
     },
+    legacySanityId,
   ],
 }
