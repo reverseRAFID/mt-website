@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url'
 
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { resendAdapter } from '@payloadcms/email-resend'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -91,6 +92,27 @@ export default buildConfig({
   ],
 
   globals: [Recruitment, Crowdfunding, Shop],
+
+  /**
+   * Object storage for uploads.
+   *
+   * Enabled only when a Blob token is present, which makes local development
+   * write to ./uploads and production write to Vercel Blob with no branching in
+   * the collections themselves.
+   *
+   * This is not optional in production, and the failure mode if it is missing is
+   * quiet rather than loud: uploads succeed, the images appear, and then the
+   * next deploy replaces the filesystem and every one of them 404s. There is no
+   * error to notice until somebody looks at the site.
+   */
+  plugins: process.env.BLOB_READ_WRITE_TOKEN
+    ? [
+        vercelBlobStorage({
+          collections: { media: true, documents: true },
+          token: process.env.BLOB_READ_WRITE_TOKEN,
+        }),
+      ]
+    : [],
 
   editor: lexicalEditor(),
 
