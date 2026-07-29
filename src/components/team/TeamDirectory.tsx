@@ -28,7 +28,7 @@ function MemberCardView({ member, index }: { member: MemberCard; index: number }
               src={urlFor(member.photo).width(440).height(550).url()}
               alt={member.name}
               fill
-              className="object-cover grayscale transition-all duration-500 group-hover:scale-[1.05] group-hover:grayscale-0"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
             />
           ) : (
