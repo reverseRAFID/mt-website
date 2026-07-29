@@ -1,8 +1,14 @@
 # Content Model
 
-Every Sanity content type, its fields, and how they relate. Schemas live in
-`src/sanity/schemas/` (registered in `index.ts`). GROQ queries that read them
-live in `src/sanity/lib/queries.ts`.
+Every content type, its fields, and how they relate. Collections live in
+`src/payload/collections/` and globals in `src/payload/globals/` (both
+registered in `payload.config.ts`). The functions that read them live in
+`src/lib/cms/`, and the generated TypeScript shapes in `src/payload-types.ts`.
+
+> Two names changed everywhere in the move from Sanity: a document's `_id` is
+> now `id`, and `slug` is a plain string rather than `{ current }`. Array rows
+> carry an `id` where Sanity had `_key` — that value is what an order stores as
+> its `variantKey`.
 
 For the editor-facing "how do I add content" guide, see [CONTENT-EDITING.md](CONTENT-EDITING.md).
 
@@ -184,7 +190,9 @@ Queried by `SAR_VIDEOS_QUERY`, `LATEST_SAR_VIDEO_QUERY`.
 ---
 
 ## recruitmentConfig (Singleton)
-Exactly **one** document, id `recruitment-config`, edited via the "Recruitment Config" item in the Studio. Controls the recruitment portal state.
+A Payload **global** — exactly one, structurally, rather than a convention about
+document ids. Edited under Settings → Recruitment. Controls the recruitment
+portal state.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -197,8 +205,13 @@ Queried by `RECRUITMENT_CONFIG_QUERY`.
 
 ---
 
-## Application submissions (Postgres, not Sanity)
-Recruitment **applications** are *not* Sanity documents — they're rows in Neon Postgres, written by `POST /api/apply`. The table is auto-created on first insert:
+## Application submissions
+Recruitment **applications** are documents in the `applications` collection,
+written by `POST /api/apply`. They are private: `read: staff`, `create: nobody`,
+and nothing on the public site reads them. (They used to live in a separate Neon
+Postgres table; that is gone — one database now.)
+
+The historical Postgres shape, for reference when reading old exports:
 
 ```sql
 CREATE TABLE IF NOT EXISTS applications (

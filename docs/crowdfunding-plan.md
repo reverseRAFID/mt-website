@@ -1,5 +1,13 @@
 # Crowdfunding / Supporters — Feature Plan
 
+> **Historical.** This is the design document written when the crowdfunding
+> feature was built on Sanity, kept because it records *why* the privacy rules
+> are what they are — the reasoning survived the migration even though the
+> mechanics did not. For how it works now, see
+> [privacy-runbook.md](privacy-runbook.md); for the current field list, see
+> [CONTENT-MODEL.md](CONTENT-MODEL.md). References below to GROQ projections,
+> `_id` and the Sanity Studio describe the previous implementation.
+
 Individual-donor crowdfunding for BRACU Mongol-Tori. Donors pay through a mobile
 financial service (bKash / Nagad / Rocket / Upay) or bank transfer, then declare
 that payment through a form on the site. An admin verifies the payment manually in

@@ -53,18 +53,35 @@ The workflow (`.github/workflows/deploy.yml`) runs on **Node 24**, then:
 ## Environment variables (on Vercel)
 
 Set these in **Vercel → Project → Settings → Environment Variables**, or via CLI.
-Public (`NEXT_PUBLIC_*`) vars are required at **build** time because pages prerender against Sanity.
+`DATABASE_URI` is needed at **build** time as well as at runtime, because pages
+prerender against the database.
 
 | Variable | Scope | Required for |
 |---|---|---|
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | all envs | **Build** — without it, prerender hits a `replace-me` placeholder and 404s |
-| `NEXT_PUBLIC_SANITY_DATASET` | all envs | **Build** (usually `production`) |
-| `NEXT_PUBLIC_SITE_URL` | all envs | OG/canonical URLs |
-| `SANITY_API_TOKEN` | production | Server-side Sanity writes (Editor token) |
-| `DATABASE_URL` | production | The recruitment form `/api/apply` (Neon) |
+| `DATABASE_URI` | all envs | **Build and runtime.** A MongoDB Atlas URI. Must be a replica set — every Atlas tier is. |
+| `PAYLOAD_SECRET` | all envs | Signs admin sessions. Different value per environment. |
+| `NEXT_PUBLIC_SITE_URL` | all envs | Canonical URLs, OG images, **and the URL of every uploaded file**. Must be the origin *that environment* answers on — a preview deploy pointing at the production URL serves production's images. |
+| `BLOB_READ_WRITE_TOKEN` | all envs | **Object storage. Not optional.** See below. |
+| `RESEND_API_KEY` | production | Order and status emails. Optional by design. |
+| `SHOP_FROM_EMAIL` | production | The From address; its domain must be verified in Resend. |
 
-Currently set on the project: the three `NEXT_PUBLIC_*` vars (production + development).
-**Not yet set:** `SANITY_API_TOKEN` and `DATABASE_URL` — the form will return 500 until `DATABASE_URL` is added.
+### Object storage is not optional
+
+Without `BLOB_READ_WRITE_TOKEN`, Payload writes uploads to the local
+filesystem. On Vercel that filesystem is **ephemeral**: uploads succeed, images
+appear, and then the next deploy replaces the container and every one of them
+404s. There is no error to notice — you find out when somebody looks at the
+site.
+
+Create the store in **Vercel → Storage → Blob** and connect it to the project;
+the token is injected automatically.
+
+### MongoDB
+
+Use MongoDB Atlas. Any tier works — all of them are replica sets, which is what
+the checkout transaction needs. Allow Vercel's egress in **Atlas → Network
+Access** (`0.0.0.0/0` if you are not using a static-IP integration) and give the
+database user `readWrite` on the app's database only.
 
 ### Adding env vars via CLI — important gotcha
 Set the value from a shell that does **not** append a carriage return. On Windows, use **git-bash**, not PowerShell:
@@ -113,11 +130,19 @@ npx vercel link        # select the mongol-tori team + mt-website project
 
 ---
 
-## Sanity setup
+## First deploy of a new environment
 
-1. Project lives at [sanity.io/manage](https://www.sanity.io/manage) (project id `aslda7ok`, dataset `production`).
-2. **API → CORS Origins:** add `http://localhost:3000` **and** the production domain (e.g. `https://mt-website-liart.vercel.app` / custom domain) — otherwise `/studio` can't talk to the dataset.
-3. **API → Tokens:** create an **Editor** token → set as `SANITY_API_TOKEN` (only needed for server-side writes).
+1. Set the env vars above.
+2. Deploy.
+3. Open `/admin`. The first visit offers to create an account, and that first
+   account is forced to the `admin` role. **Do this immediately after the first
+   deploy** — until somebody claims it, anyone who finds the URL can.
+4. Fill in the three globals under **Settings**: Shop, Crowdfunding,
+   Recruitment. All three default to `closed`, so nothing accepts submissions
+   until you open it deliberately.
+
+There is no CORS list to maintain and no separate CMS project to invite people
+to: the admin is part of this application and its users live in this database.
 
 ---
 
@@ -128,8 +153,10 @@ These were hit during initial deployment. If a build fails, check here first.
 | Symptom | Cause | Fix |
 |---|---|---|
 | `No database connection string was provided to neon()` during *Collecting page data* | Neon client was created at module import; `DATABASE_URL` unset on the build runner | `src/lib/db.ts` now creates the client lazily via `getSql()` |
-| `Dataset "production" not found for project ID "replace-me"` during *Generating static pages* | `NEXT_PUBLIC_SANITY_PROJECT_ID` not set on Vercel → fell back to placeholder | Set the `NEXT_PUBLIC_*` Sanity vars on Vercel |
 | `projectId can only contain a-z, 0-9 and dashes` | Env value had a trailing `\r` from PowerShell piping | Re-add via git-bash `printf '%s\n'` |
+| Images 404 after a deploy that changed nothing | `BLOB_READ_WRITE_TOKEN` is unset, so uploads went to the ephemeral filesystem and the deploy replaced it | Connect a Blob store and re-upload |
+| `Invalid src prop … hostname is not configured` | `NEXT_PUBLIC_SITE_URL` does not match the origin actually serving the page, so Payload built upload URLs for a host `next/image` was not told about | Set it per environment |
+| Every checkout fails with "could not confirm stock" while pages load fine | `DATABASE_URI` points at a standalone `mongod`, which cannot start the reservation transaction | Use a replica set (Atlas always is) |
 | `No Output Directory named "dist" found` after a successful build | Vercel project's framework preset was wrong | `vercel.json` pins `"framework": "nextjs"` |
 | Redeploy "succeeds" instantly with no build, still broken | Build cache reused after only env (not source) changed | Redeploy with `--force` |
 | **CI** `npm ci` fails: `Missing: @emnapi/runtime@1.11.0 from lock file` | `package-lock.json` is generated on Windows, where npm omits Linux-only wasm transitive optional deps (pulled by `@tailwindcss/oxide-wasm32-wasi`). `npm ci` is strict and rejects this on the Linux runner (any npm version). Local Windows npm won't add them, even with `--os=linux`. | Workflow uses `npm install --no-audit --no-fund` instead of `npm ci` (Vercel's build does the same) |
@@ -145,7 +172,16 @@ npx vercel ls mt-website --prod          # list prod deployments + status
 curl -s -o /dev/null -w '%{http_code}' https://mt-website-liart.vercel.app
 ```
 
-Expect `200` for `/`, `/about`, and `/studio`.
+Expect `200` for `/`, `/about`, and `/admin`.
+
+Then run the end-to-end checks against it:
+
+```bash
+BASE_URL=https://your-deployment npm run test:shop
+```
+
+Without `ADMIN_PASSWORD` it runs the access assertions only, which is the safe
+thing to do against production — it creates no data.
 
 ---
 
@@ -153,8 +189,9 @@ Expect `200` for `/`, `/about`, and `/studio`.
 
 - [ ] Transfer the **Vercel** project to the team account (`mongoltori.web@g.bracu.ac.bd`).
 - [ ] Transfer the **GitHub** repo to the team / `bracu-mongol-tori` org.
-- [ ] Add the new lead to the **Sanity** project at sanity.io/manage.
-- [ ] Re-issue and set secrets on the new owner: `VERCEL_TOKEN`, `SANITY_API_TOKEN`, `DATABASE_URL`.
-- [ ] Update Sanity **CORS origins** if the domain changes.
+- [ ] Create a CMS account for the new lead at `/admin` and give them `admin`.
+- [ ] Re-issue and set secrets on the new owner: `VERCEL_TOKEN`, `PAYLOAD_SECRET`, `RESEND_API_KEY`.
+- [ ] Transfer or re-create the **MongoDB Atlas** cluster; rotate the database user's password.
+- [ ] **Deactivate the departing lead's CMS account** — the data lives in your database now, not a third party's.
 - [ ] Confirm `.env.local` is recreated on the new machine (never committed).
 - [ ] **Revoke** any personal tokens used by the previous lead.
