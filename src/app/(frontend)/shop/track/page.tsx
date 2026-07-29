@@ -4,7 +4,7 @@ import { PageLayout } from '@/components/layout/PageLayout'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { TrackForm } from '@/components/shop/TrackForm'
-import { getShopConfig } from '@/lib/shop-server'
+import { getShopConfig } from '@/lib/cms/shop'
 
 export const metadata: Metadata = {
   title: 'Track Your Order',

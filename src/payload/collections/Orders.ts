@@ -10,6 +10,7 @@ import {
 } from '../../lib/shop'
 import { adminOnly, nobody, staff } from '../access'
 import { legacySanityId } from '../fields/slug'
+import { orderEffectsGuarded } from '../hooks/orderEffects'
 
 const statusOptions = ORDER_STATUSES.map((s) => ({ label: ORDER_STATUS_LABELS[s], value: s }))
 const paymentStatusOptions = PAYMENT_STATUSES.map((s) => ({
@@ -70,6 +71,7 @@ export const Orders: CollectionConfig = {
     update: staff,
     delete: adminOnly,
   },
+  hooks: { afterChange: [orderEffectsGuarded] },
   defaultSort: '-placedAt',
   fields: [
     // ── Fulfilment — the only editable fields ─────────────────

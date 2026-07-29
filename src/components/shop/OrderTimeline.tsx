@@ -1,4 +1,4 @@
-import type { PublicOrder } from '@/sanity/lib/types'
+import type { PublicOrder } from '@/lib/orders'
 import { ORDER_TIMELINE, timelineLabel } from '@/lib/shop'
 
 /**

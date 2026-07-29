@@ -12,10 +12,10 @@
 // here may be seconds out of date by the time the customer clicks Place Order.
 // ============================================================
 
-import type { Product, ProductForCart, ProductSummary, ProductVariant } from '@/sanity/lib/types'
+import type { Product, ProductVariant } from '@/lib/cms/types'
 
 /** Any product shape that carries enough to price and stock-check a variant. */
-type PricedProduct = Pick<ProductSummary, 'basePrice' | 'trackInventory' | 'variants'>
+type PricedProduct = Pick<Product, 'basePrice' | 'trackInventory' | 'variants'>
 
 /**
  * What one unit of this variant costs.
@@ -79,11 +79,19 @@ export function hasPriceRange(product: PricedProduct): boolean {
   return min !== max
 }
 
+/**
+ * Find a variant by the key an order recorded.
+ *
+ * That key is the array row's `id` — what Sanity called `_key`. It is a real
+ * identifier, not a positional index, which is what lets a cancelled order
+ * return stock to exactly the row it took it from even after the variant list
+ * has been reordered.
+ */
 export function findVariant(
-  product: Pick<ProductSummary, 'variants'>,
+  product: Pick<Product, 'variants'>,
   variantKey: string
 ): ProductVariant | undefined {
-  return (product.variants ?? []).find((v) => v._key === variantKey)
+  return (product.variants ?? []).find((v) => v.id === variantKey)
 }
 
 /**
@@ -94,7 +102,7 @@ export function findVariant(
  * cannot be bought at all.
  */
 export function maxPurchasable(
-  product: PricedProduct & Pick<ProductSummary, 'variants'> & { maxPerOrder?: number },
+  product: PricedProduct & { maxPerOrder?: number | null },
   variant: ProductVariant,
   shopMaxQtyPerItem: number
 ): number {
@@ -118,5 +126,4 @@ export function defaultVariant(product: PricedProduct): ProductVariant | undefin
   return active.find((v) => isVariantPurchasable(product, v)) ?? active[0] ?? product.variants?.[0]
 }
 
-/** Re-exported for callers that hold a fuller product shape. */
-export type AnyProduct = Product | ProductSummary | ProductForCart
+export type { Product, ProductVariant }

@@ -7,7 +7,7 @@ import { TrackForm } from '@/components/shop/TrackForm'
 import { OrderTimeline } from '@/components/shop/OrderTimeline'
 import { OrderDetails } from '@/components/shop/OrderDetails'
 import { getOrderByTrackId } from '@/lib/orders'
-import { getShopConfig } from '@/lib/shop-server'
+import { getShopConfig } from '@/lib/cms/shop'
 import { rateLimit } from '@/lib/rate-limit'
 import { ORDER_STATUS_LABELS } from '@/lib/shop'
 

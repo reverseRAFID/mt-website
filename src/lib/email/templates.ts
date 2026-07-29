@@ -19,7 +19,8 @@ import {
   timelineLabel,
   type OrderStatus,
 } from '@/lib/shop'
-import type { OrderInternal, ShopConfigInternal } from '@/sanity/lib/types'
+import type { OrderInternal } from '@/lib/orders'
+import type { ShopConfigInternal } from '@/lib/cms/shop'
 import { escapeHtml as h, type MailMessage } from './client'
 
 // ── Palette ───────────────────────────────────────────────────
@@ -124,10 +125,10 @@ function itemsTable(order: OrderInternal): string {
         ${item.variantLabel ? `<div style="font-size:12px;color:${FAINT};padding-top:2px;">${h(item.variantLabel)}${item.sku ? ` · ${h(item.sku)}` : ''}</div>` : ''}
       </td>
       <td align="center" style="padding:10px 8px;border-bottom:1px solid ${RULE};font-size:14px;color:${MUTED};white-space:nowrap;">
-        ${h(item.quantity)} &times; ${h(formatMoney(item.unitPrice))}
+        ${h(item.quantity ?? 0)} &times; ${h(formatMoney(item.unitPrice ?? 0))}
       </td>
       <td align="right" style="padding:10px 0;border-bottom:1px solid ${RULE};font-size:14px;font-weight:600;color:${INK};white-space:nowrap;">
-        ${h(formatMoney(item.lineTotal))}
+        ${h(formatMoney(item.lineTotal ?? 0))}
       </td>
     </tr>`
     )
@@ -195,7 +196,7 @@ function textVersion(order: OrderInternal, heading: string, intro: string): stri
   const items = (order.items ?? [])
     .map(
       (item) =>
-        `  ${item.quantity} x ${item.productTitle}${item.variantLabel ? ` (${item.variantLabel})` : ''} — ${formatMoney(item.lineTotal)}`
+        `  ${item.quantity ?? 0} x ${item.productTitle}${item.variantLabel ? ` (${item.variantLabel})` : ''} — ${formatMoney(item.lineTotal ?? 0)}`
     )
     .join('\n')
 
@@ -383,7 +384,7 @@ export function adminNewOrderEmail(
   const recipients = config.adminNotifyEmails ?? []
   if (recipients.length === 0) return null
 
-  const studioUrl = `${siteUrl()}/studio/structure/order;${encodeURIComponent(order._id)}`
+  const adminUrl = `${siteUrl()}/admin/collections/orders/${encodeURIComponent(String(order.id))}`
   const summary = (order.items ?? [])
     .map((item) => `${item.quantity} × ${item.productTitle} (${item.variantLabel})`)
     .join(', ')
@@ -397,7 +398,7 @@ export function adminNewOrderEmail(
     deliveryBlock(order),
     paragraph(`Contact: ${h(order.customerEmail)} · ${h(order.customerPhone)}`),
     order.customerNote ? paragraph(`Note: &ldquo;${h(order.customerNote)}&rdquo;`) : '',
-    button(studioUrl, 'Open in Studio'),
+    button(adminUrl, 'Open in Studio'),
   ].join('')
 
   return {
@@ -417,7 +418,7 @@ export function adminNewOrderEmail(
       '',
       summary,
       '',
-      `Open: ${studioUrl}`,
+      `Open: ${adminUrl}`,
     ].join('\n'),
   }
 }

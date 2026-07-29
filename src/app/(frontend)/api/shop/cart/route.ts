@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getShopConfigInternal } from '@/lib/shop-server'
+import { getShopConfigInternal } from '@/lib/cms/shop'
 import { priceCart } from '@/lib/orders'
 import { rateLimit, clientIp } from '@/lib/rate-limit'
 import { CAMPUS_DELIVERY_FEE } from '@/lib/shop'

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { sanityWriteClient } from '@/sanity/lib/writeClient'
-import { getShopConfigInternal } from '@/lib/shop-server'
+import { getCms } from '@/lib/cms/client'
+import { getShopConfigInternal } from '@/lib/cms/shop'
 import { getOrderInternalByTrackId, reserveAndCreateOrder } from '@/lib/orders'
 import { adminNewOrderEmail, orderConfirmationEmail } from '@/lib/email/templates'
 import { safeSend } from '@/lib/email/client'
@@ -227,7 +227,14 @@ export async function POST(req: Request) {
         const outcome = await safeSend(orderConfirmationEmail(order, config))
 
         try {
-          await sanityWriteClient.patch(order._id).set({ emailStatus: outcome }).commit()
+          const cms = await getCms()
+          await cms.update({
+            collection: 'orders',
+            id: order.id,
+            data: { emailStatus: outcome },
+            // Bookkeeping only — it must not re-enter the status/email hook.
+            context: { skipOrderEffects: true },
+          })
         } catch (err) {
           // Cosmetic bookkeeping. The customer has their order either way.
           console.error('[shop:order] could not record emailStatus', result.trackId, err)

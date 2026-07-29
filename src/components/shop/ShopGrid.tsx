@@ -1,7 +1,8 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import type { ProductCategory, ProductSummary } from '@/sanity/lib/types'
+import { rel } from '@/lib/cms/relations'
+import type { Product, ProductCategory } from '@/lib/cms/types'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { Reveal } from '@/components/motion/Reveal'
 import { isSoldOut } from '@/lib/product'
@@ -24,21 +25,21 @@ export function ShopGrid({
   products,
   categories,
 }: {
-  products: ProductSummary[]
+  products: Product[]
   categories: ProductCategory[]
 }) {
   const [active, setActive] = useState<string>(ALL)
 
   const visible = useMemo(() => {
     const filtered =
-      active === ALL ? products : products.filter((p) => p.category?._id === active)
+      active === ALL ? products : products.filter((p) => rel<ProductCategory>(p.category)?.id === active)
     return [...filtered].sort((a, b) => Number(isSoldOut(a)) - Number(isSoldOut(b)))
   }, [products, active])
 
   const counts = useMemo(() => {
     const map = new Map<string, number>()
     for (const product of products) {
-      const id = product.category?._id
+      const id = rel<ProductCategory>(product.category)?.id
       if (id) map.set(id, (map.get(id) ?? 0) + 1)
     }
     return map
@@ -72,11 +73,11 @@ export function ShopGrid({
           />
           {categories.map((category) => (
             <FilterChip
-              key={category._id}
-              active={active === category._id}
-              onClick={() => setActive(category._id)}
+              key={category.id}
+              active={active === category.id}
+              onClick={() => setActive(category.id)}
               label={category.title}
-              count={counts.get(category._id) ?? 0}
+              count={counts.get(category.id) ?? 0}
             />
           ))}
         </div>
@@ -95,7 +96,7 @@ export function ShopGrid({
           className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
           {visible.map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <ProductCard key={product.id} product={product} />
           ))}
         </Reveal>
       )}

@@ -1,5 +1,21 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 
+/**
+ * A remotePatterns entry for whatever NEXT_PUBLIC_SITE_URL points at.
+ *
+ * Returns nothing when the variable is unset or unparseable — an absent pattern
+ * gives a clear "hostname is not configured" error, which is a much better
+ * failure than a crash inside the config at boot.
+ */
+function siteImagePattern() {
+  try {
+    const url = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? '')
+    return [{ protocol: url.protocol.replace(':', ''), hostname: url.hostname, port: url.port || undefined }]
+  } catch {
+    return []
+  }
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -26,9 +42,14 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'cdn.sanity.io' },
       { protocol: 'https', hostname: 'img.youtube.com' },
-      // Vercel Blob, when object storage is configured. Uploads served from the
-      // local filesystem are same-origin and need no pattern at all.
+      // Vercel Blob, when object storage is configured.
       { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
+      // The site's own origin. Payload builds upload URLs from `serverURL`, so
+      // even a locally-stored image arrives as an absolute URL on this host and
+      // next/image refuses to optimise a host it was not told about. Derived
+      // from the env var rather than hardcoded, so dev, preview and production
+      // each allow themselves and nothing else.
+      ...siteImagePattern(),
     ],
   },
 }

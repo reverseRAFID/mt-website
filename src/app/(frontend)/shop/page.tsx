@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { PageLayout } from '@/components/layout/PageLayout'
 import { PageHero } from '@/components/ui/PageHero'
 import { ShopGrid } from '@/components/shop/ShopGrid'
-import { getShopPageData } from '@/lib/shop-server'
+import { getShopPageData } from '@/lib/cms/shop'
 import { CAMPUS_DELIVERY_FEE, formatMoney } from '@/lib/shop'
 
 export const metadata: Metadata = {

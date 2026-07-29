@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { PortableText } from '@portabletext/react'
+import { RichTextBody } from '@/lib/cms/richtext'
 import { PageLayout } from '@/components/layout/PageLayout'
 import { Accordion } from '@/components/ui/Accordion'
 import { CornerTicks } from '@/components/ui/CornerTicks'
@@ -9,8 +9,10 @@ import { Reveal } from '@/components/motion/Reveal'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { ProductGallery } from '@/components/shop/ProductGallery'
 import { AddToCart } from '@/components/shop/AddToCart'
-import { urlFor } from '@/sanity/lib/client'
-import { getProduct, getProductSlugs, getRelatedProducts, getShopConfig } from '@/lib/shop-server'
+import { ogImageUrl } from '@/lib/cms/media'
+import { rel } from '@/lib/cms/relations'
+import type { ProductCategory } from '@/lib/cms/types'
+import { getProduct, getProductSlugs, getRelatedProducts, getShopConfig } from '@/lib/cms/shop'
 import { formatMoney } from '@/lib/shop'
 import { isSoldOut, priceRange } from '@/lib/product'
 
@@ -30,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProduct(slug)
   if (!product) return { title: 'Product' }
 
-  const image = product.images?.[0]
+  const og = ogImageUrl(product.images?.[0])
   const { min } = priceRange(product)
 
   return {
@@ -40,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `${product.title} · BRACU Mongol-Tori`,
       description: product.tagline ?? undefined,
-      images: image ? [urlFor(image).width(1200).height(630).fit('crop').url()] : undefined,
+      images: og ? [og] : undefined,
     },
     other: {
       // Read by nothing in particular, but it keeps the price visible to any
@@ -62,7 +64,8 @@ export default async function ProductPage({ params }: Props) {
   // sitting on a page that cannot be ordered from.
   if (!product) notFound()
 
-  const related = await getRelatedProducts(product._id, product.category?._id, 4)
+  const category = rel<ProductCategory>(product.category)
+  const related = await getRelatedProducts(product.id, category?.id, 4)
   const soldOut = isSoldOut(product)
 
   // The Accordion's item shape is {question, answer} — it was built for the
@@ -90,7 +93,7 @@ export default async function ProductPage({ params }: Props) {
                   <li aria-hidden className="text-text-faint">
                     /
                   </li>
-                  <li className="hud-label text-text-faint">{product.category.title}</li>
+                  <li className="hud-label text-text-faint">{category!.title}</li>
                 </>
               )}
             </ol>
@@ -102,7 +105,7 @@ export default async function ProductPage({ params }: Props) {
             <div className="flex flex-col gap-6">
               <div>
                 {product.category && (
-                  <span className="hud-label text-primary">{product.category.title}</span>
+                  <span className="hud-label text-primary">{category!.title}</span>
                 )}
                 <h1 className="mt-2 font-display text-3xl font-bold uppercase leading-[1.05] tracking-tight text-text sm:text-4xl lg:text-5xl">
                   {product.title}
@@ -137,7 +140,7 @@ export default async function ProductPage({ params }: Props) {
 
               {product.description && (
                 <div className="prose-shop border-t border-divider pt-6 text-sm leading-relaxed text-text-muted [&_a]:text-primary [&_a]:underline [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-display [&_h3]:text-base [&_h3]:font-bold [&_h3]:uppercase [&_h3]:text-text [&_p]:mb-3 [&_strong]:font-semibold [&_strong]:text-text">
-                  <PortableText value={product.description} />
+                  <RichTextBody value={product.description} />
                 </div>
               )}
 
@@ -163,11 +166,11 @@ export default async function ProductPage({ params }: Props) {
           <div className="section-container">
             <div className="mb-8 flex items-center gap-2.5">
               <span aria-hidden className="h-1.5 w-1.5 rotate-45 bg-primary" />
-              <h2 className="hud-label text-text-muted">More from {product.category?.title}</h2>
+              <h2 className="hud-label text-text-muted">More from {category?.title}</h2>
             </div>
             <Reveal stagger className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {related.map((item) => (
-                <ProductCard key={item._id} product={item} />
+                <ProductCard key={item.id} product={item} />
               ))}
             </Reveal>
           </div>

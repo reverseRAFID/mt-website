@@ -95,6 +95,24 @@ export function absoluteUrl(url: string | null | undefined): string | null {
   return base ? `${base}${url.startsWith('/') ? '' : '/'}${url}` : url
 }
 
+/**
+ * The inverse of {@link absoluteUrl} — drop our own origin, keep the path.
+ *
+ * Payload absolutises upload URLs against `serverURL` when it reads them, which
+ * is right for rendering and wrong for STORING. An absolute URL frozen into an
+ * order outlives the origin it was built from: move the site to a new domain and
+ * every historical order's thumbnail 404s. Anything persisted keeps the path,
+ * and absolutises again at the moment it is used.
+ *
+ * A URL on some other host is left alone — it was never ours to shorten.
+ */
+export function relativeUrl(url: string | null | undefined): string | null {
+  if (!url) return null
+  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? '').replace(/\/$/, '')
+  if (base && url.startsWith(base)) return url.slice(base.length) || '/'
+  return url
+}
+
 /** The 160×160 stored crop, absolute. For order emails and cart line images. */
 export function emailImageUrl(ref: MediaRef): string | undefined {
   return absoluteUrl(sizeUrl(ref, 'email')) ?? undefined
