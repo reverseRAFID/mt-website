@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import { PageLayout } from '@/components/layout/PageLayout'
-import { sanityFetch } from '@/sanity/lib/client'
-import { ACTIVE_SPONSORS_QUERY } from '@/sanity/lib/queries'
-import type { Sponsor } from '@/sanity/lib/types'
+import { getActiveSponsors } from '@/lib/cms/content'
 import { PageHero } from '@/components/ui/PageHero'
 import { ImpactMetrics } from '@/components/sections/ImpactMetrics'
 import { SponsorValueProps } from '@/components/sponsors/SponsorValueProps'
@@ -24,7 +22,7 @@ export const metadata: Metadata = {
 }
 
 export default async function SponsorsPage() {
-  const sponsors = (await sanityFetch<Sponsor[]>(ACTIVE_SPONSORS_QUERY)) ?? []
+  const sponsors = await getActiveSponsors()
 
   return (
     <PageLayout>

@@ -8,9 +8,7 @@ import { Counter } from '@/components/motion/Counter'
 import { PageHero } from '@/components/ui/PageHero'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { Testimonials } from '@/components/sections/Testimonials'
-import { sanityFetch } from '@/sanity/lib/client'
-import { FEATURED_TESTIMONIALS_QUERY } from '@/sanity/lib/queries'
-import type { Testimonial } from '@/sanity/lib/types'
+import { getFeaturedTestimonials } from '@/lib/cms/content'
 import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'About Us' }
@@ -32,7 +30,7 @@ const TIMELINE = [
 ]
 
 export default async function AboutPage() {
-  const testimonials = await sanityFetch<Testimonial[]>(FEATURED_TESTIMONIALS_QUERY)
+  const testimonials = await getFeaturedTestimonials()
 
   return (
     <PageLayout>

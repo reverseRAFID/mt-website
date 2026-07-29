@@ -1,6 +1,7 @@
 import Link from 'next/link'
-import type { SarVideo } from '@/sanity/lib/types'
-import { getYouTubeID } from '@/sanity/lib/client'
+import type { Competition, SarVideo } from '@/lib/cms/types'
+import { rel } from '@/lib/cms/relations'
+import { getYouTubeID } from '@/lib/cms/media'
 import { Reveal } from '@/components/motion/Reveal'
 import { GhostText } from '@/components/motion/GhostText'
 import { CornerTicks } from '@/components/ui/CornerTicks'
@@ -14,6 +15,8 @@ export function VideoHighlight({ video }: VideoHighlightProps) {
 
   const videoId = getYouTubeID(video.youtubeUrl)
   if (!videoId) return null
+
+  const competition = rel<Competition>(video.competition)
 
   return (
     <section className="relative py-20 lg:py-28 bg-surface">
@@ -54,9 +57,9 @@ export function VideoHighlight({ video }: VideoHighlightProps) {
               <span className="hud-label text-primary">Latest SAR Video</span>
             </div>
 
-            {video.competition && (
+            {competition && (
               <span className="inline-flex items-center rounded-none bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary mb-4">
-                {video.competition.shortName} {video.competition.year}
+                {competition.shortName} {competition.year}
               </span>
             )}
 

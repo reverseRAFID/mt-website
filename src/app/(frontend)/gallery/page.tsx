@@ -2,9 +2,8 @@ import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
-import { sanityFetch, urlFor } from '@/sanity/lib/client'
-import { GALLERY_QUERY } from '@/sanity/lib/queries'
-import type { SanityImage, SanitySlug } from '@/sanity/lib/types'
+import { getGallery } from '@/lib/cms/content'
+import { media } from '@/lib/cms/media'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeader } from '@/components/ui/SectionHeader'
@@ -14,18 +13,10 @@ import { SupportCTA } from '@/components/support/SupportCTA'
 
 export const metadata: Metadata = { title: 'Gallery' }
 
-interface GalleryRover {
-  _id: string
-  name: string
-  slug: SanitySlug
-  year: number
-  gallery: SanityImage[]
-}
-
 export default async function GalleryPage() {
-  const rovers = await sanityFetch<GalleryRover[]>(GALLERY_QUERY)
-
-  const galleries = rovers?.filter((r) => r.gallery?.length > 0) ?? []
+  // /gallery has no store of its own — it is a view over the rover galleries,
+  // so adding a photo to a rover puts it here automatically.
+  const galleries = await getGallery()
   const hasImages = galleries.length > 0
 
   return (
@@ -96,7 +87,7 @@ export default async function GalleryPage() {
           ) : (
             <div className="flex flex-col gap-20">
               {galleries.map((rover) => (
-                <div key={rover._id}>
+                <div key={rover.id}>
                   <Reveal>
                     <SectionHeader
                       kicker={`${rover.year} · ${rover.gallery.length} ${
@@ -106,7 +97,7 @@ export default async function GalleryPage() {
                       titleClassName="text-2xl sm:text-3xl lg:text-4xl"
                       action={
                         <Link
-                          href={`/rovers/${rover.slug.current}`}
+                          href={`/rovers/${rover.slug}`}
                           className="group inline-flex items-center gap-1.5 text-sm font-semibold text-text-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
                           View Rover
@@ -139,7 +130,7 @@ export default async function GalleryPage() {
                         className="surface-lift group relative aspect-square overflow-hidden rounded-card border border-divider bg-surface-2 hover:border-primary/40"
                       >
                         <Image
-                          src={urlFor(img).width(400).height(400).url()}
+                          src={media(img)?.url ?? ''}
                           alt={`${rover.name} photo ${i + 1}`}
                           fill
                           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -160,7 +151,7 @@ export default async function GalleryPage() {
 
                   <div className="mt-6 sm:hidden">
                     <Link
-                      href={`/rovers/${rover.slug.current}`}
+                      href={`/rovers/${rover.slug}`}
                       className="link-underline text-sm font-semibold text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     >
                       View Rover →

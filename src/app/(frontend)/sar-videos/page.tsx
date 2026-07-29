@@ -1,9 +1,9 @@
 import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { sanityFetch } from '@/sanity/lib/client'
-import { SAR_VIDEOS_QUERY } from '@/sanity/lib/queries'
-import type { SarVideo } from '@/sanity/lib/types'
+import { getSarVideos } from '@/lib/cms/content'
+import { rel } from '@/lib/cms/relations'
+import type { Competition } from '@/lib/cms/types'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageHero } from '@/components/ui/PageHero'
@@ -18,7 +18,7 @@ function getYouTubeID(url: string): string | null {
 }
 
 export default async function SarVideosPage() {
-  const videos = await sanityFetch<SarVideo[]>(SAR_VIDEOS_QUERY)
+  const videos = await getSarVideos()
 
   return (
     <PageLayout>
@@ -40,9 +40,10 @@ export default async function SarVideosPage() {
             <Reveal stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {videos.map((video) => {
                 const ytId = getYouTubeID(video.youtubeUrl)
+                const competition = rel<Competition>(video.competition)
                 return (
                   <div
-                    key={video._id}
+                    key={video.id}
                     className="group relative flex flex-col rounded-card border border-divider bg-surface-raised overflow-hidden transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
                   >
                     {/* Media frame */}
@@ -77,9 +78,9 @@ export default async function SarVideosPage() {
                       )}
                       <CornerTicks className="text-primary/40" />
                       <span className="pointer-events-none absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-none bg-bg/80 px-2 py-1 backdrop-blur-sm">
-                        {video.competition ? (
+                        {competition ? (
                           <span className="hud-label text-primary nums">
-                            {video.competition.shortName} {video.competition.year}
+                            {competition.shortName} {competition.year}
                           </span>
                         ) : (
                           <span className="hud-label text-primary">Live Feed</span>
@@ -89,9 +90,9 @@ export default async function SarVideosPage() {
 
                     <div className="flex flex-1 flex-col p-6">
                       <div className="flex items-center gap-2 mb-3">
-                        {video.competition && (
+                        {competition && (
                           <span className="inline-flex items-center rounded-none bg-primary-highlight px-2.5 py-0.5 text-xs font-semibold text-primary">
-                            {video.competition.shortName} {video.competition.year}
+                            {competition.shortName} {competition.year}
                           </span>
                         )}
                         <span className="hud-label text-text-faint nums ml-auto">{video.year}</span>
@@ -107,9 +108,9 @@ export default async function SarVideosPage() {
                         </p>
                       )}
 
-                      {video.competition?.slug && (
+                      {competition?.slug && (
                         <Link
-                          href={`/competitions/${video.competition.slug.current}`}
+                          href={`/competitions/${competition.slug}`}
                           className="group/link mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-text-muted hover:text-primary transition-colors"
                         >
                           See competition results

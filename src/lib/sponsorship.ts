@@ -13,7 +13,7 @@
  * ─────────────────────────────────────────────────────────────────────────
  */
 
-import type { Sponsor } from '@/sanity/lib/types'
+import type { Sponsor } from '@/lib/cms/types'
 
 /** Shared icon keys — mapped to inline SVGs in the components. */
 export type SponsorIcon =

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import type { Supporter } from '@/sanity/lib/types'
+import type { Supporter } from '@/lib/cms/donations'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeader } from '@/components/ui/SectionHeader'
@@ -98,7 +98,7 @@ export function CrowdfundingSection({
                     const tier = rankTier(s.rank)
                     return (
                       <tr
-                        key={s._id}
+                        key={s.id}
                         className={cn(
                           'border-b border-l-2 border-divider transition-colors last:border-b-0',
                           tier ? ROW_STYLES[tier.key] : 'border-l-transparent'

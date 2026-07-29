@@ -1,9 +1,7 @@
 import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { sanityFetch } from '@/sanity/lib/client'
-import { COMPETITIONS_QUERY } from '@/sanity/lib/queries'
-import type { CompetitionCard } from '@/sanity/lib/types'
+import { getCompetitions } from '@/lib/cms/content'
 import { Reveal } from '@/components/motion/Reveal'
 import { Counter } from '@/components/motion/Counter'
 import { GhostText } from '@/components/motion/GhostText'
@@ -22,7 +20,7 @@ const COMPETITION_COLORS: Record<string, string> = {
 }
 
 export default async function AchievementsPage() {
-  const competitions = await sanityFetch<CompetitionCard[]>(COMPETITIONS_QUERY)
+  const competitions = await getCompetitions()
 
   const ranked = competitions?.filter((c) => c.rank) ?? []
   const bestRank = ranked.length > 0 ? Math.min(...ranked.map((c) => c.rank!)) : null
@@ -103,8 +101,8 @@ export default async function AchievementsPage() {
               <Reveal stagger className="flex flex-col gap-4">
                 {competitions.map((comp) => (
                   <Link
-                    key={comp._id}
-                    href={`/competitions/${comp.slug.current}`}
+                    key={comp.id}
+                    href={`/competitions/${comp.slug}`}
                     className="group relative rounded-card border border-divider bg-surface-raised p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
                   >
                     <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />

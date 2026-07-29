@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import type { ProductSummary } from '@/sanity/lib/types'
+import type { Product } from '@/lib/cms/types'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Reveal } from '@/components/motion/Reveal'
@@ -12,7 +12,7 @@ import { GhostText } from '@/components/motion/GhostText'
  * guards anyway, because a "Store" heading over an empty row reads as broken
  * rather than as "coming soon".
  */
-export function ShopTeaser({ products }: { products: ProductSummary[] }) {
+export function ShopTeaser({ products }: { products: Product[] }) {
   if (products.length === 0) return null
 
   return (
@@ -50,7 +50,7 @@ export function ShopTeaser({ products }: { products: ProductSummary[] }) {
 
         <Reveal stagger className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <ProductCard key={product.id} product={product} />
           ))}
         </Reveal>
       </div>

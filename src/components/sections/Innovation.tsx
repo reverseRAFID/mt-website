@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { RoverCard } from '@/sanity/lib/types'
+import type { Rover } from '@/lib/cms/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
@@ -54,7 +54,7 @@ const ICONS: Record<Capability['icon'], ReactNode> = {
  * available. Replaces the former pinned horizontal-scroll reel — content now
  * reads as a calm, scannable grid with no scroll-jacking.
  */
-export function Innovation({ rover }: { rover: RoverCard | null }) {
+export function Innovation({ rover }: { rover: Rover | null }) {
   const specValue = (cap: Capability): string | null => {
     if (!cap.specKey) return null
     const v = rover?.specs?.[cap.specKey]

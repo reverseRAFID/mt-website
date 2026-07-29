@@ -1,22 +1,12 @@
-import { sanityFetch } from '@/sanity/lib/client'
 import {
-  LATEST_COMPETITION_QUERY,
-  FEATURED_ROVER_QUERY,
-  LATEST_SAR_VIDEO_QUERY,
-  LATEST_POSTS_QUERY,
-  RESEARCH_QUERY,
-  ACTIVE_SPONSORS_QUERY,
-  FEATURED_TESTIMONIALS_QUERY,
-} from '@/sanity/lib/queries'
-import type {
-  CompetitionCard,
-  RoverCard,
-  SarVideo,
-  PostCard,
-  ResearchCard,
-  Sponsor,
-  Testimonial,
-} from '@/sanity/lib/types'
+  getActiveSponsors,
+  getFeaturedRover,
+  getFeaturedTestimonials,
+  getLatestCompetition,
+  getLatestPosts,
+  getLatestSarVideo,
+  getResearch,
+} from '@/lib/cms/content'
 
 import { AnnouncementBarServer } from '@/components/layout/AnnouncementBarServer'
 import { Navbar } from '@/components/layout/Navbar'
@@ -38,8 +28,8 @@ import { CrowdfundingSection } from '@/components/sections/CrowdfundingSection'
 import { ShopTeaser } from '@/components/sections/ShopTeaser'
 import { SponsorsStrip } from '@/components/sections/SponsorsStrip'
 import { MARQUEE_SUBTEAMS } from '@/lib/subteams'
-import { getTopSupporters, getSupporterCount, getCrowdfundingConfig } from '@/lib/donations'
-import { getFeaturedProducts, getShopConfig } from '@/lib/shop-server'
+import { getCrowdfundingConfig, getSupporterCount, getTopSupporters } from '@/lib/cms/donations'
+import { getFeaturedProducts, getShopConfig } from '@/lib/cms/shop'
 
 export default async function HomePage() {
   // Fetch all landing page data in parallel
@@ -57,13 +47,13 @@ export default async function HomePage() {
     featuredProducts,
     shopConfig,
   ] = await Promise.all([
-    sanityFetch<CompetitionCard | null>(LATEST_COMPETITION_QUERY),
-    sanityFetch<RoverCard | null>(FEATURED_ROVER_QUERY),
-    sanityFetch<SarVideo | null>(LATEST_SAR_VIDEO_QUERY),
-    sanityFetch<PostCard[]>(LATEST_POSTS_QUERY),
-    sanityFetch<ResearchCard[]>(RESEARCH_QUERY),
-    sanityFetch<Sponsor[]>(ACTIVE_SPONSORS_QUERY),
-    sanityFetch<Testimonial[]>(FEATURED_TESTIMONIALS_QUERY),
+    getLatestCompetition(),
+    getFeaturedRover(),
+    getLatestSarVideo(),
+    getLatestPosts(3),
+    getResearch(),
+    getActiveSponsors(),
+    getFeaturedTestimonials(),
     getTopSupporters(),
     getSupporterCount(),
     getCrowdfundingConfig(),
