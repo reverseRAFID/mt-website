@@ -1,14 +1,16 @@
-import { urlFor } from '@/sanity/lib/client'
-import type { Sponsor } from '@/sanity/lib/types'
+import type { Sponsor } from '@/payload-types'
+import { media } from '@/lib/cms/media'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
 
 const TIER_ORDER: Sponsor['tier'][] = ['title', 'gold', 'silver', 'bronze', 'in-kind']
 
 function logoSources(sponsor: Sponsor) {
-  const fallback = sponsor.logo ? urlFor(sponsor.logo).height(40).url() : undefined
+  // The logo is rendered at 36px tall; next/image inside ThemeLogo picks the
+  // width the device needs, so the original is the right thing to hand it.
+  const fallback = media(sponsor.logo)?.url ?? undefined
   return {
-    lightSrc: sponsor.logoLight ? urlFor(sponsor.logoLight).height(40).url() : fallback,
-    darkSrc: sponsor.logoDark ? urlFor(sponsor.logoDark).height(40).url() : fallback,
+    lightSrc: media(sponsor.logoLight)?.url ?? fallback,
+    darkSrc: media(sponsor.logoDark)?.url ?? fallback,
   }
 }
 
@@ -58,10 +60,10 @@ export function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
   return (
     <div className="relative overflow-hidden border-b border-divider bg-surface py-5 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
       <div className="flex w-max animate-marquee pause-on-hover items-center gap-12 pr-12 lg:gap-16 lg:pr-16">
-        {half.map((sponsor, i) => renderLogo(sponsor, `a-${sponsor._id}-${i}`, false))}
+        {half.map((sponsor, i) => renderLogo(sponsor, `a-${sponsor.id}-${i}`, false))}
         {half.map((sponsor, i) => (
-          <div key={`b-${sponsor._id}-${i}`} aria-hidden>
-            {renderLogo(sponsor, `b-inner-${sponsor._id}-${i}`, true)}
+          <div key={`b-${sponsor.id}-${i}`} aria-hidden>
+            {renderLogo(sponsor, `b-inner-${sponsor.id}-${i}`, true)}
           </div>
         ))}
       </div>

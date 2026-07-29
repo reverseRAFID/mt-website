@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import Link from 'next/link'
-import type { Announcement } from '@/sanity/lib/types'
+import type { Announcement } from '@/payload-types'
 
 interface AnnouncementBarProps {
   announcements: Announcement[]
@@ -98,5 +98,5 @@ export function AnnouncementBar({ announcements }: AnnouncementBarProps) {
 
 function announcementHeightKey(announcements: Announcement[], current: number) {
   const announcement = announcements[current]
-  return `${announcement?._id ?? ''}:${announcement?.message ?? ''}:${announcement?.link ?? ''}`
+  return `${announcement?.id ?? ''}:${announcement?.message ?? ''}:${announcement?.link ?? ''}`
 }
