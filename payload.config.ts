@@ -7,8 +7,10 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
+import { Announcements } from './src/payload/collections/Announcements'
 import { Documents } from './src/payload/collections/Documents'
 import { Media } from './src/payload/collections/Media'
+import { Members } from './src/payload/collections/Members'
 import { Users } from './src/payload/collections/Users'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -45,7 +47,17 @@ export default buildConfig({
     },
   },
 
-  collections: [Users, Media, Documents],
+  collections: [
+    // Content
+    Announcements,
+    // Team
+    Members,
+    // Media
+    Media,
+    Documents,
+    // Settings
+    Users,
+  ],
 
   editor: lexicalEditor(),
 

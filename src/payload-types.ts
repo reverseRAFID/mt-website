@@ -67,9 +67,11 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    announcements: Announcement;
+    members: Member;
     media: Media;
     documents: Document;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -77,9 +79,11 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -120,34 +124,131 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * The strip across the top of every page. Only active, in-window rows show.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "announcements".
  */
-export interface User {
+export interface Announcement {
   id: string;
   /**
-   * Shown in the admin UI so changes are attributable to a person.
+   * Internal label so you can tell rows apart. Never shown on the site.
    */
-  name: string;
-  role: 'editor' | 'admin';
+  title: string;
+  /**
+   * What visitors read. One short sentence — it has to fit on a phone.
+   */
+  message: string;
+  /**
+   * Optional. Makes the bar clickable.
+   */
+  link?: string | null;
+  /**
+   * The call to action, e.g. "Apply Now", "See Results".
+   */
+  linkLabel?: string | null;
+  /**
+   * Leave empty to start immediately.
+   */
+  startDate?: string | null;
+  /**
+   * Leave empty to run until switched off by hand.
+   */
+  endDate?: string | null;
+  isActive?: boolean | null;
+  /**
+   * Lower numbers are shown first.
+   */
+  priority?: number | null;
+  legacySanityId?: string | null;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
+}
+/**
+ * Everyone who has worked on the team, current and alumni.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: string;
+  /**
+   * The URL for this page. Generated from the name if left empty. Changing it breaks any link already shared.
+   */
+  slug: string;
+  name: string;
+  /**
+   * A square-ish headshot reads best.
+   */
+  photo?: (string | null) | Media;
+  role?: string | null;
+  /**
+   * One short line under the name, e.g. "Autonomy & perception, building rovers that think."
+   */
+  tagline?: string | null;
+  /**
+   * Drives the badge colour and the filter on /team.
+   */
+  subTeam?:
+    | ('uav' | 'rnd' | 'autonomous' | 'controls' | 'mechanical' | 'electronics' | 'science' | 'network' | 'management')
+    | null;
+  yearOfStudy?: string | null;
+  joinedYear?: number | null;
+  graduationYear?: number | null;
+  /**
+   * Every year this member was active, e.g. 2021, 2022, 2023. Drives the contribution timeline on their profile.
+   */
+  yearsContributed?: number[] | null;
+  isAlumni?: boolean | null;
+  /**
+   * Where they work or study now.
+   */
+  currentOrg?: string | null;
+  isActive?: boolean | null;
+  /**
+   * A few sentences on who they are and what they do here.
+   */
+  bio?: string | null;
+  quote?: string | null;
+  /**
+   * What they specialise in — "Path planning", "PCB design", "Structural FEA".
+   */
+  focusAreas?: string[] | null;
+  skills?: string[] | null;
+  achievements?:
     | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
+        /**
+         * The award, role or milestone, e.g. "URC 2023 — 5th Worldwide".
+         */
+        title: string;
+        year?: number | null;
+        /**
+         * One-line summary of what they achieved.
+         */
+        achievement?: string | null;
+        /**
+         * Optional bullet points elaborating on it.
+         */
+        details?: string[] | null;
+        id?: string | null;
       }[]
     | null;
-  password?: string | null;
-  collection: 'users';
+  /**
+   * Notable projects, repos or publications — a name and a link.
+   */
+  works?:
+    | {
+        name: string;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  linkedin?: string | null;
+  github?: string | null;
+  website?: string | null;
+  legacySanityId?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -237,6 +338,36 @@ export interface Document {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  /**
+   * Shown in the admin UI so changes are attributable to a person.
+   */
+  name: string;
+  role: 'editor' | 'admin';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -260,8 +391,12 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
-        relationTo: 'users';
-        value: string | User;
+        relationTo: 'announcements';
+        value: string | Announcement;
+      } | null)
+    | ({
+        relationTo: 'members';
+        value: string | Member;
       } | null)
     | ({
         relationTo: 'media';
@@ -270,6 +405,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'documents';
         value: string | Document;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -315,27 +454,65 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "announcements_select".
  */
-export interface UsersSelect<T extends boolean = true> {
-  name?: T;
-  role?: T;
+export interface AnnouncementsSelect<T extends boolean = true> {
+  title?: T;
+  message?: T;
+  link?: T;
+  linkLabel?: T;
+  startDate?: T;
+  endDate?: T;
+  isActive?: T;
+  priority?: T;
+  legacySanityId?: T;
   updatedAt?: T;
   createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  slug?: T;
+  name?: T;
+  photo?: T;
+  role?: T;
+  tagline?: T;
+  subTeam?: T;
+  yearOfStudy?: T;
+  joinedYear?: T;
+  graduationYear?: T;
+  yearsContributed?: T;
+  isAlumni?: T;
+  currentOrg?: T;
+  isActive?: T;
+  bio?: T;
+  quote?: T;
+  focusAreas?: T;
+  skills?: T;
+  achievements?:
     | T
     | {
+        title?: T;
+        year?: T;
+        achievement?: T;
+        details?: T;
         id?: T;
-        createdAt?: T;
-        expiresAt?: T;
       };
+  works?:
+    | T
+    | {
+        name?: T;
+        url?: T;
+        id?: T;
+      };
+  linkedin?: T;
+  github?: T;
+  website?: T;
+  legacySanityId?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -418,6 +595,30 @@ export interface DocumentsSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
