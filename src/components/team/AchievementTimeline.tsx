@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
 import { CornerTicks } from '@/components/ui/CornerTicks'
-import type { MemberAchievement } from '@/sanity/lib/types'
+import type { MemberAchievement } from '@/lib/cms/types'
 
 /**
  * Vertical achievement timeline. The spine draws downward as you scroll through

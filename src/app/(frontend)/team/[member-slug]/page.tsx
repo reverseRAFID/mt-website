@@ -2,9 +2,8 @@ import { PageLayout } from '@/components/layout/PageLayout'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { sanityFetch, urlFor } from '@/sanity/lib/client'
-import { MEMBER_BY_SLUG_QUERY } from '@/sanity/lib/queries'
-import type { MemberFull } from '@/sanity/lib/types'
+import { getMemberBySlug, getMemberConnections, getMemberSlugs } from '@/lib/cms/content'
+import { media, ogImageUrl } from '@/lib/cms/media'
 import { Reveal } from '@/components/motion/Reveal'
 import { Magnetic } from '@/components/motion/Magnetic'
 import { CornerTicks } from '@/components/ui/CornerTicks'
@@ -18,18 +17,23 @@ interface Props {
   params: Promise<{ 'member-slug': string }>
 }
 
+export async function generateStaticParams() {
+  return (await getMemberSlugs()).map((slug) => ({ 'member-slug': slug }))
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = (await params)['member-slug']
-  const member = await sanityFetch<MemberFull | null>(MEMBER_BY_SLUG_QUERY, { slug })
+  const member = await getMemberBySlug(slug)
   if (!member) return { title: 'Member' }
-  const desc = member.tagline ?? member.bio?.slice(0, 150)
+  const desc = member.tagline ?? member.bio?.slice(0, 150) ?? undefined
+  const og = ogImageUrl(member.photo)
   return {
     title: member.name,
     description: desc,
     openGraph: {
       title: member.name,
       description: desc,
-      images: member.photo ? [urlFor(member.photo).width(1200).height(630).url()] : undefined,
+      images: og ? [og] : undefined,
     },
   }
 }
@@ -56,18 +60,17 @@ function safeHost(url: string): string | null {
 
 export default async function MemberPage({ params }: Props) {
   const slug = (await params)['member-slug']
-  const member = await sanityFetch<MemberFull | null>(MEMBER_BY_SLUG_QUERY, { slug })
+  const member = await getMemberBySlug(slug)
   if (!member) notFound()
 
-  const idCode = member._id.replace(/[^a-zA-Z0-9]/g, '').slice(-5).toUpperCase()
-  const subLabel = member.subTeam ? labelFor(member.subTeam) : undefined
-  const photoUrl = member.photo ? urlFor(member.photo).width(440).height(440).url() : null
+  // What points AT this member — competitions, papers, rovers. Sanity got these
+  // from `references(^._id)` inside the member projection; Payload has no
+  // reverse-reference index, so they are separate queries.
+  const { competitions, papers, rovers } = await getMemberConnections(member.id)
 
-  // rover-> can return nulls (competition without a rover) and duplicates (member in
-  // several competitions sharing a rover) — flatten to unique, defined entries.
-  const rovers = Array.from(
-    new Map((member.rovers ?? []).filter(Boolean).map((r) => [r._id, r])).values()
-  )
+  const idCode = member.id.replace(/[^a-zA-Z0-9]/g, '').slice(-5).toUpperCase()
+  const subLabel = member.subTeam ? labelFor(member.subTeam) : undefined
+  const photoUrl = media(member.photo)?.url ?? null
 
   // Mirror ContributionRail's span: ignore a graduationYear that precedes joinedYear, and
   // fall back to a single season for an active member who only has joinedYear set.
@@ -81,8 +84,8 @@ export default async function MemberPage({ params }: Props) {
 
   const stats: HeroStat[] = []
   if (seasons && seasons > 0) stats.push({ label: seasons === 1 ? 'Season' : 'Seasons', value: seasons })
-  if (member.competitions?.length) stats.push({ label: 'Competitions', value: member.competitions.length })
-  if (member.papers?.length) stats.push({ label: member.papers.length === 1 ? 'Paper' : 'Papers', value: member.papers.length })
+  if (competitions.length) stats.push({ label: 'Competitions', value: competitions.length })
+  if (papers.length) stats.push({ label: papers.length === 1 ? 'Paper' : 'Papers', value: papers.length })
   if (rovers.length) stats.push({ label: rovers.length === 1 ? 'Rover' : 'Rovers', value: rovers.length })
 
   const hasSidebar =
@@ -260,21 +263,21 @@ export default async function MemberPage({ params }: Props) {
             )}
 
             {/* Competitions */}
-            {member.competitions && member.competitions.length > 0 && (
+            {competitions.length > 0 && (
               <Reveal as="section">
-                <SectionTitle count={member.competitions.length}>Competitions</SectionTitle>
+                <SectionTitle count={competitions.length}>Competitions</SectionTitle>
                 <div className="flex flex-col gap-3">
-                  {member.competitions.map((comp) => (
+                  {competitions.map(({ competition: comp, myRole }) => (
                     <Link
-                      key={comp._id}
-                      href={`/competitions/${comp.slug.current}`}
+                      key={comp.id}
+                      href={`/competitions/${comp.slug}`}
                       className="group relative flex items-center justify-between gap-4 rounded-card border border-divider bg-surface-raised p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
                       <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />
                       <div className="min-w-0">
                         <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
                           <span className="hud-label nums text-primary">{comp.shortName} {comp.year}</span>
-                          {comp.myRole && <span className="hud-label text-text-faint">{comp.myRole}</span>}
+                          {myRole && <span className="hud-label text-text-faint">{myRole}</span>}
                         </div>
                         <p className="font-display text-lg font-bold tracking-tight text-text transition-colors group-hover:text-primary">{comp.name}</p>
                         {comp.result && <p className="mt-1 text-sm text-text-muted leading-relaxed">{comp.result}</p>}
@@ -287,14 +290,14 @@ export default async function MemberPage({ params }: Props) {
             )}
 
             {/* Research */}
-            {member.papers && member.papers.length > 0 && (
+            {papers.length > 0 && (
               <Reveal as="section">
-                <SectionTitle count={member.papers.length}>Research</SectionTitle>
+                <SectionTitle count={papers.length}>Research</SectionTitle>
                 <div className="flex flex-col gap-3">
-                  {member.papers.map((paper) => (
+                  {papers.map((paper) => (
                     <Link
-                      key={paper._id}
-                      href={`/research/${paper.slug.current}`}
+                      key={paper.id}
+                      href={`/research/${paper.slug}`}
                       className="group relative rounded-card border border-divider bg-surface-raised p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
                       <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />
@@ -313,8 +316,8 @@ export default async function MemberPage({ params }: Props) {
                 <div className="grid gap-3 sm:grid-cols-2">
                   {rovers.map((rover) => (
                     <Link
-                      key={rover._id}
-                      href={`/rovers/${rover.slug.current}`}
+                      key={rover.id}
+                      href={`/rovers/${rover.slug}`}
                       className="group relative flex items-center justify-between gap-3 rounded-card border border-divider bg-surface-raised p-4 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
                       <div>

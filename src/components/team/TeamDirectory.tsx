@@ -5,27 +5,27 @@ import Image from 'next/image'
 import { useMemo, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
-import { urlFor } from '@/sanity/lib/client'
-import type { MemberCard } from '@/sanity/lib/types'
+import { media } from '@/lib/cms/media'
+import type { Member } from '@/lib/cms/types'
 import { TiltCard } from '@/components/motion/TiltCard'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SUBTEAM_COLORS, labelFor } from '@/lib/subteam-style'
 
-function MemberCardView({ member, index }: { member: MemberCard; index: number }) {
+function MemberCardView({ member, index }: { member: Member; index: number }) {
   const idx = String(index + 1).padStart(2, '0')
   const subtitle = member.isAlumni && member.currentOrg ? `Now @ ${member.currentOrg}` : member.role
   return (
     <TiltCard className="h-full">
       <Link
-        href={`/team/${member.slug.current}`}
+        href={`/team/${member.slug}`}
         data-member-card
         className="group relative flex h-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_22px_50px_-28px_rgba(var(--primary-rgb),0.6)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
       >
         <div className="relative aspect-[4/5] overflow-hidden bg-surface-2 scanlines">
           {member.photo ? (
             <Image
-              src={urlFor(member.photo).width(440).height(550).url()}
+              src={media(member.photo)?.url ?? ''}
               alt={member.name}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
@@ -80,7 +80,7 @@ function MemberCardView({ member, index }: { member: MemberCard; index: number }
   )
 }
 
-function MemberGrid({ members, filterKey }: { members: MemberCard[]; filterKey: string }) {
+function MemberGrid({ members, filterKey }: { members: Member[]; filterKey: string }) {
   const ref = useRef<HTMLDivElement>(null)
   useGSAP(
     () => {
@@ -97,13 +97,13 @@ function MemberGrid({ members, filterKey }: { members: MemberCard[]; filterKey: 
   return (
     <div ref={ref} className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {members.map((m, i) => (
-        <MemberCardView key={m._id} member={m} index={i} />
+        <MemberCardView key={m.id} member={m} index={i} />
       ))}
     </div>
   )
 }
 
-export function TeamDirectory({ members }: { members: MemberCard[] }) {
+export function TeamDirectory({ members }: { members: Member[] }) {
   const [filter, setFilter] = useState<string>('all')
 
   const subteams = useMemo(() => {
@@ -114,7 +114,7 @@ export function TeamDirectory({ members }: { members: MemberCard[] }) {
     return Array.from(counts.entries()).sort((a, b) => b[1] - a[1])
   }, [members])
 
-  const matches = (m: MemberCard) => filter === 'all' || m.subTeam === filter
+  const matches = (m: Member) => filter === 'all' || m.subTeam === filter
   const active = members.filter((m) => !m.isAlumni && matches(m))
   const alumni = members.filter((m) => m.isAlumni && matches(m))
 

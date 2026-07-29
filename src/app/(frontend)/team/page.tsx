@@ -1,8 +1,6 @@
 import { PageLayout } from '@/components/layout/PageLayout'
 import type { Metadata } from 'next'
-import { sanityFetch } from '@/sanity/lib/client'
-import { MEMBERS_QUERY } from '@/sanity/lib/queries'
-import type { MemberCard } from '@/sanity/lib/types'
+import { getMembers } from '@/lib/cms/content'
 import { GhostText } from '@/components/motion/GhostText'
 import { PageHero } from '@/components/ui/PageHero'
 import { TeamDirectory } from '@/components/team/TeamDirectory'
@@ -11,7 +9,7 @@ import { SupportCTA } from '@/components/support/SupportCTA'
 export const metadata: Metadata = { title: 'The Team' }
 
 export default async function TeamPage() {
-  const members = (await sanityFetch<MemberCard[]>(MEMBERS_QUERY)) ?? []
+  const members = await getMembers()
 
   return (
     <PageLayout>

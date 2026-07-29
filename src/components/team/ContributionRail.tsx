@@ -6,10 +6,10 @@ import { gsap, prefersReducedMotion } from '@/lib/gsap'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 interface ContributionRailProps {
-  joinedYear?: number
-  graduationYear?: number
-  yearsContributed?: number[]
-  isAlumni?: boolean
+  joinedYear?: number | null
+  graduationYear?: number | null
+  yearsContributed?: number[] | null
+  isAlumni?: boolean | null
 }
 
 interface YearNode {
