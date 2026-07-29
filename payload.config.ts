@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url'
 
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { resendAdapter } from '@payloadcms/email-resend'
-import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -25,11 +25,21 @@ import { SarVideos } from './src/payload/collections/SarVideos'
 import { Sponsors } from './src/payload/collections/Sponsors'
 import { Testimonials } from './src/payload/collections/Testimonials'
 import { Users } from './src/payload/collections/Users'
+import { cloudinaryAdapter } from './src/payload/storage/cloudinary'
 import { Crowdfunding } from './src/payload/globals/Crowdfunding'
 import { Recruitment } from './src/payload/globals/Recruitment'
 import { Shop } from './src/payload/globals/Shop'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
+
+/** Cloudinary accepts either a single URL or the three-part credential set. */
+const hasCloudinary = () =>
+  Boolean(
+    process.env.CLOUDINARY_URL ||
+      (process.env.CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET)
+  )
 
 /**
  * Payload root config.
@@ -94,22 +104,26 @@ export default buildConfig({
   globals: [Recruitment, Crowdfunding, Shop],
 
   /**
-   * Object storage for uploads.
+   * Object storage — Cloudinary.
    *
-   * Enabled only when a Blob token is present, which makes local development
-   * write to ./uploads and production write to Vercel Blob with no branching in
-   * the collections themselves.
+   * Enabled only when credentials are present, so local development without
+   * them writes to ./uploads and everything still works. It is NOT optional in
+   * production, and the failure mode without it is quiet rather than loud:
+   * uploads succeed, the images appear, and then the next deploy replaces the
+   * container's filesystem and every one of them 404s. Nothing errors — you
+   * find out when somebody looks at the site.
    *
-   * This is not optional in production, and the failure mode if it is missing is
-   * quiet rather than loud: uploads succeed, the images appear, and then the
-   * next deploy replaces the filesystem and every one of them 404s. There is no
-   * error to notice until somebody looks at the site.
+   * The adapter is hand-written (src/payload/storage/cloudinary.ts) because
+   * Payload ships no first-party Cloudinary adapter and this is the path every
+   * uploaded file takes.
    */
-  plugins: process.env.BLOB_READ_WRITE_TOKEN
+  plugins: hasCloudinary()
     ? [
-        vercelBlobStorage({
-          collections: { media: true, documents: true },
-          token: process.env.BLOB_READ_WRITE_TOKEN,
+        cloudStoragePlugin({
+          collections: {
+            media: { adapter: cloudinaryAdapter({ folder: 'mongol-tori/media' }) },
+            documents: { adapter: cloudinaryAdapter({ folder: 'mongol-tori/documents' }) },
+          },
         }),
       ]
     : [],

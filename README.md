@@ -55,7 +55,7 @@ Copy `.env.local.example` → `.env.local`. See [docs/DEVELOPMENT.md](docs/DEVEL
 | `DATABASE_URI` | **Yes** | MongoDB. Must be a replica set. |
 | `PAYLOAD_SECRET` | **Yes** | Signs admin sessions. Unique per environment. |
 | `NEXT_PUBLIC_SITE_URL` | **Yes** | Canonical/OG URLs **and every upload URL** — must match the environment it runs in. |
-| `BLOB_READ_WRITE_TOKEN` | Production | Object storage. Without it, uploads vanish on the next deploy. |
+| `CLOUDINARY_URL` | Production | File storage **and** image delivery. Without it uploads go to local disk and vanish on the next deploy. |
 | `RESEND_API_KEY` | Optional | Order emails. Orders are still taken without it. |
 
 `NEXT_PUBLIC_*` vars are baked into the client bundle at build time and are **not** secret.

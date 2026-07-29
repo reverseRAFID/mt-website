@@ -11,7 +11,7 @@ needs to not break it.
 |---|---|---|---|
 | 1 | **Access control holds** — `npm run check:privacy` and `npm run test:shop` both pass | Dev | ⛔ **BLOCKER** |
 | 2 | `RESEND_API_KEY` set + sender domain verified | Team | Orders work without it; no emails go out |
-| 3 | `BLOB_READ_WRITE_TOKEN` set in Vercel | Dev | Product images vanish on the next deploy without it |
+| 3 | Cloudinary credentials set in Vercel | Dev | Product images vanish on the next deploy without them |
 | 4 | Every product has at least one image | Team | Schema requires it |
 | 5 | Delivery fee checked in Shop Settings | Team | Seeded at ৳120 |
 | 6 | `adminNotifyEmails` filled in | Team | No new-order alerts otherwise |

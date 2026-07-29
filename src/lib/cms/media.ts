@@ -1,35 +1,34 @@
 // ============================================================
 // Images and files.
 //
-// This replaces `urlFor()` from the Sanity client, and it works differently
-// enough to be worth explaining.
+// This is the direct replacement for Sanity's `urlFor()`, and it works the same
+// way again: images live on Cloudinary, and any size is a URL away.
 //
-// Sanity built a URL per call — `urlFor(img).width(440).height(550).url()` —
-// and the codebase had 27 distinct width/height/crop combinations. Payload
-// resizes at upload time into a fixed set of sizes, so there is no equivalent
-// of an arbitrary on-the-fly crop.
+// That is worth stating because it was briefly not true. Sanity built a URL per
+// call — `urlFor(img).width(440).height(550).url()` — and this codebase had 27
+// distinct width/height/crop combinations. Payload has no image service of its
+// own; it resizes with sharp at UPLOAD time into a fixed set, which cannot
+// express an arbitrary crop, so the first cut of the migration worked around it
+// with four stored sizes and let CSS do the cropping.
 //
-// It turns out not to need one. Nearly all of those 27 combinations were doing
-// two separable things: picking a sensible download size, and forcing an aspect
-// ratio. `next/image` already does the first, better — it emits a srcset and
-// serves the width the device actually needs. The second is a layout concern,
-// and every one of those call sites already sits inside a fixed-size container
-// with `object-cover`.
+// Cloudinary removes the workaround. `cldUrl()` builds a transformation on
+// demand, `f_auto` negotiates AVIF or WebP per browser, `q_auto` picks a quality
+// per image, and `g_auto` chooses the crop region — so nothing is generated in
+// advance and nothing has to be regenerated when a design changes.
 //
-// So the site hands `next/image` the original and lets CSS crop. The stored
-// sizes exist only for the places `next/image` cannot reach: order emails
-// (an email client cannot call the image optimiser) and Open Graph cards
-// (scrapers want a stable absolute URL at exact dimensions).
+// `next/image` is still used everywhere, but it no longer resizes: the custom
+// loader in `cloudinary-loader.ts` hands the width to Cloudinary instead. We get
+// the srcset and the layout behaviour without paying for the optimisation twice.
 // ============================================================
 
 import type { Document as PayloadDocument, Media } from '@/payload-types'
+
+import { cldParams, cldTransform, type CldOptions } from './cloudinary-url'
 
 /** A Payload upload field is `string | Media` depending on the query depth. */
 export type MediaRef = string | Media | null | undefined
 export type DocumentRef = string | PayloadDocument | null | undefined
 
-/** The stored sizes, from src/payload/collections/Media.ts. */
-export type MediaSize = 'email' | 'card' | 'og' | 'hero'
 
 /**
  * Resolve an upload field to the document, or null.
@@ -73,11 +72,16 @@ export function imageProps(
   }
 }
 
-/** The URL of a specific stored size, falling back to the original. */
-export function sizeUrl(ref: MediaRef, size: MediaSize): string | null {
-  const m = media(ref)
-  if (!m) return null
-  return m.sizes?.[size]?.url ?? m.url ?? null
+/**
+ * A delivery URL at a specific size.
+ *
+ * Returns the original untouched when Cloudinary is not configured — local
+ * development without credentials still renders, just without transformation.
+ */
+export function cldUrl(ref: MediaRef, options: CldOptions): string | null {
+  const url = media(ref)?.url
+  if (!url) return null
+  return cldTransform(url, cldParams(options))
 }
 
 /**
@@ -113,14 +117,28 @@ export function relativeUrl(url: string | null | undefined): string | null {
   return url
 }
 
-/** The 160×160 stored crop, absolute. For order emails and cart line images. */
+/**
+ * A 160×160 crop, absolute. For order emails and cart line images.
+ *
+ * An email client cannot call an image optimiser, so this has to be a real URL
+ * at a real size — which is exactly what a Cloudinary transformation is.
+ */
 export function emailImageUrl(ref: MediaRef): string | undefined {
-  return absoluteUrl(sizeUrl(ref, 'email')) ?? undefined
+  return absoluteUrl(cldUrl(ref, { width: 160, height: 160, crop: 'fill' })) ?? undefined
 }
 
-/** The 1200×630 stored crop, absolute. For Open Graph and Twitter cards. */
+/**
+ * A 1200×630 crop, absolute. For Open Graph and Twitter cards.
+ *
+ * Scrapers do not run JavaScript and want a stable URL at exact dimensions.
+ */
 export function ogImageUrl(ref: MediaRef): string | undefined {
-  return absoluteUrl(sizeUrl(ref, 'og')) ?? undefined
+  return absoluteUrl(cldUrl(ref, { width: 1200, height: 630, crop: 'fill' })) ?? undefined
+}
+
+/** A square thumbnail. Used by the admin list views. */
+export function thumbUrl(ref: MediaRef, size = 320): string | null {
+  return cldUrl(ref, { width: size, height: size, crop: 'fill' })
 }
 
 /** Alt text, with the caption as a fallback and then the empty string. */

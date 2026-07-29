@@ -49,7 +49,7 @@ only find out in production.
 | `DATABASE_URI` | **Yes** | Must be a replica set. `npm run db:up` gives you one. |
 | `PAYLOAD_SECRET` | **Yes** | Signs admin sessions. Generate one; do not share it between environments. |
 | `NEXT_PUBLIC_SITE_URL` | **Yes** | **Must match the environment.** Payload builds upload URLs from it — a dev server set to the production URL renders `<img>` tags pointing at images that only exist in production. |
-| `BLOB_READ_WRITE_TOKEN` | Production only | Object storage. Without it uploads go to `./uploads`, which is right locally and wrong on Vercel. |
+| `CLOUDINARY_URL` | Production | File storage and image delivery. Without it uploads go to `./uploads` — right locally, wrong on Vercel. |
 | `RESEND_API_KEY` | Optional | Order emails. Unset means orders are still taken and flagged `emailStatus: skipped`. |
 
 `.env.local` is gitignored — never commit it.
@@ -70,6 +70,8 @@ only find out in production.
 | `npm run generate:importmap` | Regenerate the admin import map (only needed for custom admin components) |
 | `npm run check:privacy` | Static privacy guards (see [privacy-runbook.md](privacy-runbook.md)) |
 | `npm run test:shop` | End-to-end access + checkout test against a running server |
+| `npm run test:cloudinary` | Cloudinary URL construction — pure functions, no account needed |
+| `npm run reupload:media` | Move locally-stored uploads to Cloudinary, in place |
 | `npm run migrate:sanity` | One-off import from the old Sanity dataset |
 
 > `next build` no longer runs ESLint (Next 16 removed that). Run
@@ -93,8 +95,10 @@ only find out in production.
   value is written to Next's data cache on disk. Map to the public shape
   *inside* the cached function, not after it.
 - **Images:** `next/image` with the media document's own `url` (via
-  `media()` / `imageProps()` in `src/lib/cms/media.ts`). The stored sizes exist
-  for emails and Open Graph, where `next/image` cannot reach.
+  `media()` / `imageProps()`). Sizing is a Cloudinary transformation built by
+  `cldUrl()` — nothing is generated at upload, so any size is free and a design
+  change costs nothing. `next/image` delegates to Cloudinary through the custom
+  loader rather than resizing itself.
 - **Relationships are `string | Doc`** depending on query depth. Narrow with
   `rel()` / `rels()` and decide what an unpopulated one should look like —
   usually "do not render this row".

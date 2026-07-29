@@ -1,28 +1,22 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, staff } from '../access'
+import { cldTransform } from '../../lib/cms/cloudinary-url'
 import { legacySanityId } from '../fields/slug'
 
 /**
  * Images.
  *
- * ── Why fixed sizes instead of Sanity's on-the-fly crops ──────
- * Sanity built a URL per call — `urlFor(img).width(440).height(550)` — and the
- * codebase had 27 distinct combinations. Payload resizes once, at upload.
- * Reproducing 27 fixed sizes would be absurd, so the site instead hands the
- * ORIGINAL to `next/image`, which does width resizing and srcset generation at
- * request time, and lets CSS `object-fit` handle the aspect ratios that used to
- * be baked into the crop.
+ * ── No generated sizes, on purpose ────────────────────────────
+ * Files live on Cloudinary, which resizes on request, so nothing is generated
+ * at upload. One stored original per image instead of five, any size available
+ * without a re-upload, and a design change costs nothing — see
+ * `cldUrl()` in src/lib/cms/media.ts.
  *
- * The four sizes below exist for the cases `next/image` cannot serve:
- *
- *   • `email`  — order confirmation emails. An email client cannot call the
- *                Next image optimiser, so this has to be a real stored file.
- *   • `og`     — Open Graph cards, for the same reason (scrapers do not run JS
- *                and want a stable absolute URL at exact dimensions).
- *   • `card`   — admin thumbnails and any non-`next/image` surface.
- *   • `hero`   — a sane upper bound so a 6000px phone photo is not the thing a
- *                page actually downloads if the optimiser is bypassed.
+ * This is also why there is no focal point. Payload's focal point only means
+ * something when Payload does the cropping; Cloudinary's `g_auto` picks the
+ * region of interest itself, which is better than a centre crop and one less
+ * thing for an editor to set on four hundred photos.
  */
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -39,16 +33,17 @@ export const Media: CollectionConfig = {
     delete: staff,
   },
   upload: {
+    // Only used when Cloudinary is not configured — see payload.config.ts.
     staticDir: 'uploads/media',
     mimeTypes: ['image/*'],
-    focalPoint: true,
-    adminThumbnail: 'card',
-    imageSizes: [
-      { name: 'email', width: 160, height: 160, position: 'centre', fit: 'cover' },
-      { name: 'card', width: 800, height: undefined, fit: 'inside', withoutEnlargement: true },
-      { name: 'og', width: 1200, height: 630, position: 'centre', fit: 'cover' },
-      { name: 'hero', width: 1920, height: undefined, fit: 'inside', withoutEnlargement: true },
-    ],
+    // A Cloudinary transformation rather than a stored size. Falls back to the
+    // original when Cloudinary is not configured, so the admin still shows
+    // something in local development.
+    adminThumbnail: ({ doc }) =>
+      cldTransform(
+        typeof doc?.url === 'string' ? doc.url : null,
+        'f_auto,q_auto,w_320,h_320,c_fill,g_auto'
+      ),
   },
   fields: [
     {

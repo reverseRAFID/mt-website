@@ -1,21 +1,5 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 
-/**
- * A remotePatterns entry for whatever NEXT_PUBLIC_SITE_URL points at.
- *
- * Returns nothing when the variable is unset or unparseable — an absent pattern
- * gives a clear "hostname is not configured" error, which is a much better
- * failure than a crash inside the config at boot.
- */
-function siteImagePattern() {
-  try {
-    const url = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? '')
-    return [{ protocol: url.protocol.replace(':', ''), hostname: url.hostname, port: url.port || undefined }]
-  } catch {
-    return []
-  }
-}
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -39,17 +23,20 @@ const nextConfig = {
     serverComponentsHmrCache: false,
   },
   images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'img.youtube.com' },
-      // Vercel Blob, when object storage is configured.
-      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
-      // The site's own origin. Payload builds upload URLs from `serverURL`, so
-      // even a locally-stored image arrives as an absolute URL on this host and
-      // next/image refuses to optimise a host it was not told about. Derived
-      // from the env var rather than hardcoded, so dev, preview and production
-      // each allow themselves and nothing else.
-      ...siteImagePattern(),
-    ],
+    // ── Cloudinary does the resizing ──────────────────────────
+    // A custom loader means Next never runs its own optimiser: it still emits
+    // the srcset and handles layout, but each URL is a Cloudinary
+    // transformation. One CDN hop instead of two, AVIF/WebP negotiated by
+    // `f_auto`, and no image-optimisation usage on Vercel.
+    //
+    // The loader runs for EVERY <Image>, so it passes non-Cloudinary URLs
+    // through untouched — the local logo SVGs go through it too.
+    //
+    // `remotePatterns` is deliberately absent: it configures the built-in
+    // optimiser, which is no longer in the path. Host allow-listing moves to
+    // the loader, which only ever rewrites res.cloudinary.com.
+    loader: 'custom',
+    loaderFile: './src/lib/cms/cloudinary-loader.ts',
   },
 }
 

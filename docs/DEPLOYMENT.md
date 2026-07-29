@@ -61,20 +61,30 @@ prerender against the database.
 | `DATABASE_URI` | all envs | **Build and runtime.** A MongoDB Atlas URI. Must be a replica set — every Atlas tier is. |
 | `PAYLOAD_SECRET` | all envs | Signs admin sessions. Different value per environment. |
 | `NEXT_PUBLIC_SITE_URL` | all envs | Canonical URLs, OG images, **and the URL of every uploaded file**. Must be the origin *that environment* answers on — a preview deploy pointing at the production URL serves production's images. |
-| `BLOB_READ_WRITE_TOKEN` | all envs | **Object storage. Not optional.** See below. |
+| `CLOUDINARY_URL` | all envs | **File storage and image delivery. Not optional.** See below. |
 | `RESEND_API_KEY` | production | Order and status emails. Optional by design. |
 | `SHOP_FROM_EMAIL` | production | The From address; its domain must be verified in Resend. |
 
-### Object storage is not optional
+### Cloudinary is not optional
 
-Without `BLOB_READ_WRITE_TOKEN`, Payload writes uploads to the local
-filesystem. On Vercel that filesystem is **ephemeral**: uploads succeed, images
-appear, and then the next deploy replaces the container and every one of them
-404s. There is no error to notice — you find out when somebody looks at the
-site.
+Without credentials, Payload writes uploads to the local filesystem. On Vercel
+that filesystem is **ephemeral**: uploads succeed, images appear, and then the
+next deploy replaces the container and every one of them 404s. There is no error
+to notice — you find out when somebody looks at the site.
 
-Create the store in **Vercel → Storage → Blob** and connect it to the project;
-the token is injected automatically.
+Copy the **API Environment variable** from the Cloudinary dashboard
+(`cloudinary://key:secret@cloud_name`) into `CLOUDINARY_URL`, or set
+`CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET`
+separately.
+
+Cloudinary is also the image pipeline, not just storage: nothing is resized at
+upload, every size is a URL transformation, and `next/image` delegates to it
+through a custom loader. That means **no Vercel image-optimisation usage at
+all**, and it is why `images.remotePatterns` is absent from `next.config.mjs`.
+
+If files were uploaded before Cloudinary was configured, `npm run reupload:media`
+moves them across in place, keeping every document id and therefore every
+relationship pointing at them.
 
 ### MongoDB
 
@@ -154,8 +164,8 @@ These were hit during initial deployment. If a build fails, check here first.
 |---|---|---|
 | `No database connection string was provided to neon()` during *Collecting page data* | Neon client was created at module import; `DATABASE_URL` unset on the build runner | `src/lib/db.ts` now creates the client lazily via `getSql()` |
 | `projectId can only contain a-z, 0-9 and dashes` | Env value had a trailing `\r` from PowerShell piping | Re-add via git-bash `printf '%s\n'` |
-| Images 404 after a deploy that changed nothing | `BLOB_READ_WRITE_TOKEN` is unset, so uploads went to the ephemeral filesystem and the deploy replaced it | Connect a Blob store and re-upload |
-| `Invalid src prop … hostname is not configured` | `NEXT_PUBLIC_SITE_URL` does not match the origin actually serving the page, so Payload built upload URLs for a host `next/image` was not told about | Set it per environment |
+| Images 404 after a deploy that changed nothing | Cloudinary is unconfigured, so uploads went to the ephemeral filesystem and the deploy replaced it | Set the credentials, then `npm run reupload:media` |
+| Images load but are never resized (full-size originals over the wire) | `cldTransform` is not matching the URL — check it really is a `res.cloudinary.com` URL with an `/upload/` segment | `npm run test:cloudinary` |
 | Every checkout fails with "could not confirm stock" while pages load fine | `DATABASE_URI` points at a standalone `mongod`, which cannot start the reservation transaction | Use a replica set (Atlas always is) |
 | `No Output Directory named "dist" found` after a successful build | Vercel project's framework preset was wrong | `vercel.json` pins `"framework": "nextjs"` |
 | Redeploy "succeeds" instantly with no build, still broken | Build cache reused after only env (not source) changed | Redeploy with `--force` |

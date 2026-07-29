@@ -14,7 +14,7 @@ How the BRACU Mongol-Tori site is put together: the stack, where things live, ho
 | Database | **MongoDB** (replica set) | Everything: content, media metadata, orders, donations, applications, CMS users |
 | Styling | **Tailwind CSS v4** | Via `@tailwindcss/postcss`; no `tailwind.config.ts` (v4 is CSS-first, configured in `globals.css`) |
 | Theming | **next-themes** | Light/dark, system default |
-| File storage | **Vercel Blob** in production, local disk in dev | Enabled by the presence of a token |
+| Files & images | **Cloudinary** | Storage plus on-demand resizing. Local disk when unconfigured. |
 | Hosting | **Vercel** | See [DEPLOYMENT.md](DEPLOYMENT.md) |
 | Language | **TypeScript** | Strict; CI runs `tsc --noEmit` |
 
@@ -159,5 +159,5 @@ protects the rendered page from fetching something it must not publish. See
 
 ## 7. Notable Config
 
-- **`next.config.mjs`** — wraps the config in `withPayload`, and allow-lists image hosts: `img.youtube.com`, Vercel Blob, and the site's own origin (derived from `NEXT_PUBLIC_SITE_URL`, because Payload builds upload URLs from it).
+- **`next.config.mjs`** — wraps the config in `withPayload`, and sets a custom `next/image` loader so resizing is delegated to Cloudinary rather than done twice. `remotePatterns` is absent on purpose: it configures the built-in optimiser, which is no longer in the path.
 - **`vercel.json`** — pins `framework: "nextjs"` so Vercel uses `.next` output handling (the project had been misconfigured to look for a `dist/` directory).

@@ -19,7 +19,7 @@ import type { ClientSession, Connection } from 'mongoose'
 import type { Order, Product } from '@/payload-types'
 
 import { getCms } from '@/lib/cms/client'
-import { relativeUrl, sizeUrl } from '@/lib/cms/media'
+import { cldUrl, relativeUrl } from '@/lib/cms/media'
 import type { ShopConfigInternal } from '@/lib/cms/shop'
 import type { CartItem } from '@/lib/cart'
 import { isVariantKey, sanitizeCart } from '@/lib/cart'
@@ -292,7 +292,7 @@ export function priceCartFrom(
       // and it would also be a foreign host to next/image on the track page.
       // Anything that needs it absolute (an email, an OG tag) calls
       // absoluteUrl() at the moment it sends, when it knows the origin.
-      imageUrl: relativeUrl(sizeUrl(product.images?.[0], 'email')) ?? undefined,
+      imageUrl: relativeUrl(cldUrl(product.images?.[0], { width: 160, height: 160, crop: 'fill' })) ?? undefined,
       available: Number.isFinite(available) ? available : null,
       maxQuantity,
     })
