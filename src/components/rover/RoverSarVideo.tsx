@@ -2,7 +2,7 @@ import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionEyebrow } from '@/components/rover/SectionEyebrow'
 import { SarFacade } from '@/components/rover/SarFacade'
-import { getYouTubeID } from '@/sanity/lib/client'
+import { getYouTubeID } from '@/lib/cms/media'
 
 /**
  * Cinematic SAR video embed. Server component; the heavy YouTube iframe is
@@ -15,7 +15,7 @@ export function RoverSarVideo({
   year,
   index = '06',
 }: {
-  url?: string
+  url?: string | null
   roverName: string
   year: number
   index?: string

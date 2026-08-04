@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { urlFor } from '@/sanity/lib/client'
-import type { ProductSummary } from '@/sanity/lib/types'
+import { media } from '@/lib/cms/media'
+import { rel } from '@/lib/cms/relations'
+import type { Product, ProductCategory } from '@/lib/cms/types'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { formatMoney } from '@/lib/shop'
 import { hasPriceRange, isSoldOut, priceRange, totalStock } from '@/lib/product'
@@ -16,7 +17,8 @@ const LOW_STOCK_AT = 5
  * can stream as HTML. Adding to the cart happens on the product page, where the
  * customer has actually chosen a size.
  */
-export function ProductCard({ product }: { product: ProductSummary }) {
+export function ProductCard({ product }: { product: Product }) {
+  const category = rel<ProductCategory>(product.category)
   const soldOut = isSoldOut(product)
   const { min } = priceRange(product)
   const showFrom = hasPriceRange(product)
@@ -27,15 +29,15 @@ export function ProductCard({ product }: { product: ProductSummary }) {
 
   return (
     <Link
-      href={`/shop/${product.slug.current}`}
+      href={`/shop/${product.slug}`}
       className="group relative flex flex-col overflow-hidden rounded-none border border-divider bg-surface-raised transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
     >
       <CornerTicks className="z-10 text-primary/0 transition-colors group-hover:text-primary/40" />
 
       <div className="relative aspect-square overflow-hidden bg-surface">
-        {product.image ? (
+        {media(product.images?.[0]) ? (
           <Image
-            src={urlFor(product.image).width(600).height(600).fit('crop').url()}
+            src={media(product.images?.[0])?.url ?? ''}
             alt={product.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -44,9 +46,9 @@ export function ProductCard({ product }: { product: ProductSummary }) {
             }`}
           />
         ) : (
-          // The schema requires an image, so this only shows for a document
-          // saved before that rule or fetched mid-upload. Better a labelled
-          // placeholder than a broken image icon.
+          // Images are recommended, not required — see the note in the
+          // Products collection. Better a labelled placeholder than a broken
+          // image icon.
           <div className="flex h-full w-full items-center justify-center bg-surface-2">
             <span className="hud-label text-text-faint">No image</span>
           </div>
@@ -72,8 +74,8 @@ export function ProductCard({ product }: { product: ProductSummary }) {
       </div>
 
       <div className="flex flex-1 flex-col gap-1.5 border-t border-divider p-4">
-        {product.category?.title && (
-          <span className="hud-label text-text-faint">{product.category.title}</span>
+        {category?.title && (
+          <span className="hud-label text-text-faint">{category.title}</span>
         )}
         <h3 className="font-display text-base font-bold uppercase leading-tight tracking-tight text-text transition-colors group-hover:text-primary">
           {product.title}

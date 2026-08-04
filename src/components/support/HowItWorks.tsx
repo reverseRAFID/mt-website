@@ -1,4 +1,4 @@
-import type { CrowdfundingStep } from '@/sanity/lib/types'
+import type { CrowdfundingStep } from '@/lib/cms/types'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeader } from '@/components/ui/SectionHeader'

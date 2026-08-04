@@ -1,5 +1,5 @@
-import { urlFor } from '@/sanity/lib/client'
-import type { Sponsor } from '@/sanity/lib/types'
+import { media } from '@/lib/cms/media'
+import type { Sponsor } from '@/lib/cms/types'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
@@ -19,10 +19,10 @@ const TIER_CONFIG: Record<Sponsor['tier'], { label: string; logo: string; cols: 
 }
 
 function logoSources(sponsor: Sponsor) {
-  const fallback = sponsor.logo ? urlFor(sponsor.logo).height(64).url() : undefined
+  const fallback = media(sponsor.logo)?.url ?? undefined
   return {
-    lightSrc: sponsor.logoLight ? urlFor(sponsor.logoLight).height(64).url() : fallback,
-    darkSrc: sponsor.logoDark ? urlFor(sponsor.logoDark).height(64).url() : fallback,
+    lightSrc: media(sponsor.logoLight)?.url ?? fallback,
+    darkSrc: media(sponsor.logoDark)?.url ?? fallback,
   }
 }
 
@@ -70,7 +70,7 @@ export function SponsorShowcase({ sponsors }: { sponsors: Sponsor[] }) {
 
                   <Reveal stagger className={`grid ${cfg.cols} items-stretch gap-4 sm:gap-5`}>
                     {grouped[tier].map((sponsor) => (
-                      <TiltCard key={sponsor._id} max={5} className="h-full">
+                      <TiltCard key={sponsor.id} max={5} className="h-full">
                         <a
                           href={sponsor.website ?? '#'}
                           target="_blank"

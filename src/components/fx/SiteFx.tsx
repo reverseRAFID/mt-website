@@ -8,12 +8,12 @@ import { Preloader } from './Preloader'
 
 /**
  * Global "award layer". Mounted once in the root layout (persists across client
- * navigations). The embedded Sanity Studio opts out entirely — it needs native
+ * navigations). The Payload admin opts out entirely — it needs native
  * scrolling, the native cursor, and no overlays.
  */
 export function SiteFx() {
   const pathname = usePathname()
-  if (pathname?.startsWith('/studio')) return null
+  if (pathname?.startsWith('/admin')) return null
 
   return (
     <>

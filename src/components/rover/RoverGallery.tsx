@@ -6,8 +6,8 @@ import { Reveal } from '@/components/motion/Reveal'
 import { TiltCard } from '@/components/motion/TiltCard'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionEyebrow } from './SectionEyebrow'
-import { urlFor } from '@/sanity/lib/client'
-import type { SanityImage } from '@/sanity/lib/types'
+import { caption, media } from '@/lib/cms/media'
+import type { Media } from '@/lib/cms/types'
 import { pad2 } from './roverHelpers'
 
 export function RoverGallery({
@@ -15,7 +15,7 @@ export function RoverGallery({
   roverName,
   index = '06',
 }: {
-  images: SanityImage[]
+  images: (string | Media)[]
   roverName: string
   index?: string
 }) {
@@ -68,8 +68,8 @@ export function RoverGallery({
             >
               <TiltCard max={6} className="absolute inset-0">
                 <Image
-                  src={urlFor(img).width(i === 0 ? 800 : 400).height(i === 0 ? 800 : 400).url()}
-                  alt={img.caption ?? `${roverName} photo ${i + 1}`}
+                  src={media(img)?.url ?? ''}
+                  alt={caption(img) ?? `${roverName} photo ${i + 1}`}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                   sizes={i === 0 ? '(max-width: 640px) 100vw, 50vw' : '(max-width: 640px) 50vw, 25vw'}
@@ -108,8 +108,8 @@ export function RoverGallery({
           <div className="relative z-[1] flex max-h-full w-full max-w-5xl flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="relative aspect-[16/10] w-full overflow-hidden rounded-card border border-divider bg-surface-2">
               <Image
-                src={urlFor(images[open]).width(1600).fit('max').url()}
-                alt={images[open].caption ?? `${roverName} photo ${open + 1}`}
+                src={media(images[open])?.url ?? ''}
+                alt={caption(images[open]) ?? `${roverName} photo ${open + 1}`}
                 fill
                 className="object-contain"
                 sizes="(max-width: 1024px) 100vw, 1024px"
@@ -120,8 +120,8 @@ export function RoverGallery({
               <span className="hud-label nums text-text-faint">
                 {pad2(open + 1)} / {pad2(count)}
               </span>
-              {images[open].caption && (
-                <span className="truncate text-sm text-text-muted">{images[open].caption}</span>
+              {caption(images[open]) && (
+                <span className="truncate text-sm text-text-muted">{caption(images[open])}</span>
               )}
               {count > 1 && (
                 <div className="flex items-center gap-2">

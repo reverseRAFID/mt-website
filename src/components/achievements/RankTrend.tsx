@@ -11,7 +11,7 @@ export interface RankPoint {
   year: number
   rank: number
   shortName: string
-  totalTeams?: number
+  totalTeams?: number | null
 }
 
 /**

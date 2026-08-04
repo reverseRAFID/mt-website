@@ -5,8 +5,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useGSAP } from '@gsap/react'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
-import { urlFor } from '@/sanity/lib/client'
-import type { Testimonial } from '@/sanity/lib/types'
+import { media } from '@/lib/cms/media'
+import type { Testimonial } from '@/lib/cms/types'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { Reveal } from '@/components/motion/Reveal'
@@ -207,7 +207,7 @@ export function Testimonials({
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-card border border-divider bg-surface-2 sm:h-14 sm:w-14">
                   {t.photo ? (
                     <Image
-                      src={urlFor(t.photo).width(160).height(160).url()}
+                      src={media(t.photo)?.url ?? ''}
                       alt={t.name}
                       fill
                       className="object-cover"
@@ -257,7 +257,7 @@ export function Testimonials({
               <div className="flex items-center gap-1">
                 {testimonials.map((item, i) => (
                   <button
-                    key={item._id}
+                    key={item.id}
                     type="button"
                     onClick={() => go(i)}
                     aria-current={i === active ? 'true' : undefined}

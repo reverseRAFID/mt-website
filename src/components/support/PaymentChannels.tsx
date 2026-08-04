@@ -1,4 +1,4 @@
-import type { PaymentChannel } from '@/sanity/lib/types'
+import type { PaymentChannel } from '@/lib/cms/types'
 import { CopyButton } from '@/components/ui/CopyButton'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { Reveal } from '@/components/motion/Reveal'
@@ -30,7 +30,7 @@ export function PaymentChannels({ channels }: { channels: PaymentChannel[] }) {
       <Reveal stagger className="grid gap-4 sm:grid-cols-2">
         {channels.map((c) => (
           <div
-            key={c._key}
+            key={c.id}
             className="group relative flex flex-col gap-4 rounded-card border border-divider bg-surface-raised p-5 transition-colors hover:border-primary/40"
           >
             <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/30" />

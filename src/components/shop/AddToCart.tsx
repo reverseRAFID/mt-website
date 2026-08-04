@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useId, useState } from 'react'
-import type { Product, ProductVariant } from '@/sanity/lib/types'
+import type { Product, ProductVariant } from '@/lib/cms/types'
 import { useCart } from '@/providers/CartProvider'
 import { formatMoney, DEFAULT_VARIANT_AXIS_LABEL } from '@/lib/shop'
 import {
@@ -32,13 +32,13 @@ export function AddToCart({ product, shopOpen }: { product: Product; shopOpen: b
   const pickerId = useId()
 
   const [variantKey, setVariantKey] = useState<string | undefined>(
-    () => defaultVariant(product)?._key
+    () => defaultVariant(product)?.id ?? undefined
   )
   const [quantity, setQuantity] = useState(1)
   const [justAdded, setJustAdded] = useState(false)
 
   const selected: ProductVariant | undefined =
-    variants.find((v) => v._key === variantKey) ?? variants[0]
+    variants.find((v) => v.id === variantKey) ?? variants[0]
 
   const stock = selected ? availableStock(product, selected) : 0
   const purchasable = selected ? isVariantPurchasable(product, selected) : false
@@ -48,7 +48,7 @@ export function AddToCart({ product, shopOpen }: { product: Product; shopOpen: b
   // this the customer could add 3, then 3 again, and only discover the cap at
   // checkout.
   const inCart =
-    items.find((i) => i.productId === product._id && i.variantKey === selected?._key)?.quantity ?? 0
+    items.find((i) => i.productId === product.id && i.variantKey === selected?.id)?.quantity ?? 0
   const remaining = Math.max(0, ceiling - inCart)
 
   // Changing size re-anchors the quantity: the new variant may allow fewer.
@@ -78,7 +78,8 @@ export function AddToCart({ product, shopOpen }: { product: Product; shopOpen: b
 
   function handleAdd() {
     if (!selected || !canAdd) return
-    add(product._id, selected._key, Math.min(quantity, remaining))
+    if (!selected.id) return
+    add(product.id, selected.id, Math.min(quantity, remaining))
     setJustAdded(true)
   }
 
@@ -98,14 +99,14 @@ export function AddToCart({ product, shopOpen }: { product: Product; shopOpen: b
           <div role="radiogroup" aria-labelledby={pickerId} className="flex flex-wrap gap-2">
             {variants.map((variant) => {
               const ok = isVariantPurchasable(product, variant)
-              const isSelected = variant._key === selected?._key
+              const isSelected = variant.id === selected?.id
               return (
                 <button
-                  key={variant._key}
+                  key={variant.id}
                   type="button"
                   role="radio"
                   aria-checked={isSelected}
-                  onClick={() => setVariantKey(variant._key)}
+                  onClick={() => setVariantKey(variant.id ?? undefined)}
                   // Sold-out options stay selectable, not disabled. A disabled
                   // control is skipped by screen readers and gives no reason;
                   // this way the customer can select it and be told why.

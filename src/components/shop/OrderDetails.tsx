@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import type { PublicOrder } from '@/sanity/lib/types'
+import type { PublicOrder } from '@/lib/orders'
 import { DELIVERY_METHOD_LABELS, formatMoney } from '@/lib/shop'
 
 /**

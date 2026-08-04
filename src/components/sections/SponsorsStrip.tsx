@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import type { Sponsor } from '@/sanity/lib/types'
-import { urlFor } from '@/sanity/lib/client'
+import type { Sponsor } from '@/lib/cms/types'
+import { media } from '@/lib/cms/media'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
 import { Reveal } from '@/components/motion/Reveal'
 
@@ -35,15 +35,15 @@ export function SponsorsStrip({ sponsors }: SponsorsStripProps) {
   )
 
   const getSponsorLogoSources = (sponsor: Sponsor) => {
-    const fallback = sponsor.logo ? urlFor(sponsor.logo).height(40).url() : undefined
-    const lightSrc = sponsor.logoLight ? urlFor(sponsor.logoLight).height(40).url() : fallback
-    const darkSrc = sponsor.logoDark ? urlFor(sponsor.logoDark).height(40).url() : fallback
+    const fallback = media(sponsor.logo)?.url ?? undefined
+    const lightSrc = media(sponsor.logoLight)?.url ?? fallback
+    const darkSrc = media(sponsor.logoDark)?.url ?? fallback
     return { lightSrc, darkSrc }
   }
 
   const renderSponsor = (sponsor: Sponsor, duplicate = false) => (
     <a
-      key={sponsor._id}
+      key={sponsor.id}
       href={sponsor.website ?? '#'}
       target="_blank"
       rel="noopener noreferrer"
@@ -98,7 +98,7 @@ export function SponsorsStrip({ sponsors }: SponsorsStripProps) {
             <div className="animate-marquee pause-on-hover flex w-max items-center gap-12 pr-12 lg:gap-16 lg:pr-16">
               {sorted.map((sponsor) => renderSponsor(sponsor))}
               {sorted.map((sponsor) => (
-                <div key={`dup-${sponsor._id}`} aria-hidden>
+                <div key={`dup-${sponsor.id}`} aria-hidden>
                   {renderSponsor(sponsor, true)}
                 </div>
               ))}

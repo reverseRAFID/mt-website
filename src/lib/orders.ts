@@ -2,9 +2,9 @@
 // Orders — SERVER ONLY.
 //
 // Cart pricing, stock reservation, order creation, cancellation restore, and
-// the masked track lookup. Never import this from a client component: it holds
-// the write client and reads customer PII. `npm run check:privacy` fails the
-// build if a 'use client' file reaches for it.
+// the masked track lookup. Never import this from a client component: it reads
+// customer PII. `npm run check:privacy` fails the build if a 'use client' file
+// reaches for it.
 //
 // ── THE PRICING RULE ──────────────────────────────────────────
 // The browser never sends a price. It sends {productId, variantKey, quantity}
@@ -14,35 +14,28 @@
 // wrong price.
 // ============================================================
 
-import { sanityFetch, urlFor } from '@/sanity/lib/client'
-import { sanityWriteClient } from '@/sanity/lib/writeClient'
-import {
-  ORDER_BY_IDEMPOTENCY_KEY_INTERNAL_QUERY,
-  ORDER_BY_TRACK_ID_INTERNAL_QUERY,
-  ORDER_STOCK_STATE_INTERNAL_QUERY,
-  ORDER_TRACK_QUERY,
-  PRODUCTS_BY_IDS_QUERY,
-  TRACK_ID_EXISTS_INTERNAL_QUERY,
-} from '@/sanity/lib/queries'
-import type {
-  OrderInternal,
-  OrderTrackRow,
-  ProductForCart,
-  ProductVariant,
-  PublicOrder,
-  ShopConfigInternal,
-} from '@/sanity/lib/types'
+import type { ClientSession, Connection } from 'mongoose'
+
+import type { Order, Product } from '@/payload-types'
+
+import { getCms } from '@/lib/cms/client'
+import { cldUrl, relativeUrl } from '@/lib/cms/media'
+import type { ShopConfigInternal } from '@/lib/cms/shop'
 import type { CartItem } from '@/lib/cart'
 import { isVariantKey, sanitizeCart } from '@/lib/cart'
 import { availableStock, findVariant, maxPurchasable, variantPrice } from '@/lib/product'
 import {
   CAMPUS_DELIVERY_FEE,
+  type DeliveryMethod,
+  type OrderStatus,
+  type PaymentStatus,
   generateTrackId,
   isTrackIdShape,
   maskAddress,
   normalizeTrackId,
-  type DeliveryMethod,
 } from '@/lib/shop'
+
+type ProductVariant = NonNullable<Product['variants']>[number]
 
 // ── Shapes ────────────────────────────────────────────────────
 
@@ -112,30 +105,79 @@ export interface OrderTotals {
   total: number
 }
 
+export interface OrderItem {
+  productTitle: string
+  variantLabel: string
+  sku?: string | null
+  quantity: number
+  unitPrice: number
+  lineTotal: number
+  productId: string
+  variantKey: string
+  productSlug?: string | null
+  imageUrl?: string | null
+  /** Whether this line actually decremented inventory when the order was placed. */
+  stockTaken?: boolean | null
+}
+
+export interface OrderStatusEvent {
+  status: string
+  at: string
+  note?: string | null
+}
+
+/** SERVER ONLY — the raw order, PII included. */
+export type OrderInternal = Order
+
+/**
+ * The masked order the track page renders.
+ *
+ * `customerName` survives because the buyer needs to recognise their own order;
+ * everything that could be used to find or contact them at home does not. There
+ * is no email, no street address, no postcode, and the phone is reduced to its
+ * last three digits.
+ */
+export interface PublicOrder {
+  trackId: string
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  placedAt: string
+  customerName: string
+  /** Already masked, e.g. "••••••789". Safe to render directly. */
+  maskedPhone: string
+  deliveryMethod: DeliveryMethod
+  /** Already coarsened to area + city, e.g. "Mirpur, Dhaka". */
+  maskedAddress: string
+  campusHandoverPoint?: string
+  items: OrderItem[]
+  subtotal: number
+  deliveryFee: number
+  total: number
+  statusHistory: OrderStatusEvent[]
+  cancellationReason?: string
+  estimatedDeliveryDays?: string
+}
+
 // ── Fetch ─────────────────────────────────────────────────────
 
 /**
  * Read the products behind a set of cart lines.
  *
- * Uncached (`revalidate: 0`) on purpose. Stock and price are the two things
- * this call exists to check, and both change without warning — a 60-second
- * cache would let two customers reserve the same last unit.
+ * Uncached on purpose. Stock and price are the two things this call exists to
+ * check, and both change without warning — serving them from a cache would let
+ * two customers reserve the same last unit.
  */
-export async function fetchCartProducts(ids: string[]): Promise<ProductForCart[]> {
+export async function fetchCartProducts(ids: string[]): Promise<Product[]> {
   const unique = [...new Set(ids)].filter(Boolean)
   if (unique.length === 0) return []
-  return (await sanityFetch<ProductForCart[]>(PRODUCTS_BY_IDS_QUERY, { ids: unique }, 0)) ?? []
-}
-
-function imageUrlFor(product: ProductForCart): string | undefined {
-  if (!product.image) return undefined
-  try {
-    return urlFor(product.image).width(160).height(160).fit('crop').url()
-  } catch {
-    // A malformed asset ref must not take down an order. The email and cart
-    // both degrade to a placeholder.
-    return undefined
-  }
+  const cms = await getCms()
+  const { docs } = await cms.find({
+    collection: 'products',
+    depth: 1, // populate the first image, for the cart thumbnail and the email
+    limit: unique.length,
+    where: { id: { in: unique } },
+  })
+  return docs
 }
 
 // ── Pricing ───────────────────────────────────────────────────
@@ -143,8 +185,8 @@ function imageUrlFor(product: ProductForCart): string | undefined {
 /**
  * Resolve and price cart lines against products already fetched.
  *
- * Pure, so the reservation transaction can re-run it on each retry with a fresh
- * read without paying for another round trip through the async layer.
+ * Pure, so the reservation can re-run it on a retry with a fresh read without
+ * paying for another round trip through the async layer.
  *
  * Unavailable lines are reported as issues and dropped rather than silently
  * removed. The customer picked those items deliberately; a cart that quietly
@@ -152,11 +194,11 @@ function imageUrlFor(product: ProductForCart): string | undefined {
  * the order they eventually place is the one they meant.
  */
 export function priceCartFrom(
-  products: ProductForCart[],
+  products: Product[],
   items: CartItem[],
   config: ShopConfigInternal
 ): PricedCart {
-  const byId = new Map(products.map((p) => [p._id, p]))
+  const byId = new Map(products.map((p) => [p.id, p]))
   const lines: PricedLine[] = []
   const issues: CartIssue[] = []
 
@@ -232,16 +274,25 @@ export function priceCartFrom(
     const unitPrice = variantPrice(product, variant)
 
     lines.push({
-      productId: product._id,
-      variantKey: variant._key,
+      productId: product.id,
+      variantKey: variant.id ?? '',
       productTitle: product.title,
-      productSlug: product.slug?.current ?? '',
+      productSlug: product.slug ?? '',
       variantLabel: variant.label,
-      sku: variant.sku,
+      sku: variant.sku ?? undefined,
       unitPrice,
       quantity,
       lineTotal: unitPrice * quantity,
-      imageUrl: imageUrlFor(product),
+      // The stored 160x160 crop, as a RELATIVE path.
+      //
+      // Deliberately not absolute. This value is frozen into the order and
+      // outlives everything around it: the product can be deleted, and the site
+      // can move origin. An absolute URL baked in at order time would rot on the
+      // day the domain changes and break every historical order's thumbnail —
+      // and it would also be a foreign host to next/image on the track page.
+      // Anything that needs it absolute (an email, an OG tag) calls
+      // absoluteUrl() at the moment it sends, when it knows the origin.
+      imageUrl: relativeUrl(cldUrl(product.images?.[0], { width: 160, height: 160, crop: 'fill' })) ?? undefined,
       available: Number.isFinite(available) ? available : null,
       maxQuantity,
     })
@@ -316,10 +367,10 @@ export async function priceCart(
 /**
  * Subtotal plus delivery.
  *
- * The fee comes from the config or, for campus handover, from a constant — never
- * from the request. Campus is asserted against CAMPUS_DELIVERY_FEE rather than
- * a config field so that no admin edit and no crafted payload can put a charge
- * on a pickup the team does by hand.
+ * The fee comes from the config or, for campus handover, from a constant —
+ * never from the request. Campus is asserted against CAMPUS_DELIVERY_FEE rather
+ * than a config field so that no admin edit and no crafted payload can put a
+ * charge on a pickup the team does by hand.
  */
 export function computeTotals(
   subtotal: number,
@@ -327,7 +378,9 @@ export function computeTotals(
   config: ShopConfigInternal
 ): OrderTotals {
   const deliveryFee =
-    deliveryMethod === 'campus' ? CAMPUS_DELIVERY_FEE : Math.max(0, Math.round(config.standardDeliveryFee))
+    deliveryMethod === 'campus'
+      ? CAMPUS_DELIVERY_FEE
+      : Math.max(0, Math.round(config.standardDeliveryFee))
   return { subtotal, deliveryFee, total: subtotal + deliveryFee }
 }
 
@@ -338,7 +391,7 @@ export function computeTotals(
 // `reserveAndCreateOrder()` before changing anything below.
 // ════════════════════════════════════════════════════════════════════════
 
-/** How many times a compare-and-set conflict is retried before giving up. */
+/** How many times a losing race is retried before giving up. */
 const MAX_RESERVATION_ATTEMPTS = 5
 
 /** How many track IDs to generate before concluding something is wrong. */
@@ -387,10 +440,19 @@ export type PlaceOrderResult =
     }
   | { ok: false; code: 'busy'; message: string }
 
-/** Sanity array members need a `_key` unique within their array. */
-function arrayKey(): string {
-  return crypto.randomUUID().replace(/-/g, '').slice(0, 12)
+/** The bits of the Mongo adapter this module reaches into directly. */
+type MongoAdapter = {
+  connection: Connection
+  sessions: Record<string, ClientSession>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  collections: Record<string, any>
+  beginTransaction: () => Promise<string>
+  commitTransaction: (id: string) => Promise<void>
+  rollbackTransaction: (id: string) => Promise<void>
 }
+
+/** Thrown inside the reservation when a line lost its race for the last unit. */
+class LostRace extends Error {}
 
 /**
  * A track ID nothing else is using.
@@ -400,44 +462,35 @@ function arrayKey(): string {
  * other's order. Cheap to check, so it gets checked.
  */
 async function reserveTrackId(prefix: string): Promise<string> {
+  const cms = await getCms()
   for (let attempt = 0; attempt < MAX_TRACK_ID_ATTEMPTS; attempt++) {
     const trackId = generateTrackId(prefix)
-    const exists = await sanityFetch<boolean>(TRACK_ID_EXISTS_INTERNAL_QUERY, { trackId }, 0)
-    if (!exists) return trackId
+    const { totalDocs } = await cms.count({
+      collection: 'orders',
+      where: { trackId: { equals: trackId } },
+    })
+    if (totalDocs === 0) return trackId
   }
   throw new Error('[shop] could not allocate a unique track ID after repeated attempts')
 }
 
-/** Idempotency keys become part of a document id, so keep them id-safe. */
+/** Idempotency keys are stored and compared verbatim, so keep them well-formed. */
 function normalizeIdempotencyKey(key: string | undefined): string | undefined {
   if (typeof key !== 'string') return undefined
   const cleaned = key.trim()
   return /^[A-Za-z0-9-]{8,64}$/.test(cleaned) ? cleaned : undefined
 }
 
-type ExistingOrder = { _id: string; trackId: string } & Partial<OrderTotals>
-
-async function findOrderByIdempotencyKey(key: string): Promise<ExistingOrder | null> {
-  return await sanityFetch<ExistingOrder | null>(
-    ORDER_BY_IDEMPOTENCY_KEY_INTERNAL_QUERY,
-    { key },
-    0
-  )
-}
-
-/**
- * Totals for a replayed order, taken from what was actually stored.
- *
- * A replay is answered with the original order, so it must also be answered
- * with the original order's money. Returning zeroes would put "৳0" on the
- * customer's confirmation screen for an order they genuinely owe for.
- */
-function totalsOf(order: ExistingOrder): OrderTotals {
-  return {
-    subtotal: order.subtotal ?? 0,
-    deliveryFee: order.deliveryFee ?? 0,
-    total: order.total ?? 0,
-  }
+async function findOrderByIdempotencyKey(key: string) {
+  const cms = await getCms()
+  const { docs } = await cms.find({
+    collection: 'orders',
+    depth: 0,
+    limit: 1,
+    where: { idempotencyKey: { equals: key } },
+    select: { trackId: true, subtotal: true, deliveryFee: true, total: true },
+  })
+  return docs[0] ?? null
 }
 
 /**
@@ -445,42 +498,51 @@ function totalsOf(order: ExistingOrder): OrderTotals {
  *
  * ── WHY IT IS SHAPED LIKE THIS ────────────────────────────────
  *
- * Everything happens in ONE Sanity transaction — every stock decrement plus
- * the order document. Sanity applies a transaction whole or not at all, which
- * rules out the two failure modes that matter:
+ * Everything happens in ONE MongoDB transaction — every stock decrement plus
+ * the order document. A transaction applies whole or not at all, which rules
+ * out the two failure modes that matter:
  *
  *   • Stock decremented but the order lost. The customer is charged nothing,
  *     the team ships nothing, and the inventory is quietly wrong forever.
  *   • Order recorded but stock not taken. The same unit gets sold twice and
  *     somebody has to send an apology.
  *
- * Overselling is prevented by compare-and-set, not by locking. Each product
- * patch is guarded by `ifRevisionId(_rev)` — the revision read moments earlier.
- * If anyone changed that product in between, Sanity rejects the whole
- * transaction and the loop retries against fresh stock. Two customers racing
- * for the last unit therefore cannot both win: one commits, the other retries,
- * re-reads a stock of 0, and is told it sold out.
+ * ── HOW OVERSELLING IS PREVENTED ──────────────────────────────
  *
- * Decrements are grouped one-patch-per-product. A cart holding two sizes of the
- * same tee would otherwise produce two patches against one document inside a
- * single transaction, and the second `ifRevisionId` would fail against the
- * revision the first had just created — a self-inflicted conflict that no
- * amount of retrying fixes.
+ * Not by locking, and not by re-reading. Each decrement is a single
+ * conditional update:
+ *
+ *     { _id, variants: { $elemMatch: { id, stock: { $gte: qty } } } }
+ *     { $inc: { 'variants.$[v].stock': -qty } }
+ *
+ * MongoDB matches and updates one document atomically, so the `stock >= qty`
+ * test and the decrement cannot be separated by another writer. If somebody
+ * else took the last unit in between, the filter simply stops matching,
+ * `matchedCount` is 0, and this attempt is abandoned and retried against fresh
+ * stock. Two customers racing for the last unit therefore cannot both win: one
+ * commits, the other re-reads a stock of 0 and is told it sold out.
+ *
+ * This is strictly stronger than the Sanity implementation it replaces, which
+ * guarded a whole product document with `ifRevisionId` — there, any unrelated
+ * edit to the product forced a retry. Here the condition is on the exact
+ * variant's stock, so only a genuine contest for the same units causes one.
  *
  * Untracked products (`trackInventory: false`) are skipped entirely: a
  * made-to-order item has no shelf to take anything off.
  *
- * Idempotency uses the key as the document id, so `create` — which refuses to
- * overwrite — is what enforces uniqueness. A double-click cannot produce two
- * orders even if both requests are in flight at once, because the second
- * transaction fails as a whole and takes its stock decrements down with it.
+ * ── IDEMPOTENCY ───────────────────────────────────────────────
+ * A key is looked up before the transaction (the common double-click) and again
+ * after a failure (the genuinely concurrent case), so a retried request is
+ * answered with the original order rather than creating a second one.
  */
 export async function reserveAndCreateOrder(
   input: PlaceOrderInput,
   config: ShopConfigInternal
 ): Promise<PlaceOrderResult> {
+  const cms = await getCms()
+  const db = cms.db as unknown as MongoAdapter
+
   const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey)
-  const orderId = idempotencyKey ? `order-${idempotencyKey}` : undefined
 
   // Fast path: an obvious replay (the customer hit the button twice, seconds
   // apart). The transaction below is what makes the truly concurrent case safe.
@@ -489,9 +551,13 @@ export async function reserveAndCreateOrder(
     if (existing) {
       return {
         ok: true,
-        orderId: existing._id,
+        orderId: String(existing.id),
         trackId: existing.trackId,
-        totals: totalsOf(existing),
+        totals: {
+          subtotal: existing.subtotal ?? 0,
+          deliveryFee: existing.deliveryFee ?? 0,
+          total: existing.total ?? 0,
+        },
         lines: [],
         replayed: true,
       }
@@ -507,8 +573,8 @@ export async function reserveAndCreateOrder(
 
   for (let attempt = 0; attempt < MAX_RESERVATION_ATTEMPTS; attempt++) {
     // Re-read on every attempt. A retry exists precisely because the data moved,
-    // so reusing the previous read would retry against the stale revision and
-    // fail identically forever.
+    // so reusing the previous read would retry against stale stock and fail
+    // identically forever.
     const products = await fetchCartProducts(items.map((i) => i.productId))
     const cart = priceCartFrom(products, items, config)
 
@@ -550,44 +616,22 @@ export async function reserveAndCreateOrder(
       }
     }
 
-    const byId = new Map(products.map((p) => [p._id, p]))
-
-    // Group decrements per product — see the note above on self-inflicted
-    // conflicts.
-    const patches = new Map<string, { rev: string; decrements: Record<string, number> }>()
-    for (const line of cart.lines) {
-      const product = byId.get(line.productId)
-      if (!product || product.trackInventory === false) continue
-
-      // The key came back from Sanity via findVariant(), not from the request.
-      // Re-checked anyway because it is about to be interpolated into a patch
-      // path, and a guard that costs nothing on a path that matters is worth
-      // keeping.
-      if (!isVariantKey(line.variantKey)) {
-        throw new Error(`[shop] refusing to build a patch path for key: ${line.variantKey}`)
-      }
-
-      const entry = patches.get(product._id) ?? { rev: product._rev, decrements: {} }
-      const path = `variants[_key=="${line.variantKey}"].stock`
-      entry.decrements[path] = (entry.decrements[path] ?? 0) + line.quantity
-      patches.set(product._id, entry)
-    }
+    const byId = new Map(products.map((p) => [p.id, p]))
+    const tracked = cart.lines.filter((line) => byId.get(line.productId)?.trackInventory !== false)
 
     const now = new Date().toISOString()
-    const doc = {
-      _type: 'order' as const,
-      ...(orderId ? { _id: orderId } : {}),
+    const orderData = {
       trackId,
       status: 'placed' as const,
-      paymentMethod: 'cod' as const,
+      paymentMethod: 'cod',
       paymentStatus: 'unpaid' as const,
       customerName: input.customerName,
       customerEmail: input.customerEmail,
       customerPhone: input.customerPhone,
       // Computed here, once, so the track page can show a recognisable tail
-      // without its query ever selecting the full number. GROQ has no substring
-      // function, and masking in React would be too late — the raw value would
-      // already have been fetched into the page.
+      // without its query ever selecting the full number. Masking in React
+      // would be too late — the raw value would already have been fetched into
+      // the page.
       phoneLast3: input.customerPhone.replace(/\D/g, '').slice(-3),
       deliveryMethod: input.deliveryMethod,
       // Only the fields belonging to the chosen method are stored. A campus
@@ -601,8 +645,6 @@ export async function reserveAndCreateOrder(
         : {}),
       ...(input.customerNote ? { customerNote: input.customerNote } : {}),
       items: cart.lines.map((line) => ({
-        _key: arrayKey(),
-        _type: 'orderItem' as const,
         productTitle: line.productTitle,
         variantLabel: line.variantLabel,
         ...(line.sku ? { sku: line.sku } : {}),
@@ -614,57 +656,83 @@ export async function reserveAndCreateOrder(
         productSlug: line.productSlug,
         // Recorded now, so a later cancellation returns exactly what was taken
         // regardless of how trackInventory is configured by then.
-        stockTaken: patches.has(line.productId),
+        stockTaken: tracked.some(
+          (t) => t.productId === line.productId && t.variantKey === line.variantKey
+        ),
         ...(line.imageUrl ? { imageUrl: line.imageUrl } : {}),
-        product: { _type: 'reference' as const, _ref: line.productId, _weak: true },
       })),
       subtotal: totals.subtotal,
       deliveryFee: totals.deliveryFee,
       total: totals.total,
       placedAt: now,
-      statusHistory: [
-        { _key: arrayKey(), _type: 'statusEvent' as const, status: 'placed', at: now },
-      ],
-      // Pre-marked, so the webhook that fires on this very creation cannot also
-      // send a confirmation. The route below owns that email; if its send fails
-      // it sets emailStatus and an admin re-sends from the Studio.
+      statusHistory: [{ status: 'placed', at: now }],
+      // Pre-marked, so the afterChange hook that fires on this very creation
+      // cannot also send a confirmation. The route owns that email; if its send
+      // fails it sets emailStatus and an admin re-sends from the CMS.
       notifiedStatuses: ['placed'],
       stockReserved: true,
       ...(idempotencyKey ? { idempotencyKey } : {}),
     }
 
-    const txn = sanityWriteClient.transaction()
-    for (const [productId, { rev, decrements }] of patches) {
-      txn.patch(productId, (patch) => patch.ifRevisionId(rev).dec(decrements))
-    }
-    txn.create(doc)
+    const transactionID = await db.beginTransaction()
+    const session = db.sessions[transactionID]
 
     try {
-      // 'sync' so the order is queryable the instant this resolves — the
-      // customer is redirected straight to the track page for it.
-      const result = await txn.commit({ visibility: 'sync' })
-      const createdId = orderId ?? result.results?.find((r) => r.operation === 'create')?.id
+      const Products = db.collections['products']
+
+      for (const line of tracked) {
+        if (!isVariantKey(line.variantKey)) {
+          throw new Error(`[shop] refusing to build an update for key: ${line.variantKey}`)
+        }
+
+        const result = await Products.updateOne(
+          {
+            _id: line.productId,
+            variants: { $elemMatch: { id: line.variantKey, stock: { $gte: line.quantity } } },
+          },
+          { $inc: { 'variants.$[v].stock': -line.quantity } },
+          { arrayFilters: [{ 'v.id': line.variantKey }], session }
+        )
+
+        // Zero matches means the guard failed: somebody else took the units
+        // between the read above and this write. Abandon the whole attempt.
+        if (result.matchedCount === 0) throw new LostRace(line.variantKey)
+      }
+
+      const created = await cms.create({
+        collection: 'orders',
+        data: orderData as unknown as Order,
+        // Joins this write to the same transaction as the decrements above.
+        req: { transactionID } as Parameters<typeof cms.create>[0]['req'],
+      })
+
+      await db.commitTransaction(transactionID)
 
       return {
         ok: true,
-        orderId: createdId ?? '',
+        orderId: String(created.id),
         trackId,
         totals,
         lines: cart.lines,
         replayed: false,
       }
     } catch (err) {
-      // Two different 409s land here: a revision conflict (retry) and a
-      // duplicate document id (a genuinely concurrent replay). Rather than
-      // parsing error text, ask the dataset which one it was.
+      await db.rollbackTransaction(transactionID).catch(() => {})
+
+      // A genuinely concurrent replay: the other request won and created the
+      // order. Answer with theirs rather than trying again.
       if (idempotencyKey) {
         const existing = await findOrderByIdempotencyKey(idempotencyKey)
         if (existing) {
           return {
             ok: true,
-            orderId: existing._id,
+            orderId: String(existing.id),
             trackId: existing.trackId,
-            totals: totalsOf(existing),
+            totals: {
+              subtotal: existing.subtotal ?? 0,
+              deliveryFee: existing.deliveryFee ?? 0,
+              total: existing.total ?? 0,
+            },
             lines: cart.lines,
             replayed: true,
           }
@@ -672,8 +740,10 @@ export async function reserveAndCreateOrder(
       }
 
       const isLastAttempt = attempt === MAX_RESERVATION_ATTEMPTS - 1
-      if (isLastAttempt) {
+      if (!(err instanceof LostRace) && isLastAttempt) {
         console.error('[shop] reservation failed after retries', err)
+      }
+      if (isLastAttempt) {
         return {
           ok: false,
           code: 'busy',
@@ -708,134 +778,167 @@ export type RestoreResult =
 /**
  * Return a cancelled order's stock to inventory. Exactly once, ever.
  *
- * The webhook that calls this can fire more than once for one cancellation:
- * Sanity retries on a non-2xx, and an admin can re-save the document. Adding
- * the same units back twice would invent inventory that does not exist and
- * lead straight to overselling it.
+ * The hook that calls this can fire more than once for one cancellation — an
+ * admin can re-save the document, and a status can be corrected and re-applied.
+ * Adding the same units back twice would invent inventory that does not exist
+ * and lead straight to overselling it.
  *
- * `stockRestoredAt` is the guard, and it is set inside the same transaction as
- * the increments, under `ifRevisionId`. Two concurrent restores therefore
- * cannot both commit — the loser's revision check fails, it re-reads, sees the
- * timestamp, and stops.
+ * `stockRestoredAt` is the guard, and the claim on it is itself the lock: the
+ * update that stamps it requires the field to still be missing. Two concurrent
+ * restores therefore cannot both proceed — the loser matches nothing and stops.
+ * The stamp is claimed FIRST, inside the transaction, before any stock moves,
+ * so a crash between the two leaves the units unrestored (recoverable by hand)
+ * rather than restored twice (silently wrong forever).
  *
  * What gets returned comes from the order's own `stockTaken` flags, not from
  * asking the product what it does now. If inventory tracking was toggled
  * between the order and the cancellation, asking the product would either
  * strand the units or conjure stock that was never taken.
  */
-export async function restoreStockForOrder(orderId: string): Promise<RestoreResult> {
-  for (let attempt = 0; attempt < MAX_RESERVATION_ATTEMPTS; attempt++) {
-    const order = await sanityFetch<{
-      _id: string
-      _rev: string
-      status: string
-      stockReserved?: boolean
-      stockRestoredAt?: string | null
-      items?: { productId: string; variantKey: string; quantity: number; stockTaken?: boolean }[]
-    } | null>(ORDER_STOCK_STATE_INTERNAL_QUERY, { id: orderId }, 0)
+export async function restoreStockForOrder(
+  orderId: string,
+  /**
+   * The transaction to join, when one is already open.
+   *
+   * This matters more than it looks. The caller is normally the `orders`
+   * afterChange hook, which Payload runs INSIDE the transaction of the update
+   * that triggered it — the admin saving "cancelled". Starting a second
+   * transaction here would try to write the same order document that the outer
+   * one is still holding, and MongoDB answers that with a write conflict: the
+   * restore fails, the status change succeeds, and the units are stranded.
+   *
+   * Joining instead makes "this order is cancelled" and "its stock is back on
+   * the shelf" a single atomic fact, which is what they always should have been.
+   */
+  existingTransactionID?: string
+): Promise<RestoreResult> {
+  const cms = await getCms()
+  const db = cms.db as unknown as MongoAdapter
 
-    if (!order) return { restored: false, reason: 'not_found' }
-    if (order.status !== 'cancelled') return { restored: false, reason: 'not_cancelled' }
-    if (order.stockReserved !== true) return { restored: false, reason: 'never_reserved' }
-    if (order.stockRestoredAt) return { restored: false, reason: 'already_restored' }
+  const order = await cms.findByID({
+    collection: 'orders',
+    id: orderId,
+    depth: 0,
+    select: {
+      status: true,
+      stockReserved: true,
+      stockRestoredAt: true,
+      items: true,
+    },
+    ...(existingTransactionID
+      ? { req: { transactionID: existingTransactionID } as Parameters<typeof cms.findByID>[0]['req'] }
+      : {}),
+  })
 
-    const lines = (order.items ?? []).filter(
-      (item) => item.stockTaken !== false && isVariantKey(item.variantKey) && item.quantity > 0
+  if (!order) return { restored: false, reason: 'not_found' }
+  if (order.status !== 'cancelled') return { restored: false, reason: 'not_cancelled' }
+  if (order.stockReserved !== true) return { restored: false, reason: 'never_reserved' }
+  if (order.stockRestoredAt) return { restored: false, reason: 'already_restored' }
+
+  const lines = (order.items ?? []).filter(
+    (item) =>
+      item.stockTaken !== false &&
+      typeof item.variantKey === 'string' &&
+      isVariantKey(item.variantKey) &&
+      (item.quantity ?? 0) > 0
+  )
+
+  // Own the transaction only if nobody else does.
+  const ownsTransaction = !existingTransactionID
+  const transactionID = existingTransactionID ?? (await db.beginTransaction())
+  const session = db.sessions[transactionID]
+
+  try {
+    const Orders = db.collections['orders']
+    const Products = db.collections['products']
+
+    // Claim the restore before moving anything. `stockRestoredAt: null` in the
+    // filter is what makes this a claim rather than a write: only one caller can
+    // match a document that has not been stamped yet.
+    const claim = await Orders.updateOne(
+      { _id: orderId, $or: [{ stockRestoredAt: null }, { stockRestoredAt: { $exists: false } }] },
+      { $set: { stockRestoredAt: new Date() } },
+      { session }
     )
+    if (claim.matchedCount === 0) {
+      if (ownsTransaction) await db.rollbackTransaction(transactionID)
+      return { restored: false, reason: 'already_restored' }
+    }
 
-    // Only products that still exist can be patched — a transaction naming a
-    // deleted document fails as a whole, which would block the restore of every
-    // other line in the order.
-    const products = await fetchCartProducts(lines.map((l) => l.productId))
-    const byId = new Map(products.map((p) => [p._id, p]))
-
-    const patches = new Map<string, { rev: string; increments: Record<string, number> }>()
     let units = 0
     for (const line of lines) {
-      const product = byId.get(line.productId)
-      if (!product) continue
-      const entry = patches.get(product._id) ?? { rev: product._rev, increments: {} }
-      const path = `variants[_key=="${line.variantKey}"].stock`
-      entry.increments[path] = (entry.increments[path] ?? 0) + line.quantity
-      patches.set(product._id, entry)
-      units += line.quantity
+      // A product deleted since the order was placed simply has nowhere to put
+      // its units back. Skipped rather than failing the whole restore, which
+      // would strand every other line in the order.
+      const result = await Products.updateOne(
+        { _id: line.productId, 'variants.id': line.variantKey },
+        { $inc: { 'variants.$[v].stock': line.quantity } },
+        { arrayFilters: [{ 'v.id': line.variantKey }], session }
+      )
+      if (result.matchedCount > 0) units += line.quantity ?? 0
     }
 
-    const txn = sanityWriteClient.transaction()
-    for (const [productId, { rev, increments }] of patches) {
-      txn.patch(productId, (patch) => patch.ifRevisionId(rev).inc(increments))
-    }
-    // Stamped in the same transaction as the increments. If this patch fails,
-    // no stock moved either.
-    txn.patch(order._id, (patch) =>
-      patch.ifRevisionId(order._rev).set({ stockRestoredAt: new Date().toISOString() })
-    )
-
-    try {
-      await txn.commit({ visibility: 'sync' })
-      return { restored: true, units }
-    } catch (err) {
-      if (attempt === MAX_RESERVATION_ATTEMPTS - 1) {
-        console.error('[shop] stock restore failed after retries', orderId, err)
-        return { restored: false, reason: 'busy' }
-      }
-      // Contention — loop, re-read, and let the guards decide again.
-    }
+    if (ownsTransaction) await db.commitTransaction(transactionID)
+    return { restored: true, units }
+  } catch (err) {
+    // Only roll back what we started. Aborting somebody else's transaction
+    // would silently undo the status change that called us.
+    if (ownsTransaction) await db.rollbackTransaction(transactionID).catch(() => {})
+    console.error('[shop] stock restore failed', orderId, err)
+    return { restored: false, reason: 'busy' }
   }
-  return { restored: false, reason: 'busy' }
 }
 
 // ── Public lookup ─────────────────────────────────────────────
 
-/**
- * Build the renderable order from the privacy-safe projection.
- *
- * Note what this does NOT do: fetch the order and then drop fields. Masking
- * after the fact was the original bug — Next serialises fetch responses into
- * the RSC flight payload embedded in the page, so a street address the page
- * never rendered was still sitting in its source. The fix is upstream, in
- * ORDER_TRACK_QUERY: the private fields are never selected, so there is nothing
- * here left to leak.
- */
-function toPublicOrder(row: OrderTrackRow, estimatedDeliveryDays?: string): PublicOrder {
-  return {
-    trackId: row.trackId,
-    status: row.status,
-    paymentStatus: row.paymentStatus,
-    placedAt: row.placedAt,
-    // Kept: the buyer has to recognise this as their own order.
-    customerName: row.customerName,
-    // `phoneLast3` was computed at order time precisely so the full number
-    // never has to be selected. Older orders predate it and show nothing.
-    maskedPhone: row.phoneLast3 ? `••••••${row.phoneLast3}` : '••••••',
-    deliveryMethod: row.deliveryMethod,
-    maskedAddress:
-      row.deliveryMethod === 'campus' ? 'BRACU campus' : maskAddress(row.area, row.city),
-    campusHandoverPoint: row.handoverPoint,
-    items: row.items ?? [],
-    subtotal: row.subtotal,
-    deliveryFee: row.deliveryFee,
-    total: row.total,
-    statusHistory: row.statusHistory ?? [],
-    cancellationReason: row.cancellationReason,
-    estimatedDeliveryDays,
-  }
-}
-
 /** SERVER ONLY — the unmasked order, for building emails. */
 export async function getOrderInternalByTrackId(trackId: string): Promise<OrderInternal | null> {
-  return await sanityFetch<OrderInternal | null>(
-    ORDER_BY_TRACK_ID_INTERNAL_QUERY,
-    { trackId },
-    0
-  )
+  const cms = await getCms()
+  const { docs } = await cms.find({
+    collection: 'orders',
+    depth: 0,
+    limit: 1,
+    where: { trackId: { equals: trackId } },
+  })
+  return docs[0] ?? null
 }
+
+/**
+ * The track page's projection — and the ONLY order read that is safe to render.
+ *
+ * Masking used to happen in TypeScript, after the full order had been fetched.
+ * That was too late: Next serialises fetched data into the page, so the raw
+ * street address, postcode, phone number and email ended up in the page source
+ * even though nothing rendered them. Selecting them was the mistake, not
+ * displaying them.
+ *
+ * So this `select` never asks for them. `area` and `city` are lifted out of
+ * `deliveryAddress` individually rather than taking the object, and the phone
+ * comes from `phoneLast3`, computed when the order was placed.
+ */
+const TRACK_SELECT = {
+  trackId: true,
+  status: true,
+  paymentStatus: true,
+  placedAt: true,
+  customerName: true,
+  phoneLast3: true,
+  deliveryMethod: true,
+  deliveryAddress: { area: true, city: true },
+  campusDetails: { handoverPoint: true },
+  items: true,
+  subtotal: true,
+  deliveryFee: true,
+  total: true,
+  statusHistory: true,
+  cancellationReason: true,
+} as const
 
 /**
  * Look up an order for the public track page.
  *
  * Accepts whatever the customer typed. The shape is validated before the
- * dataset is touched so a junk string costs nothing, and a bare code with no
+ * database is touched so a junk string costs nothing, and a bare code with no
  * prefix gets the configured one prepended — people copy the digits and leave
  * the "MT-" behind more often than not.
  *
@@ -849,18 +952,45 @@ export async function getOrderByTrackId(
   const normalized = normalizeTrackId(raw ?? '')
   if (!normalized) return null
 
-  const trackId = normalized.includes('-')
-    ? normalized
-    : `${config.orderPrefix}-${normalized}`
-
+  const trackId = normalized.includes('-') ? normalized : `${config.orderPrefix}-${normalized}`
   if (!isTrackIdShape(trackId)) return null
 
-  // Deliberately NOT getOrderInternalByTrackId — that projection carries PII,
-  // and simply fetching it inside a page is enough to put it in the page source.
-  const row = await sanityFetch<OrderTrackRow | null>(ORDER_TRACK_QUERY, { trackId }, 0)
+  const cms = await getCms()
+  const { docs } = await cms.find({
+    collection: 'orders',
+    depth: 0,
+    limit: 1,
+    where: { trackId: { equals: trackId } },
+    // Deliberately NOT the whole document — that carries PII, and simply
+    // fetching it inside a page is enough to put it in the page source.
+    select: TRACK_SELECT,
+  })
+
+  const row = docs[0]
   if (!row) return null
 
-  return toPublicOrder(row, config.estimatedDeliveryDays)
+  return {
+    trackId: row.trackId,
+    status: row.status as OrderStatus,
+    paymentStatus: row.paymentStatus as PaymentStatus,
+    placedAt: row.placedAt,
+    // Kept: the buyer has to recognise this as their own order.
+    customerName: row.customerName,
+    // `phoneLast3` was computed at order time precisely so the full number never
+    // has to be selected. Orders predating it show nothing.
+    maskedPhone: row.phoneLast3 ? `••••••${row.phoneLast3}` : '••••••',
+    deliveryMethod: row.deliveryMethod as DeliveryMethod,
+    maskedAddress:
+      row.deliveryMethod === 'campus'
+        ? 'BRACU campus'
+        : maskAddress(row.deliveryAddress?.area, row.deliveryAddress?.city),
+    campusHandoverPoint: row.campusDetails?.handoverPoint ?? undefined,
+    items: (row.items ?? []) as OrderItem[],
+    subtotal: row.subtotal,
+    deliveryFee: row.deliveryFee,
+    total: row.total,
+    statusHistory: (row.statusHistory ?? []) as OrderStatusEvent[],
+    cancellationReason: row.cancellationReason ?? undefined,
+    estimatedDeliveryDays: config.estimatedDeliveryDays,
+  }
 }
-
-export { toPublicOrder }

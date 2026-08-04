@@ -9,9 +9,9 @@ needs to not break it.
 
 | # | Item | Who | Status |
 |---|---|---|---|
-| 1 | **Dataset is Private** — `npm run check:privacy` passes | Sanity account owner | ⛔ **BLOCKER** |
+| 1 | **Access control holds** — `npm run check:privacy` and `npm run test:shop` both pass | Dev | ⛔ **BLOCKER** |
 | 2 | `RESEND_API_KEY` set + sender domain verified | Team | Orders work without it; no emails go out |
-| 3 | `SANITY_WEBHOOK_SECRET` set in Vercel **and** sanity.io/manage | Team | No status emails / no stock restore without it |
+| 3 | Cloudinary credentials set in Vercel | Dev | Product images vanish on the next deploy without them |
 | 4 | Every product has at least one image | Team | Schema requires it |
 | 5 | Delivery fee checked in Shop Settings | Team | Seeded at ৳120 |
 | 6 | `adminNotifyEmails` filled in | Team | No new-order alerts otherwise |
@@ -21,15 +21,20 @@ needs to not break it.
 
 Order documents hold a **real name, email address, mobile number and home
 address**, tied to a purchase. On a public dataset, anyone can read all of it
-with one request — the GROQ projections in this repo are irrelevant, because an
+with one request — the projections in this repo were irrelevant, because an
 attacker writes their own query:
 
 ```bash
-curl 'https://aslda7ok.api.sanity.io/v2024-01-01/data/query/production?query=*[_type=="order"]'
+curl 'https://<project>.api.sanity.io/v2024-01-01/data/query/production?query=*[_type=="order"]'
 ```
 
-**Fix:** sanity.io/manage → project `aslda7ok` → Datasets → `production` →
-Visibility → **Private**. Then confirm `SANITY_API_TOKEN` is set in Vercel for
+**That is history.** There is no shared dataset now: the only HTTP surface is
+`/payload-api`, `orders` sets `read: staff` and `create: nobody`, and
+`npm run test:shop` asserts an anonymous request gets a 403. What follows
+described the old fix and is kept only so the reasoning is not lost.
+
+**Old fix:** sanity.io/manage → project → Datasets → `production` →
+Visibility → **Private**. Then confirm the API token was set in Vercel for
 **both** Production and Preview, or a private dataset means a blank site.
 
 Verify with `npm run check:privacy`. See `docs/privacy-runbook.md` §1 for what
@@ -91,7 +96,7 @@ options still has one variant called `Standard` — that is what holds its count
 
 ### Can we oversell?
 
-No. Placing an order runs one atomic Sanity transaction containing every stock
+No. Placing an order runs one atomic MongoDB transaction containing every stock
 decrement and the order document, each decrement guarded by a compare-and-set on
 the product's revision. If two customers race for the last unit, one commits and
 the other is told it sold out. Verified with ten concurrent orders against a
@@ -120,29 +125,22 @@ confirmation email** and save. It sends and unticks itself.
 `Skipped` means `RESEND_API_KEY` was not configured when the order came in. The
 order is completely fine — the customer just never got their receipt.
 
-### Setting up the webhook (one-time)
+### There is no webhook to set up any more
 
-Status emails and cancellation stock-restores are driven by a Sanity webhook.
-Without it, **changing a status silently does nothing**.
+This section used to be twenty lines of dashboard configuration: a Sanity
+webhook posting to `/api/shop/webhook`, an HMAC secret kept in sync between two
+places, a projection, an API version, and a delivery log to check when status
+changes silently did nothing.
 
-1. sanity.io/manage → project → **API** → **Webhooks** → **Create webhook**
-2. Fill in:
-   - **Name** — `Shop orders`
-   - **URL** — `https://bracumongoltori.com/api/shop/webhook`
-   - **Dataset** — `production`
-   - **Trigger on** — ✅ Create, ✅ Update  (leave Delete off)
-   - **Filter** — `_type == "order"`
-   - **Projection** — leave empty (the route re-reads the order itself)
-   - **HTTP method** — `POST`
-   - **API version** — `v2024-01-01`
-   - **Include drafts** — off
-   - **Secret** — paste the same value as `SANITY_WEBHOOK_SECRET` in Vercel
-3. Save, then change any test order's status and check the webhook's delivery
-   log for a `200`.
+All of it is gone. The CMS runs inside this application, so changing a status
+calls a function directly — `src/payload/hooks/orderEffects.ts`. Nothing to
+configure, no secret to rotate, and no public endpoint that could email
+customers if that secret ever leaked.
 
-The route **fails closed**: with no secret set it rejects every request, because
-an unauthenticated caller could otherwise trigger emails to customers and move
-stock.
+What did **not** change is the idempotency, because it was never really about
+the webhook: an admin can still save the same order five times, or set a status
+back and forth. One email per status (`notifiedStatuses`), one stock restore
+ever (`stockRestoredAt`), history appended only on a real change.
 
 ---
 
@@ -188,7 +186,7 @@ publishes it.
 `PublicOrder` grows a private field, or if `ORDER_TRACK_QUERY` starts selecting
 something it should not.
 
-### Why the masking happens in GROQ and not in React
+### Why the masking happens in the query and not in React
 
 This caught us once, so it is worth stating plainly.
 
@@ -198,20 +196,21 @@ number and email were still in the page source. Next serialises `fetch()`
 responses into the RSC flight payload embedded in the HTML, so the raw Sanity
 response was sitting in `self.__next_f.push(...)` regardless of what was
 rendered. It was caught by `scripts/test-shop-flow.mjs`, which greps the actual
-served HTML for values it knows should not be there.
+served HTML for values it knows should not be there — and still does, on every
+run, for exactly this reason.
 
-**Selecting a private field inside a page is enough to publish it.** Not
-rendering it does not help. So `ORDER_TRACK_QUERY` never selects one: `area` and
-`city` are lifted out of `deliveryAddress` individually, and the phone tail
-comes from `phoneLast3`, computed once when the order is written because GROQ
-has no substring function.
+**Fetching a private field inside a page is enough to publish it.** Not
+rendering it does not help. So `TRACK_SELECT` in `src/lib/orders.ts` never asks
+for one: `deliveryAddress` is narrowed to `{ area, city }` rather than taken
+whole, and the phone tail comes from `phoneLast3`, computed once when the order
+is written.
 
-This is the same lesson `APPROVED_DONATIONS_QUERY` already encodes for
-crowdfunding — resolve privacy inside Sanity, so what must not be published
-never leaves the dataset.
+The same lesson is encoded in the supporters roll — sort by `amount` inside
+MongoDB and do not select it, so the figure never leaves the server.
 
-If you add a field to the track page: add it to `ORDER_TRACK_QUERY`, not to a
-projection that already had it.
+If you add a field to the track page: add it to `TRACK_SELECT`, and run
+`npm run check:privacy`, which will tell you if it is one of the fields that
+must never go there.
 
 ---
 
@@ -237,11 +236,12 @@ Nothing expires automatically. At least once per term:
 | Pricing, reservation, restore, masked lookup | `src/lib/orders.ts` (server only) |
 | Catalogue reads | `src/lib/shop-server.ts` (server only) |
 | Email | `src/lib/email/` (server only; `safeSend` never throws) |
-| Schemas | `src/sanity/schemas/{product,productCategory,shopConfig,order}.ts` |
+| Collections | `src/payload/collections/{Products,ProductCategories,Orders}.ts`, `src/payload/globals/Shop.ts` |
 
 **The pricing rule.** The browser never sends a price. It sends
 `{productId, variantKey, quantity}` and nothing else that costs money. Every
-figure on an invoice is recomputed server-side from Sanity at request time. If
+figure on an invoice is recomputed server-side from the product documents at
+request time. If
 you find yourself trusting a number from the client, stop.
 
 **Seeding a demo catalogue:**

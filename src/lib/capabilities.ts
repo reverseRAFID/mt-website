@@ -2,17 +2,17 @@
  * Rover capabilities / innovation reel (editorial).
  *
  * These describe the subsystems every competitive Mars-rover team builds for
- * URC/ERC/IRC missions. Where the featured rover has a matching spec in Sanity
+ * URC/ERC/IRC missions. Where the featured rover has a matching spec in the CMS
  * (`specKey`), the real value is surfaced on the card; otherwise the card still
  * reads correctly without it.
  *
  * TODO(team): tweak the copy to match the current rover's standout features.
  */
 
-import type { RoverCard } from '@/sanity/lib/types'
+import type { Rover } from '@/lib/cms/types'
 
 /** Spec fields actually projected onto the featured-rover card. */
-type CardSpecKey = keyof NonNullable<RoverCard['specs']>
+type CardSpecKey = keyof NonNullable<Rover['specs']>
 
 export interface Capability {
   icon: 'arm' | 'cpu' | 'beaker' | 'wheel' | 'signal' | 'bolt'

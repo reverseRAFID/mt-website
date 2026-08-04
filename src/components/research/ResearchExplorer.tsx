@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import type { ResearchCard } from '@/sanity/lib/types'
+import { authorNames } from '@/lib/cms/relations'
+import type { Research } from '@/lib/cms/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { cn } from '@/lib/utils'
@@ -61,7 +62,7 @@ function FilterChip({
  * (focus area) on the client. The initial list reveals on scroll; re-filtered
  * results render immediately. All data-driven from the papers passed in.
  */
-export function ResearchExplorer({ papers }: { papers: ResearchCard[] }) {
+export function ResearchExplorer({ papers }: { papers: Research[] }) {
   const [status, setStatus] = useState<string>('all')
   const [topic, setTopic] = useState<string>('all')
 
@@ -149,8 +150,8 @@ export function ResearchExplorer({ papers }: { papers: ResearchCard[] }) {
         <Reveal stagger dependencies={[status, topic]} className="flex flex-col gap-3">
           {filtered.map((paper, i) => (
             <Link
-              key={paper._id}
-              href={`/research/${paper.slug.current}`}
+              key={paper.id}
+              href={`/research/${paper.slug}`}
               className="group relative flex flex-col gap-4 rounded-card border border-divider bg-surface-raised p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg sm:flex-row sm:items-center sm:gap-6 sm:p-6"
             >
               <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />
@@ -173,8 +174,8 @@ export function ResearchExplorer({ papers }: { papers: ResearchCard[] }) {
                   {paper.title}
                 </h3>
 
-                {paper.authorNames && paper.authorNames.length > 0 && (
-                  <p className="mt-1.5 text-sm text-text-muted">{paper.authorNames.join(', ')}</p>
+                {authorNames(paper) && authorNames(paper).length > 0 && (
+                  <p className="mt-1.5 text-sm text-text-muted">{authorNames(paper).join(', ')}</p>
                 )}
 
                 {paper.topics && paper.topics.length > 0 && (

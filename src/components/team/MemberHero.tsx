@@ -19,12 +19,12 @@ export interface HeroStat {
 
 interface MemberHeroProps {
   name: string
-  role?: string
-  tagline?: string
-  subTeamKey?: string
+  role?: string | null
+  tagline?: string | null
+  subTeamKey?: string | null
   subLabel?: string
-  isAlumni?: boolean
-  currentOrg?: string
+  isAlumni?: boolean | null
+  currentOrg?: string | null
   photoUrl?: string | null
   idCode: string
   stats: HeroStat[]

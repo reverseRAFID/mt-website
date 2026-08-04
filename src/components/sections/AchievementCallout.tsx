@@ -1,10 +1,10 @@
 import Link from 'next/link'
-import type { CompetitionCard } from '@/sanity/lib/types'
+import type { Competition } from '@/lib/cms/types'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 interface AchievementCalloutProps {
-  competition: CompetitionCard | null
+  competition: Competition | null
 }
 
 function getOrdinalSuffix(n: number): string {
@@ -50,7 +50,7 @@ export function AchievementCallout({ competition }: AchievementCalloutProps) {
           </div>
 
           <Link
-            href={`/competitions/${competition.slug.current}`}
+            href={`/competitions/${competition.slug}`}
             className="group inline-flex shrink-0 items-center gap-2 rounded-none border border-border px-5 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-primary hover:text-primary"
           >
             View Details

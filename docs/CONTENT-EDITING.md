@@ -1,31 +1,39 @@
 # Content Editing Guide
 
 For team members who manage the website content — **no coding required.**
-You edit everything through the visual CMS (the "Studio").
+You edit everything through the admin, which is part of the website itself.
 
 For the technical field reference, see [CONTENT-MODEL.md](CONTENT-MODEL.md).
 
 ---
 
-## Opening the Studio
+## Opening the admin
 
-Go to **/studio** on the site:
+Go to **/admin** on the site:
 
-- Production: https://mt-website-liart.vercel.app/studio
-- Local dev: http://localhost:3000/studio
+- Production: https://mt-website-liart.vercel.app/admin
+- Local dev: http://localhost:3000/admin
 
-Sign in with the Sanity account you were invited with. If you don't have access,
-ask the team lead to add you at [sanity.io/manage](https://www.sanity.io/manage).
+Sign in with your own account. If you do not have one, ask a team lead — they
+create accounts under **Settings → Users**. There is no third-party service to
+be invited to any more; the accounts live in the site's own database.
+
+Two roles:
+
+- **Editor** — content, plus the order and donation queues. This is what most
+  people need.
+- **Admin** — everything an editor can do, plus creating users.
 
 ---
 
 ## How publishing works
 
-- The Studio talks to the **Sanity** content cloud, separate from the website code.
-- When you **Publish** a document, the live site picks up the change automatically
-  within about **30–60 seconds** — no developer or redeploy needed.
-- **Draft** changes (unpublished) are only visible in the Studio, not on the site.
-- Always click **Publish** (bottom-right) to make a change go live.
+- **Save** makes a change live. There is no separate publish step and no draft
+  state: what you save is what the site shows.
+- The change appears **immediately** — the site clears its cache for that
+  collection the moment you save. No waiting, no redeploy.
+- Because there is no draft, do not save a half-written post. Write it
+  somewhere else and paste it in when it is ready.
 
 ---
 
@@ -65,7 +73,7 @@ To add something: click the section → the **pencil/＋** to create → fill fi
 4. Add/edit **FAQ Items** → **Publish**.
 
 > Applications submitted through the form are stored in the team's database, not in
-> the Studio. Ask a developer to export them.
+> the admin. Ask a developer to export them.
 
 ### Add a team member
 1. **Team Members → ＋**.

@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import type { RoverCard } from '@/sanity/lib/types'
-import { urlFor } from '@/sanity/lib/client'
+import type { Competition, Rover } from '@/lib/cms/types'
+import { media } from '@/lib/cms/media'
+import { rel } from '@/lib/cms/relations'
+import { roverHeroImage } from '@/components/rover/roverHelpers'
 import { Reveal } from '@/components/motion/Reveal'
 import { Parallax } from '@/components/motion/Parallax'
 import { GhostText } from '@/components/motion/GhostText'
@@ -9,7 +11,7 @@ import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
 interface RoverSpotlightProps {
-  rover: RoverCard | null
+  rover: Rover | null
 }
 
 const SPEC_LABELS: Record<string, string> = {
@@ -23,6 +25,8 @@ export function RoverSpotlight({ rover }: RoverSpotlightProps) {
   if (!rover) return null
 
   const specEntries = Object.entries(rover.specs ?? {}).filter(([, v]) => v !== undefined && v !== null)
+
+  const competition = rel<Competition>(rover.competition)
 
   return (
     <section className="relative overflow-hidden py-20 lg:py-28 bg-bg">
@@ -42,9 +46,9 @@ export function RoverSpotlight({ rover }: RoverSpotlightProps) {
               />
               <div className="relative rounded-card border border-divider bg-surface-raised p-2 shadow-[0_24px_60px_-32px_rgba(var(--primary-rgb),0.55)]">
                 <div className="relative aspect-[4/3] rounded-none bg-surface-2 overflow-hidden">
-                  {rover.heroImage ? (
+                  {media(roverHeroImage(rover)) ? (
                     <Image
-                      src={urlFor(rover.heroImage).width(800).height(600).url()}
+                      src={media(roverHeroImage(rover))?.url ?? ''}
                       alt={rover.name}
                       fill
                       className="object-cover"
@@ -61,7 +65,7 @@ export function RoverSpotlight({ rover }: RoverSpotlightProps) {
                           </svg>
                         </div>
                         <p className="text-sm text-text-faint">{rover.name}</p>
-                        <p className="text-xs text-text-faint mt-1">Add a gallery photo in Sanity CMS</p>
+                        <p className="text-xs text-text-faint mt-1">Add a gallery photo in the CMS</p>
                       </div>
                     </div>
                   )}
@@ -69,10 +73,10 @@ export function RoverSpotlight({ rover }: RoverSpotlightProps) {
                 </div>
               </div>
 
-              {rover.competition && (
+              {competition && (
                 <div className="absolute -top-3 -right-3 z-10 inline-flex items-center rounded-none bg-primary px-3 py-1.5 shadow-lg">
                   <span className="hud-label text-on-accent nums">
-                    {rover.competition.shortName} {rover.competition.year}
+                    {competition.shortName} {competition.year}
                   </span>
                 </div>
               )}
@@ -100,7 +104,7 @@ export function RoverSpotlight({ rover }: RoverSpotlightProps) {
             <Reveal delay={0.1}>
               <div className="flex flex-wrap gap-3">
                 <Link
-                  href={`/rovers/${rover.slug.current}`}
+                  href={`/rovers/${rover.slug}`}
                   className="inline-flex items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:bg-primary-hover"
                 >
                   View Full Specs

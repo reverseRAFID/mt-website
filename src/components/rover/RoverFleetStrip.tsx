@@ -4,10 +4,11 @@ import { Reveal } from '@/components/motion/Reveal'
 import { Magnetic } from '@/components/motion/Magnetic'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionEyebrow } from '@/components/rover/SectionEyebrow'
-import { urlFor } from '@/sanity/lib/client'
-import type { RoverSibling } from '@/sanity/lib/types'
+import { media } from '@/lib/cms/media'
+import { roverHeroImage } from '@/components/rover/roverHelpers'
+import type { Rover } from '@/lib/cms/types'
 
-export function RoverFleetStrip({ rovers }: { rovers?: RoverSibling[] }) {
+export function RoverFleetStrip({ rovers }: { rovers?: Rover[] }) {
   if (!rovers || rovers.length === 0) return null
 
   return (
@@ -35,15 +36,15 @@ export function RoverFleetStrip({ rovers }: { rovers?: RoverSibling[] }) {
 
         <Reveal stagger={0.06} className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {rovers.slice(0, 6).map((r) => (
-            <Magnetic key={r._id} strength={0.2} className="block h-full">
+            <Magnetic key={r.id} strength={0.2} className="block h-full">
               <Link
-                href={`/rovers/${r.slug.current}`}
+                href={`/rovers/${r.slug}`}
                 className="group relative flex h-full w-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
               >
                 <div className="relative aspect-[16/10] overflow-hidden bg-surface-2">
-                  {r.heroImage ? (
+                  {media(roverHeroImage(r))?.url ? (
                     <Image
-                      src={urlFor(r.heroImage).width(560).height(350).url()}
+                      src={media(roverHeroImage(r))!.url!}
                       alt={r.name}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"

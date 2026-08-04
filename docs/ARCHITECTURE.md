@@ -8,12 +8,13 @@ How the BRACU Mongol-Tori site is put together: the stack, where things live, ho
 
 | Layer | Technology | Notes |
 |---|---|---|
-| Framework | **Next.js 15** (App Router) | React Server Components by default |
+| Framework | **Next.js 16** (App Router, Turbopack) | React Server Components by default |
 | UI runtime | **React 19** | |
-| CMS | **Sanity v3** | Embedded Studio at `/studio`; content fetched via GROQ |
+| CMS | **Payload 3** | Admin at `/admin`, in this app. Content read through the Local API — no network hop. |
+| Database | **MongoDB** (replica set) | Everything: content, media metadata, orders, donations, applications, CMS users |
 | Styling | **Tailwind CSS v4** | Via `@tailwindcss/postcss`; no `tailwind.config.ts` (v4 is CSS-first, configured in `globals.css`) |
 | Theming | **next-themes** | Light/dark, system default |
-| Database | **Neon** (serverless Postgres) | Only the recruitment form (`/api/apply`) |
+| Files & images | **Cloudinary** | Storage plus on-demand resizing. Local disk when unconfigured. |
 | Hosting | **Vercel** | See [DEPLOYMENT.md](DEPLOYMENT.md) |
 | Language | **TypeScript** | Strict; CI runs `tsc --noEmit` |
 
@@ -22,46 +23,54 @@ How the BRACU Mongol-Tori site is put together: the stack, where things live, ho
 ## 2. Directory Layout
 
 ```
+payload.config.ts                # CMS root config: collections, globals, db, admin
+next.config.mjs                  # Image remote patterns; wraps the config in withPayload
+docker-compose.yml               # Local MongoDB (single-node replica set)
+
 src/
-├─ app/                          # App Router: routes are folders with page.tsx
-│  ├─ layout.tsx                 # Root layout — fonts, ThemeProvider, Navbar, Footer
-│  ├─ page.tsx                   # Home (/)
-│  ├─ globals.css                # Tailwind v4 entry + design tokens (colors, fonts)
-│  ├─ about|achievements|...     # Static content pages
-│  ├─ rovers/                    # Listing + rovers/[slug] detail
-│  ├─ competitions/              # Listing + competitions/[slug] detail
-│  ├─ team/                      # Listing + team/[member-slug] portfolio
-│  ├─ research/                  # Listing + research/[slug] detail
-│  ├─ news/                      # Listing + news/[slug] article
-│  ├─ join/                      # Recruitment landing + join/apply (form)
-│  ├─ api/apply/route.ts         # POST handler → writes application to Neon
-│  └─ studio/[[...tool]]/        # Sanity Studio mount (catch-all route)
+├─ app/
+│  ├─ (frontend)/                # The website. Route groups do not appear in URLs.
+│  │  ├─ layout.tsx              # Root layout — fonts, ThemeProvider, Navbar, Footer
+│  │  ├─ page.tsx                # Home (/)
+│  │  ├─ globals.css             # Tailwind v4 entry + design tokens
+│  │  ├─ rovers|team|news|…      # Listings + [slug] details
+│  │  └─ api/                    # apply, donate, shop/cart, shop/order
+│  └─ (payload)/                 # The admin. A SECOND root layout — Payload
+│     ├─ admin/[[...segments]]/  # renders its own <html>, so it cannot live
+│     └─ payload-api/[...slug]/  # inside the site's layout tree.
 │
-├─ components/
-│  ├─ layout/                    # Navbar, Footer, PageLayout, AnnouncementBar(+Server)
-│  ├─ sections/                  # Home/page sections (Hero, RoverSpotlight, NewsStrip, …)
-│  └─ ui/                        # Small reusables (ThemeToggle, ThemeLogo)
-│
-├─ sanity/
-│  ├─ schemas/                   # One file per content type + index.ts (schemaTypes[])
-│  └─ lib/
-│     ├─ client.ts               # Canonical Sanity client + urlFor() + sanityFetch()
-│     ├─ queries.ts              # All GROQ queries (single source of truth)
-│     └─ types.ts                # TypeScript types for query results
+├─ payload/
+│  ├─ collections/               # One file per collection; each declares `access`
+│  ├─ globals/                   # Recruitment, Crowdfunding, Shop
+│  ├─ fields/                    # slug, richText editors, subteam options
+│  ├─ access/                    # Named predicates: anyone, staff, adminOnly, nobody
+│  └─ hooks/                     # revalidate (cache busting), orderEffects
 │
 ├─ lib/
-│  ├─ db.ts                      # Lazy Neon client — getSql()
-│  └─ utils.ts                   # cn(), formatDate(), estimateReadTime()
+│  ├─ cms/                       # THE READ LAYER — the only place that talks to Payload
+│  │  ├─ client.ts               #   getCms()
+│  │  ├─ cache.ts                #   cachedRead(): tag by collection, bust on save
+│  │  ├─ content.ts              #   public content reads
+│  │  ├─ shop.ts, donations.ts, recruitment.ts
+│  │  ├─ media.ts, richtext.tsx, relations.ts, types.ts
+│  ├─ orders.ts                  # Pricing, stock reservation, the masked track read
+│  └─ shop.ts, cart.ts, crowdfunding.ts   # Isomorphic domain constants
 │
-└─ providers/
-   └─ ThemeProvider.tsx          # Wraps next-themes
+├─ components/
+│  ├─ layout|sections|ui|rover|shop|support|team
+│
+└─ payload-types.ts              # GENERATED — `npm run generate:types`
 
-sanity.config.ts                 # Studio config: projectId, dataset, desk structure
-next.config.mjs                  # Image remote patterns + /studio iframe headers
-vercel.json                      # { "framework": "nextjs" }
+scripts/
+├─ migrate-from-sanity.ts        # One-off import from the old dataset
+├─ check-shop-privacy.mjs        # Static privacy guards
+├─ check-donation-privacy.mjs    # …and the whole-database access audit
+└─ test-shop-flow.mjs            # End-to-end access + checkout test
 ```
 
-> All Sanity reads go through the single client in `src/sanity/lib/client.ts`.
+> Never call `getPayload()` from a page. Every read goes through
+> `src/lib/cms/`, which is what makes caching and `select` discipline
+> reviewable in one place.
 
 ---
 
@@ -69,13 +78,15 @@ vercel.json                      # { "framework": "nextjs" }
 
 The site is **statically generated with Incremental Static Regeneration (ISR)**.
 
-- Content pages are React Server Components that call `sanityFetch()` at build time.
-- `sanityFetch()` sets `next: { revalidate }` (default **60s**, home/listing pages use **30s**), so Vercel re-renders a page in the background at most once per window after the first request following an edit.
+- Content pages are React Server Components that read through `src/lib/cms/`.
+- Those reads are wrapped in `cachedRead`, tagged per collection, and the
+  collection's `afterChange` hook clears the tag on save — so a page is cached
+  until its content actually changes, not for a fixed window.
 - Detail routes (`rovers/[slug]`, `competitions/[slug]`, `team/[member-slug]`, `research/[slug]`, `news/[slug]`) are **dynamic** (`ƒ`) — server-rendered on demand, so newly-published documents appear without a rebuild.
 - `/api/apply` is a dynamic Node route (POST only).
-- `/studio/[[...tool]]` is a client-rendered SPA (the Sanity Studio), dynamic.
+- `/admin/[[...segments]]` is the Payload admin — a client-rendered SPA, always dynamic.
 
-Net effect: **content edits in Sanity appear on the site within the revalidation window — no redeploy needed.** A redeploy is only required for *code* changes.
+Net effect: **a content edit appears on the site immediately — no redeploy, and no waiting for a revalidation window.** A redeploy is only required for *code* changes.
 
 See the build output table in [DEPLOYMENT.md](DEPLOYMENT.md) for which routes are Static (`○`) vs Dynamic (`ƒ`).
 
@@ -84,32 +95,55 @@ See the build output table in [DEPLOYMENT.md](DEPLOYMENT.md) for which routes ar
 ## 4. Data Flow
 
 ```
-Editor → Sanity Studio (/studio) → Sanity dataset (cloud)
-                                        │  GROQ over HTTPS
-                                        ▼
-   Server Component → sanityFetch(QUERY) → renders HTML  (ISR-cached)
-                                        ▲
-                                        │  images
-                          cdn.sanity.io (next/image remote pattern)
+Editor → /admin (Payload, same app) ──┐
+                                      ▼
+Server Component → src/lib/cms/* → Payload Local API → MongoDB
+                          │              (in-process function call)
+                          └─ cachedRead: tagged by collection,
+                             busted by the collection's afterChange hook
 
-Visitor → /join/apply (form) → POST /api/apply → getSql() → Neon Postgres
+Visitor → a form → POST /api/{apply,donate,shop/order} → Local API → MongoDB
 ```
 
-- **Reads** (all public content): GROQ queries in `src/sanity/lib/queries.ts`, executed via `sanityFetch()`. No API token needed for public reads.
-- **Images**: served from `cdn.sanity.io`, transformed via `urlFor()` (allow-listed in `next.config.mjs`).
-- **Writes** (applications): the only write path. The browser POSTs JSON to `/api/apply`, which validates, lazily connects to Neon via `getSql()`, ensures the `applications` table exists, and inserts a row.
+The single biggest change from the Sanity architecture: **there is no network
+hop to read content.** The CMS is a library inside this application, not a
+service it calls.
 
-### Why `getSql()` is lazy
-`src/lib/db.ts` creates the Neon client **on first query**, not at module import. If it connected at import time, `next build` would crash while statically analyzing the route whenever `DATABASE_URL` is unset (e.g. on the Vercel build runner). Lazy init keeps the build env-free; a missing `DATABASE_URL` only surfaces as a graceful 500 at runtime.
+- **Reads** live in `src/lib/cms/` — never call `getPayload()` from a page.
+- **Caching** is tag-based rather than time-based. Sanity reads were fetches
+  with `revalidate: 60`; a Local API call is not a fetch, so `cachedRead` wraps
+  reads with a per-collection tag and the collection's `afterChange` hook clears
+  it on save. Content is cached until it changes, so publishing is immediate
+  rather than up to a minute late, and nothing refetches on a timer.
+- **Anything that must be fresh reads uncached** and says why: stock at
+  checkout, the shop and campaign gates, order lookups.
+- **Writes** go through the Local API from route handlers. The collections set
+  `create: nobody`, so those handlers are the only door — every row that gets in
+  has been through the validator, the rate limiter and the gate.
+
+### Access control vs. select
+
+The Local API runs with `overrideAccess: true`, so collection access rules do
+not apply to the site reading its own database — and should not. Two controls,
+two jobs: `access` protects `/payload-api` from the outside world, and `select`
+protects the rendered page from fetching something it must not publish. See
+[privacy-runbook.md](privacy-runbook.md) §1.
 
 ---
 
-## 5. Sanity Integration
+## 5. CMS Integration
 
-- **Client:** `src/sanity/lib/client.ts` — `createClient` from `next-sanity` with `useCdn: false` for fresh ISR data. Exports `sanityClient`, `urlFor()`, `getYouTubeID()`, `getFileUrl()`, and the typed `sanityFetch<T>()`.
-- **Queries:** all GROQ lives in `src/sanity/lib/queries.ts`. Add new queries there rather than inline, so projections stay consistent and typeable.
-- **Types:** `src/sanity/lib/types.ts` mirrors query shapes.
-- **Studio:** `sanity.config.ts` mounts the Studio at `basePath: '/studio'` and defines the desk structure (grouped document lists + the `recruitment-config` singleton). The catch-all route `app/studio/[[...tool]]/page.tsx` renders it.
+- **Config:** `payload.config.ts`. The REST API is mounted at `/payload-api`,
+  not the default `/api`, because this app already owns `/api/apply`,
+  `/api/donate` and `/api/shop/*`. GraphQL is disabled — nothing uses it, and it
+  would be a second door into collections holding personal data.
+- **Collections:** `src/payload/collections/`. Every one declares explicit
+  `access` for all four operations; `npm run check:privacy` fails otherwise.
+- **Generated types:** `src/payload-types.ts`. Never edited by hand — run
+  `npm run generate:types` after any collection change.
+- **Two root layouts:** the site lives in `src/app/(frontend)/` and the admin in
+  `src/app/(payload)/`, because Payload's admin renders its own `<html>`. Route
+  groups do not appear in URLs, so nothing moved.
 - **Content types** are documented field-by-field in [CONTENT-MODEL.md](CONTENT-MODEL.md).
 
 ---
@@ -125,5 +159,5 @@ Visitor → /join/apply (form) → POST /api/apply → getSql() → Neon Postgre
 
 ## 7. Notable Config
 
-- **`next.config.mjs`** — allows images from `cdn.sanity.io` and `img.youtube.com`; sets `X-Frame-Options: SAMEORIGIN` on `/studio/*` so the Studio loads in a same-origin iframe.
+- **`next.config.mjs`** — wraps the config in `withPayload`, and sets a custom `next/image` loader so resizing is delegated to Cloudinary rather than done twice. `remotePatterns` is absent on purpose: it configures the built-in optimiser, which is no longer in the path.
 - **`vercel.json`** — pins `framework: "nextjs"` so Vercel uses `.next` output handling (the project had been misconfigured to look for a `dist/` directory).

@@ -2,10 +2,8 @@ import Link from 'next/link'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
 import { GhostText } from '@/components/motion/GhostText'
 import { SponsorMarquee } from '@/components/sponsors/SponsorMarquee'
-import { sanityFetch } from '@/sanity/lib/client'
-import { ACTIVE_SPONSORS_QUERY } from '@/sanity/lib/queries'
-import type { Sponsor } from '@/sanity/lib/types'
-import { getSupportCtaData } from '@/lib/donations'
+import { getActiveSponsors } from '@/lib/cms/content'
+import { getSupportCtaData } from '@/lib/cms/donations'
 import { DONATE_HREF, urgencyLabel, socialProofLabel } from '@/lib/support-cta'
 
 const footerLinks = {
@@ -120,7 +118,7 @@ async function FooterSupportStrip() {
 }
 
 export async function Footer() {
-  const sponsors = await sanityFetch<Sponsor[]>(ACTIVE_SPONSORS_QUERY)
+  const sponsors = await getActiveSponsors()
 
   return (
     <footer className="relative overflow-hidden bg-surface border-t border-divider">

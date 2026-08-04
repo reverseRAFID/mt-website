@@ -1,10 +1,10 @@
 // ============================================================
 // Crowdfunding domain constants.
 //
-// Single source of truth shared by the Sanity `donation` /
+// Single source of truth shared by the `donations` collection /
 // `crowdfundingConfig` schemas, the /api/donate validator, and the /support
 // UI. The schemas import this with a RELATIVE path (not the @/ alias) so the
-// module resolves under both the Next bundler and the Sanity CLI — same
+// module resolves under both the Next bundler and the Payload CLI — same
 // convention as src/lib/subteams.ts.
 //
 // SECURITY NOTE — nothing in this file may reference a donation `amount`.
@@ -97,7 +97,7 @@ export function formatRank(rank: number): string {
 
 // ── Display name ──────────────────────────────────────────────
 // Anonymity is resolved server-side in GROQ (see APPROVED_DONATIONS_QUERY) so
-// an anonymous donor's real name never leaves Sanity. This constant is the
+// an anonymous donor's real name never leaves the server. This constant is the
 // label that stands in for it.
 
 export const ANONYMOUS_LABEL = 'Anonymous'
@@ -126,7 +126,7 @@ export function normalizeAccount(value: string): string {
 }
 
 // ── Copy ──────────────────────────────────────────────────────
-// Fallbacks used when the Sanity singleton has not been filled in yet, so
+// Fallbacks used when the global has not been filled in yet, so
 // /support is never a broken page.
 
 export const DEFAULT_STEPS = [

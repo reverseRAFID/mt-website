@@ -8,27 +8,36 @@ import { gsap, prefersReducedMotion } from '@/lib/gsap'
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
-import { urlFor } from '@/sanity/lib/client'
-import type { RoverCrewMember } from '@/sanity/lib/types'
+import { media } from '@/lib/cms/media'
+import { rel } from '@/lib/cms/relations'
+import type { Member, RoverCrewMember } from '@/lib/cms/types'
 import { SUBTEAM_COLORS, labelFor } from './roverHelpers'
 
-const effectiveTeam = (c: RoverCrewMember) => c.subTeamOverride ?? c.member.subTeam ?? 'other'
+/** The member document, or null when the query did not populate it. */
+const memberOf = (c: RoverCrewMember): Member | null => rel<Member>(c.member)
+
+const effectiveTeam = (c: RoverCrewMember) =>
+  c.subTeamOverride ?? memberOf(c)?.subTeam ?? 'other'
 
 function CrewCard({ crew }: { crew: RoverCrewMember }) {
-  const { member, contribution } = crew
+  const member = memberOf(crew)
+  // Nothing to link to and no face to show — skip the card rather than render
+  // a broken one.
+  if (!member) return null
+  const { contribution } = crew
   const team = effectiveTeam(crew)
   const badge = team !== 'other' ? SUBTEAM_COLORS[team] : undefined
 
   return (
     <Link
-      href={`/team/${member.slug.current}`}
+      href={`/team/${member.slug}`}
       data-crew-card
       className="group relative flex flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_22px_50px_-28px_rgba(var(--primary-rgb),0.6)]"
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-surface-2 scanlines">
         {member.photo ? (
           <Image
-            src={urlFor(member.photo).width(360).height(450).url()}
+            src={media(member.photo)?.url ?? ''}
             alt={member.name}
             fill
             className="object-cover grayscale transition-all duration-500 group-hover:scale-[1.05] group-hover:grayscale-0"
@@ -88,7 +97,7 @@ function CrewGrid({ crew, filterKey }: { crew: RoverCrewMember[]; filterKey: str
   return (
     <div ref={ref} className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {crew.map((c) => (
-        <CrewCard key={c.member._id} crew={c} />
+        <CrewCard key={memberOf(c)?.id} crew={c} />
       ))}
     </div>
   )
@@ -108,7 +117,7 @@ export function RoverCrew({
   // Drop entries whose member reference didn't resolve (e.g. a draft-only or
   // deleted member) so the grid never renders a broken card.
   const valid = useMemo(
-    () => (crew ?? []).filter((c) => c?.member?.slug?.current),
+    () => (crew ?? []).filter((c) => memberOf(c)?.slug),
     [crew]
   )
 

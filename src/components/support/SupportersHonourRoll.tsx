@@ -1,4 +1,4 @@
-import type { Supporter } from '@/sanity/lib/types'
+import type { Supporter } from '@/lib/cms/donations'
 import { GhostText } from '@/components/motion/GhostText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'

@@ -6,9 +6,9 @@ Local setup, conventions, the branching/PR workflow, and how to do common tasks.
 
 ## Prerequisites
 
-- **Node.js 20+** (CI uses 20; works on 24)
+- **Node.js 20.9+** (Next 16 minimum; works on 24)
 - npm
-- A Sanity project id + dataset (ask the current team lead, or create your own at sanity.io)
+- **Docker**, for the local MongoDB
 
 ---
 
@@ -18,25 +18,39 @@ Local setup, conventions, the branching/PR workflow, and how to do common tasks.
 git clone https://github.com/reverseRAFID/mt-website.git
 cd mt-website
 npm install
-cp .env.local.example .env.local     # fill in values
+cp .env.local.example .env.local     # fill in values — see below
+npm run db:up                        # MongoDB replica set on :27017
 npm run dev
 ```
 
-- App → http://localhost:3000
-- Studio → http://localhost:3000/studio
+- Site → http://localhost:3000
+- Admin → http://localhost:3000/admin
 
-If `/studio` shows a CORS error, add `http://localhost:3000` to your Sanity project's
-**API → CORS Origins** (see [DEPLOYMENT.md](DEPLOYMENT.md#sanity-setup)).
+The first time you open `/admin` it asks you to create an account. That first
+account is forced to the `admin` role; everyone after it defaults to `editor`
+and only an admin can promote them.
+
+An empty database is a working site — every page renders its empty state. To
+work with real content, either add some in the admin or run the Sanity import
+(see [the migration script](../scripts/migrate-from-sanity.ts)).
+
+### Why MongoDB runs as a replica set
+
+`docker-compose.yml` starts a single-node **replica set**, not a standalone
+`mongod`. Placing an order reserves stock and writes the order in one
+transaction, and a standalone server refuses to start one. Against a standalone
+database every page would load and every checkout would fail — and you would
+only find out in production.
 
 ### Environment variables
 
 | Variable | Required | Notes |
 |---|---|---|
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | **Yes** | Site renders against a placeholder without it (reads 404) |
-| `NEXT_PUBLIC_SANITY_DATASET` | **Yes** | Usually `production` |
-| `NEXT_PUBLIC_SITE_URL` | Recommended | OG/canonical URLs |
-| `SANITY_API_TOKEN` | Only for write testing | Editor token; server-only |
-| `DATABASE_URL` | Only to test `/api/apply` | Neon connection string; server-only |
+| `DATABASE_URI` | **Yes** | Must be a replica set. `npm run db:up` gives you one. |
+| `PAYLOAD_SECRET` | **Yes** | Signs admin sessions. Generate one; do not share it between environments. |
+| `NEXT_PUBLIC_SITE_URL` | **Yes** | **Must match the environment.** Payload builds upload URLs from it — a dev server set to the production URL renders `<img>` tags pointing at images that only exist in production. |
+| `CLOUDINARY_URL` | Production | File storage and image delivery. Without it uploads go to `./uploads` — right locally, wrong on Vercel. |
+| `RESEND_API_KEY` | Optional | Order emails. Unset means orders are still taken and flagged `emailStatus: skipped`. |
 
 `.env.local` is gitignored — never commit it.
 
@@ -46,46 +60,73 @@ If `/studio` shows a CORS error, add `http://localhost:3000` to your Sanity proj
 
 | Command | Purpose |
 |---|---|
-| `npm run dev` | Dev server with hot reload |
-| `npm run build` | Production build — **runs ESLint + type-check**; mirrors what fails CI |
+| `npm run dev` | Dev server |
+| `npm run build` | Production build (Turbopack) |
 | `npm start` | Serve the built output |
 | `npm run lint` | ESLint |
-| `npx tsc --noEmit` | Type-check (CI gate) |
+| `npm run typecheck` | `tsc --noEmit` — the CI gate |
+| `npm run db:up` / `db:down` | Start / stop MongoDB |
+| `npm run generate:types` | Regenerate `src/payload-types.ts` — **run after every collection change** |
+| `npm run generate:importmap` | Regenerate the admin import map (only needed for custom admin components) |
+| `npm run check:privacy` | Static privacy guards (see [privacy-runbook.md](privacy-runbook.md)) |
+| `npm run test:shop` | End-to-end access + checkout test against a running server |
+| `npm run test:cloudinary` | Cloudinary URL construction — pure functions, no account needed |
+| `npm run reupload:media` | Move locally-stored uploads to Cloudinary, in place |
+| `npm run migrate:sanity` | One-off import from the old Sanity dataset |
 
-> Before pushing, run `npm run build` locally. ESLint errors (e.g. unused imports)
-> are **fatal** to `next build`, so a clean local build is the best pre-push check.
+> `next build` no longer runs ESLint (Next 16 removed that). Run
+> `npm run lint && npm run typecheck` before pushing — CI does.
 
 ---
 
 ## Project conventions
 
-- **Server Components by default.** Only add `'use client'` when you need state, effects, or browser APIs (e.g. the apply form, theme toggle, announcement bar).
-- **All GROQ lives in `src/sanity/lib/queries.ts`.** Don't inline queries in pages — add a named query there and a matching type in `types.ts`.
-- **Fetch via `sanityFetch<T>(QUERY, params, revalidate)`** so ISR caching stays consistent. Listing/home pages use ~30s; default is 60s.
-- **Images:** use `next/image` with `urlFor(source)` for Sanity assets. New external image hosts must be allow-listed in `next.config.mjs`.
-- **Styling:** Tailwind v4 utility classes + the design tokens in `globals.css`. Keep orange as the only accent (see [ARCHITECTURE.md §6](ARCHITECTURE.md#6-styling--theming)).
-- **Helpers:** `cn()`, `formatDate()`, `estimateReadTime()` in `src/lib/utils.ts`.
-- **Env access:** server-only secrets (`DATABASE_URL`, `SANITY_API_TOKEN`) must never be read in client components or prefixed `NEXT_PUBLIC_`.
+- **Server Components by default.** Add `'use client'` only for state, effects
+  or browser APIs.
+- **All CMS reads live in `src/lib/cms/`.** Don't call `getPayload()` from a
+  page — add a named function there. `content.ts` for public content,
+  `shop.ts`, `donations.ts`, `recruitment.ts` for their domains, `orders.ts`
+  (in `src/lib/`) for anything touching an order.
+- **Cache reads with `cachedRead`,** which tags by collection and is busted by
+  the collection's `afterChange` hook. Anything that must be fresh — stock at
+  checkout, the shop and campaign gates, order lookups — reads uncached, and
+  says why in a comment.
+- **Never return a private field from inside a cached function.** The return
+  value is written to Next's data cache on disk. Map to the public shape
+  *inside* the cached function, not after it.
+- **Images:** `next/image` with the media document's own `url` (via
+  `media()` / `imageProps()`). Sizing is a Cloudinary transformation built by
+  `cldUrl()` — nothing is generated at upload, so any size is free and a design
+  change costs nothing. `next/image` delegates to Cloudinary through the custom
+  loader rather than resizing itself.
+- **Relationships are `string | Doc`** depending on query depth. Narrow with
+  `rel()` / `rels()` and decide what an unpopulated one should look like —
+  usually "do not render this row".
+- **Styling:** Tailwind v4 + the tokens in `globals.css`. Orange is the only
+  accent (see [ARCHITECTURE.md](ARCHITECTURE.md)).
 
 ---
 
 ## Common tasks
 
-### Add a new page
-1. Create `src/app/<route>/page.tsx` (a Server Component).
-2. If it needs CMS data, add a query to `queries.ts` + type to `types.ts`, then `sanityFetch()` it.
-3. Wrap content in `PageLayout` for consistent nav/footer.
-4. Add a nav entry in `src/components/layout/Navbar.tsx` if it's top-level.
+### Add a page
+1. Create `src/app/(frontend)/<route>/page.tsx` as a Server Component.
+2. If it needs CMS data, add a read function to `src/lib/cms/content.ts`.
+3. Wrap in `PageLayout`; add a nav entry in `Navbar.tsx` if it is top-level.
 
-### Add a new Sanity field or content type
-1. Edit/add a schema in `src/sanity/schemas/` (register new types in `index.ts`).
-2. Add it to the desk structure in `sanity.config.ts` if it's a new document type.
-3. Update the relevant GROQ projection in `queries.ts` and the type in `types.ts`.
-4. Restart `npm run dev`; the change appears at `/studio`.
-5. Document the change in [CONTENT-MODEL.md](CONTENT-MODEL.md).
+### Add a field or a collection
+1. Edit or add a file in `src/payload/collections/` (register new ones in
+   `payload.config.ts`).
+2. Give it explicit `access` for all four operations — `npm run check:privacy`
+   fails otherwise, and "what happens if I forget" must never be a question.
+3. `npm run generate:types`.
+4. Update the read function in `src/lib/cms/` and the docs in
+   [CONTENT-MODEL.md](CONTENT-MODEL.md).
 
-### Add a new section component
-Put it in `src/components/sections/`, keep it a Server Component unless it needs interactivity, and pass already-fetched data in as props (fetch in the page, not the section).
+### Add a section component
+Put it in `src/components/sections/`, keep it a Server Component unless it needs
+interactivity, and pass already-fetched data in as props — fetch in the page,
+not the section.
 
 ---
 
@@ -94,22 +135,25 @@ Put it in `src/components/sections/`, keep it a Server Component unless it needs
 | Branch | Purpose | Deploys to |
 |---|---|---|
 | `main` | Production | Live site (auto) |
-| `develop` | Staging | Vercel preview URL |
-| `feature/<name>` | A single feature/fix | — (PR into `develop`) |
+| `feature/<name>` | A single feature or fix | Vercel preview |
 
-Workflow:
-1. Branch off `develop`: `git checkout -b feature/my-thing`.
-2. Commit small, run `npm run build` before pushing.
-3. Open a PR into `develop`. **At least 1 review** before merging toward `main`.
-4. Promote `develop` → `main` to release.
-
-> CI runs a type-check on every push to `main`/`develop` and deploys. Keep `tsc --noEmit` green.
+Branch off `main`, commit small, run `lint` + `typecheck` before pushing, and
+open a PR with at least one review.
 
 ---
 
 ## Gotchas
 
-- **Build needs the Sanity env vars** — pages prerender against the dataset. A missing `NEXT_PUBLIC_SANITY_PROJECT_ID` causes a 404/placeholder build failure.
-- **`/api/apply` needs `DATABASE_URL` at runtime** but **not at build time** (the Neon client is lazy via `getSql()`). Locally, the form 500s until you set a real connection string.
-- **One Sanity client:** import from `src/sanity/lib/client.ts` (the single source). Don't reintroduce a duplicate client under `src/lib/`.
-- **Windows shells:** prefer git-bash for `vercel`/`gh` CLI work; PowerShell pipes append `\r` which corrupts piped values (see [DEPLOYMENT.md](DEPLOYMENT.md#adding-env-vars-via-cli--important-gotcha)).
+- **A stale cache survives a dev restart.** `cachedRead` writes to
+  `.next/dev/cache`, so changing `NEXT_PUBLIC_SITE_URL` (or anything else that
+  changes what a read *returns* rather than what it queries) needs
+  `rm -rf .next`. This will waste your afternoon exactly once.
+- **`npm run generate:types` after every collection change.** The generated
+  types are what every read function is checked against; a stale file produces
+  errors that point everywhere except the collection you edited.
+- **Do not `pkill -f "next dev"`** — the pattern matches the shell running it
+  and kills your own script mid-command. Match `next-server` instead.
+- **Order effects run inside the caller's transaction.** If you add work to the
+  `orders` afterChange hook, pass `req` to any Payload write and
+  `existingTransactionID` to anything doing raw Mongo. Opening a second
+  transaction against the same document deadlocks against the first.

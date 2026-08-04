@@ -2,11 +2,11 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
-import { urlFor } from '@/sanity/lib/client'
-import type { SanityImage } from '@/sanity/lib/types'
+import { media } from '@/lib/cms/media'
+import type { Media } from '@/lib/cms/types'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 
-type GalleryImage = SanityImage & { _key: string; alt?: string }
+type GalleryImage = string | Media
 
 /**
  * Product image gallery.
@@ -32,10 +32,10 @@ export function ProductGallery({ images, title }: { images: GalleryImage[]; titl
       <div className="relative aspect-square overflow-hidden border border-divider bg-surface">
         <CornerTicks className="z-10 text-primary/25" size="md" />
         <Image
-          src={urlFor(active).width(1000).height(1000).fit('crop').url()}
+          src={media(active)?.url ?? ''}
           // Falls back to the product name so the image is never unlabelled,
           // even though the schema requires alt text.
-          alt={active.alt || title}
+          alt={media(active)?.alt || title}
           fill
           sizes="(max-width: 1024px) 100vw, 50vw"
           priority
@@ -51,7 +51,7 @@ export function ProductGallery({ images, title }: { images: GalleryImage[]; titl
         >
           {images.map((image, i) => (
             <button
-              key={image._key}
+              key={media(image)?.id ?? i}
               type="button"
               onClick={() => setIndex(i)}
               aria-label={`Show image ${i + 1} of ${images.length}`}
@@ -63,7 +63,7 @@ export function ProductGallery({ images, title }: { images: GalleryImage[]; titl
               }`}
             >
               <Image
-                src={urlFor(image).width(200).height(200).fit('crop').url()}
+                src={media(image)?.url ?? ''}
                 alt=""
                 fill
                 sizes="120px"

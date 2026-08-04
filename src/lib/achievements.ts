@@ -1,9 +1,9 @@
 /**
- * Achievements editorial content (not in Sanity).
+ * Achievements editorial content (not in the CMS).
  *
  * MILESTONES mirrors the team history already published on the About page —
  * these are real, dated events. Competition rankings and the trend chart are
- * data-driven from the `competition` documents in Sanity.
+ * data-driven from the `competitions` collection.
  *
  * TODO(team): keep this list in sync with the About page timeline and add new
  * milestones as they happen.

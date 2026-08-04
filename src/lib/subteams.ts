@@ -3,7 +3,7 @@
 //
 // APPLY_SUBTEAMS — the full set applicants can choose from. This is the
 //   single source of truth for the apply form dropdown, the /api/apply
-//   validation, and the Sanity `application` schema options. The names MUST
+//   validation, and the `applications` collection options. The names MUST
 //   stay identical to the sub-team cards on /join (src/app/join/page.tsx),
 //   which annotates its array with `ApplySubteam` so drift fails the build.
 //

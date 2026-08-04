@@ -1,14 +1,11 @@
-import { sanityFetch } from '@/sanity/lib/client'
-import { ACTIVE_ANNOUNCEMENTS_QUERY } from '@/sanity/lib/queries'
-import type { Announcement } from '@/sanity/lib/types'
+import { getActiveAnnouncements } from '@/lib/cms/content'
+
 import { AnnouncementBar } from './AnnouncementBar'
 
 export async function AnnouncementBarServer() {
-  const announcements = await sanityFetch<Announcement[]>(
-    ACTIVE_ANNOUNCEMENTS_QUERY,
-    {},
-    30 // revalidate every 30s — announcements change frequently
-  )
+  // Uncached by design — the result depends on the current time, and a cached
+  // "no announcements" would outlive the moment one was due to appear.
+  const announcements = await getActiveAnnouncements()
 
-  return <AnnouncementBar announcements={announcements ?? []} />
+  return <AnnouncementBar announcements={announcements} />
 }

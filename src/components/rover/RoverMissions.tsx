@@ -1,6 +1,6 @@
 import { GhostText } from '@/components/motion/GhostText'
 import { Reveal } from '@/components/motion/Reveal'
-import type { RoverMission } from '@/sanity/lib/types'
+import type { RoverMission } from '@/lib/cms/types'
 import { SectionEyebrow } from './SectionEyebrow'
 import { MissionSpine } from './MissionSpine'
 import { pad2 } from './roverHelpers'

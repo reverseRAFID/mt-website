@@ -5,55 +5,64 @@ applicants and crowdfunding donors.
 
 ---
 
-## 1. The dataset must stay PRIVATE
+## 1. Every collection declares its own access
 
 **This is the single control everything else rests on.**
 
-A public Sanity dataset serves *every field of every document* to anyone who
-asks — GROQ projections in this repo are irrelevant to that, because an
-attacker writes their own query:
+Under Sanity this section said "the dataset must stay private", because a
+public Sanity dataset serves every field of every document to anyone who asks,
+and the projections in this repo were irrelevant to that — an attacker writes
+their own query.
 
-```bash
-curl 'https://aslda7ok.api.sanity.io/v2024-01-01/data/query/production?query=*[_type=="donation"]'
-```
+That whole class of problem is gone. There is no shared dataset and no public
+query API: the database is reachable only by this application, and the only
+HTTP surface is `/payload-api`, where every collection declares explicit
+`access` for all four operations. `orders`, `donations`, `applications` and
+`users` answer 403 to anyone who is not signed in.
 
-On a public dataset that returns donation amounts, donor phone numbers, sender
-account numbers, and the real names of donors who asked to be anonymous.
+The risk moved rather than disappearing. It is now "somebody adds a collection
+and forgets the access block", which is why forgetting is a build failure.
 
 ### Verify it
 
 ```bash
-npm run check:privacy
+npm run check:privacy      # static: every collection declares all four ops
+npm run test:shop          # live: the private collections actually answer 403
 ```
 
-Expected: the anonymous probe is **rejected**. If it returns data, the dataset
-is public — fix it immediately.
+`test:shop` runs its access assertions without `ADMIN_PASSWORD`, so it is safe
+to point at production — it creates nothing.
 
 ### Fix it
 
-1. https://www.sanity.io/manage → project `aslda7ok`
-2. **Datasets** → `production` → **Visibility** → **Private**
-3. Confirm `SANITY_API_TOKEN` is set in Vercel for **Production and Preview**
-   (Settings → Environment Variables). Without it, a private dataset means a
-   blank site.
-4. Re-run `npm run check:privacy`.
+Add the missing `access` block to the collection in
+`src/payload/collections/`, using a name from `src/payload/access/index.ts`
+rather than an inline function — `anyone`, `staff`, `adminOnly`, `nobody`.
 
-### What does *not* break when it goes private
+### Access control does not protect the site from itself
 
-- **Images.** Sanity serves assets from `cdn.sanity.io` publicly regardless of
-  dataset visibility. `next/image` and `urlFor()` keep working.
-- **Server-side reads.** `readClient` in `src/sanity/lib/client.ts` is already
-  tokened and is what every page uses.
-- **Client components.** None of them fetch from Sanity — they only import
-  `urlFor` and types. Checked, and `check:privacy` re-checks it.
-- **The Studio.** `/studio` authenticates interactively.
+Worth knowing before you rely on it: the site reads its own database through
+Payload's **Local API**, which runs with `overrideAccess: true`. Collection and
+field access rules do not apply to it, and they are not supposed to — that is
+this application reading its own data, not a request from outside.
+
+So there are two separate controls doing two separate jobs:
+
+| Control | Protects against | Where |
+|---|---|---|
+| `access` on the collection | Someone querying `/payload-api` directly | `src/payload/collections/*` |
+| `select` on the read | The site fetching a private field into a page | `src/lib/cms/*`, `src/lib/orders.ts` |
+
+Neither substitutes for the other. A page that fetches a donor's phone number
+publishes it, however locked-down the collection is — see §2.
 
 ---
 
 ## 2. What must never be published
 
-`src/sanity/schemas/donation.ts` splits fields into groups for exactly this
-reason. These must never appear in a GROQ projection that reaches a browser:
+`src/payload/collections/Donations.ts` says this at the top of the file for
+exactly this reason. These must never be fetched into anything that reaches a
+browser:
 
 | Field | Why |
 |---|---|
@@ -64,19 +73,22 @@ reason. These must never appear in a GROQ projection that reaches a browser:
 | `donorName` **when `isAnonymous`** | Publishing it defeats the donor's explicit choice. |
 | `adminNotes`, `rejectionReason`, `verifiedBy` | Internal judgements about a person. |
 
-The public projection lives in `APPROVED_DONATIONS_QUERY` /
-`TOP_DONATIONS_QUERY` (`src/sanity/lib/queries.ts`) and selects only
-`_id`, `displayName`, `affiliation`, `message`, `approvedAt`.
+The public read lives in `src/lib/cms/donations.ts`. Its `PUBLIC_SELECT` asks
+for `donorName`, `isAnonymous`, `affiliation`, `message`, `approvedAt` and
+nothing else, and what it *returns* is narrower still.
 
-**How rank stays honest without publishing the amount:** Sanity performs
-`order(amount desc, approvedAt asc, _createdAt asc)` internally and returns
-rows *without* the amount. `src/lib/donations.ts` then numbers them by array
-position. The ordering is authoritative; the figure never leaves the dataset.
+**How rank stays honest without publishing the amount:** the query sorts
+`['-amount', 'approvedAt', 'createdAt']` inside MongoDB and does not select
+`amount`. Rows arrive already in rank order and are numbered by array position.
+Sorting by a field you do not select is the whole trick; the figure never
+leaves the database.
 
-**How anonymity is enforced:** in GROQ, not React —
-`"displayName": select(isAnonymous == true => "Anonymous", donorName)`. The
-real name is never projected, so it cannot be recovered from page source, a
-hydration payload, or an RSC flight chunk.
+**How anonymity is enforced:** in `toPublic()`, on the server, before anything
+is returned. GROQ could do this inside the query; Payload has no query-level
+conditional, so the substitution happens in TypeScript **inside the cached
+read** — which means the real name exists only as a local variable in a server
+module and never enters the returned shape, the data cache, or an RSC flight
+chunk.
 
 ---
 
