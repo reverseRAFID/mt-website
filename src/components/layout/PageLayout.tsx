@@ -1,5 +1,5 @@
 import { AnnouncementBarServer } from '@/components/layout/AnnouncementBarServer'
-import { Navbar } from '@/components/layout/Navbar'
+import { NavbarServer } from '@/components/layout/NavbarServer'
 import { Footer } from '@/components/layout/Footer'
 import { SupportStickyCTAServer } from '@/components/support/SupportStickyCTAServer'
 
@@ -16,7 +16,7 @@ export function PageLayout({ children }: PageLayoutProps) {
   return (
     <>
       <AnnouncementBarServer />
-      <Navbar />
+      <NavbarServer />
       <main className="relative isolate min-h-dvh overflow-hidden bg-bg">
         {/* technical grid, faded toward the edges */}
         <div

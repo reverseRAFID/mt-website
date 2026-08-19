@@ -5,7 +5,7 @@ import { ThemeLogo } from '@/components/ui/ThemeLogo'
 const TIER_ORDER: Sponsor['tier'][] = ['title', 'gold', 'silver', 'bronze', 'in-kind']
 
 function logoSources(sponsor: Sponsor) {
-  // The logo is rendered at 36px tall; next/image inside ThemeLogo picks the
+  // The logo is rendered up to 56px tall; next/image inside ThemeLogo picks the
   // width the device needs, so the original is the right thing to hand it.
   const fallback = media(sponsor.logo)?.url ?? undefined
   return {
@@ -41,15 +41,15 @@ export function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
       aria-label={decorative ? undefined : sponsor.name}
       aria-hidden={decorative || undefined}
       tabIndex={decorative ? -1 : undefined}
-      className="flex h-9 shrink-0 items-center px-2"
+      className="flex h-11 shrink-0 items-center px-2 sm:h-14"
     >
       {sponsor.logo || sponsor.logoLight || sponsor.logoDark ? (
         <ThemeLogo
           {...logoSources(sponsor)}
           alt={sponsor.name}
-          width={110}
-          height={36}
-          className="max-h-9 w-auto object-contain"
+          width={170}
+          height={56}
+          className="max-h-11 w-auto object-contain sm:max-h-14"
         />
       ) : (
         <span className="text-sm font-medium text-text-muted">{sponsor.name}</span>
@@ -58,7 +58,7 @@ export function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
   )
 
   return (
-    <div className="relative overflow-hidden border-b border-divider bg-surface py-5 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+    <div className="relative overflow-hidden border-b border-divider bg-surface py-6 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
       <div className="flex w-max animate-marquee pause-on-hover items-center gap-12 pr-12 lg:gap-16 lg:pr-16">
         {half.map((sponsor, i) => renderLogo(sponsor, `a-${sponsor.id}-${i}`, false))}
         {half.map((sponsor, i) => (

@@ -15,7 +15,7 @@ needs to not break it.
 | 4 | Every product has at least one image | Team | Schema requires it |
 | 5 | Delivery fee checked in Shop Settings | Team | Seeded at ৳120 |
 | 6 | `adminNotifyEmails` filled in | Team | No new-order alerts otherwise |
-| 7 | Shop status set to **🟢 Open** | Team | Seeds closed on purpose |
+| 7 | Shop status set to **🟢 Open** | Team | Seeds disabled on purpose |
 
 ### 1 is a blocker, and here is why
 
@@ -150,13 +150,47 @@ ever (`stockRestoredAt`), history appended only on a real change.
 
 | Setting | Notes |
 |---|---|
-| **Status** | 🟢 Open / 🟡 Paused (browsable, no checkout) / 🔴 Closed. Enforced server-side. |
+| **Status** | 🟢 Open / 🟡 Paused / 🔴 Disabled. The off switch — see below. Enforced server-side. |
 | **Home Delivery Fee** | Flat, whole taka. Seeded at ৳120. |
 | **Campus handover** | Always free — there is no fee field, by design. |
 | **Restrict campus to BRACU email** | **Off.** Turn on only if free handover gets abused; it also locks out alumni and guests. |
 | **Max Quantity per Item** | Stops one person clearing out a size. |
 | **Track ID Prefix** | Changing it does not rewrite IDs already issued — old ones keep working. |
 | **Notify These Addresses** | Never published. Empty = no new-order alerts. |
+
+### Turning the shop off
+
+**Studio → Settings → Shop Settings → Status → 🔴 Disabled.** It takes effect on
+the next request — the save busts the `shop` cache tag, there is no deploy and
+no waiting out a revalidate window.
+
+Each status removes exactly one thing:
+
+| Status | Storefront | Checkout | Nav link + cart button | Home page teaser |
+|---|---|---|---|---|
+| 🟢 Open | visible | live | shown | shown |
+| 🟡 Paused | visible | refused, with your **Paused Message** | shown | hidden |
+| 🔴 Disabled | **404** | refused | **hidden** | hidden |
+
+Disabled 404s `/shop`, every product page, `/shop/cart` and `/shop/checkout`,
+and `/api/shop/cart` answers 403 so a direct POST gets the same answer as the
+pages.
+
+**What Disabled deliberately does not touch:**
+
+- **Order tracking.** `/shop/track` and every `/shop/track/<id>` page keep
+  working, and the footer keeps its *Track an Order* link. Someone holding a
+  track ID has no other way to check on an order, and turning the shop off must
+  not strand the people who already bought something.
+- **The admin panel.** Products and Orders stay exactly where they are, so
+  outstanding orders can still be packed, dispatched and marked delivered.
+
+Use **Paused** instead when you want the merch on show between drops — same
+refusal at checkout, storefront intact.
+
+Nothing about this is client-side: the gate is read on the server before the
+page renders and again inside `/api/shop/order`, so a bookmarked checkout URL
+or a hand-rolled POST is refused the same way a click is.
 
 ---
 

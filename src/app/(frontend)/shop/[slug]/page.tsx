@@ -12,8 +12,14 @@ import { AddToCart } from '@/components/shop/AddToCart'
 import { ogImageUrl } from '@/lib/cms/media'
 import { rel } from '@/lib/cms/relations'
 import type { ProductCategory } from '@/lib/cms/types'
-import { getProduct, getProductSlugs, getRelatedProducts, getShopConfig } from '@/lib/cms/shop'
-import { formatMoney } from '@/lib/shop'
+import {
+  getProduct,
+  getProductSlugs,
+  getRelatedProducts,
+  getShopConfig,
+  isShopPublic,
+} from '@/lib/cms/shop'
+import { formatMoney, isShopVisible } from '@/lib/shop'
 import { isSoldOut, priceRange } from '@/lib/product'
 
 interface Props {
@@ -23,12 +29,18 @@ interface Props {
 export const revalidate = 60
 
 export async function generateStaticParams() {
+  // Nothing to prerender while the shop is switched off — every one of these
+  // pages would build straight into a 404.
+  if (!(await isShopPublic())) return []
   const slugs = await getProductSlugs()
   return slugs.map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
+  // A hidden shop publishes no product metadata — the page it would describe
+  // does not exist.
+  if (!(await isShopPublic())) return { title: 'Product' }
   const product = await getProduct(slug)
   if (!product) return { title: 'Product' }
 
@@ -59,6 +71,9 @@ export default async function ProductPage({ params }: Props) {
   // Config comes along because the Add-to-cart button has to know whether the
   // shop is even taking orders.
   const [product, config] = await Promise.all([getProduct(slug), getShopConfig()])
+
+  // The whole storefront is switched off in the CMS.
+  if (!isShopVisible(config.status)) notFound()
 
   // getProduct filters on isActive, so a withdrawn product 404s rather than
   // sitting on a page that cannot be ordered from.

@@ -21,6 +21,7 @@ import {
   DEFAULT_STANDARD_DELIVERY_FEE,
   type ShopStatus,
   isShopStatus,
+  isShopVisible,
   sanitizePrefix,
 } from '@/lib/shop'
 
@@ -142,6 +143,23 @@ export const getShopConfig = cachedRead('global:shop', ['shop'], async (): Promi
   const raw = await cms.findGlobal({ slug: 'shop', depth: 0 })
   return toPublic(withDefaults(raw as unknown as Record<string, unknown> | null))
 })
+
+/**
+ * Whether the storefront exists on the site at all.
+ *
+ * Read by the shared chrome — the navbar and footer render on every page,
+ * shop or not — and by each /shop route before it renders anything. Goes
+ * through the cached `getShopConfig()` rather than opening its own read, so a
+ * page that has nothing to do with merch pays a cache lookup rather than a
+ * database round trip, and flipping the switch in the admin clears both at
+ * once via the `shop` tag.
+ *
+ * Order tracking deliberately does not consult this. See src/lib/shop.ts.
+ */
+export async function isShopPublic(): Promise<boolean> {
+  const { status } = await getShopConfig()
+  return isShopVisible(status)
+}
 
 /**
  * Shop settings including the team notification inboxes.

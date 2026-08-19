@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getShopConfigInternal } from '@/lib/cms/shop'
 import { priceCart } from '@/lib/orders'
 import { rateLimit, clientIp } from '@/lib/rate-limit'
-import { CAMPUS_DELIVERY_FEE } from '@/lib/shop'
+import { CAMPUS_DELIVERY_FEE, isShopVisible } from '@/lib/shop'
 
 // Prices and stock are read live on every call, so this must never be
 // prerendered or cached.
@@ -44,6 +44,14 @@ export async function POST(req: Request) {
     }
 
     const config = await getShopConfigInternal()
+
+    // The storefront is switched off. Every page that calls this now 404s, so
+    // reaching here means a direct POST — answer it the same way the routes
+    // do rather than quietly pricing a cart nobody can check out.
+    if (!isShopVisible(config.status)) {
+      return NextResponse.json({ error: 'The shop is closed.' }, { status: 403 })
+    }
+
     // priceCart() sanitises the items itself, so an absent or malformed
     // `items` is answered with an empty cart rather than a 400.
     const cart = await priceCart((body as { items?: unknown }).items, config)

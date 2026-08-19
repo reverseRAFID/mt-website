@@ -39,12 +39,40 @@ export function formatMoney(taka: number): string {
 // Enforced server-side in /api/shop/order, mirroring how CROWDFUNDING_STATUS
 // gates /api/donate. A closed shop rejects orders even when someone posts
 // straight at the endpoint.
+//
+// The three states are a ladder, and each rung removes exactly one thing:
+//
+//   open    storefront up, checkout live.
+//   paused  storefront up, checkout refused. The merch is still on show — use
+//           this between drops, when you want the anticipation without the
+//           orders.
+//   closed  storefront gone. This is the kill switch: /shop and everything
+//           under it 404s, the nav link and cart button disappear, and the
+//           home page teaser is not rendered.
+//
+// `closed` deliberately does NOT touch order tracking or the admin panel.
+// Orders already placed still have to be found, packed and delivered, and the
+// customer holding a track ID has no other way to check on one — turning the
+// shop off must not strand the people who already bought something.
 
 export const SHOP_STATUSES = ['open', 'paused', 'closed'] as const
 export type ShopStatus = (typeof SHOP_STATUSES)[number]
 
 export function isShopStatus(value: unknown): value is ShopStatus {
   return typeof value === 'string' && (SHOP_STATUSES as readonly string[]).includes(value)
+}
+
+/**
+ * True when the storefront exists on the site at all.
+ *
+ * Read by the shared chrome on every page, by each /shop route before it
+ * renders, and by /api/shop/cart — so the switch is honoured in the markup,
+ * in the router and at the endpoint, not just in one of the three.
+ *
+ * Order tracking is not gated on this. See the ladder above.
+ */
+export function isShopVisible(status: ShopStatus): boolean {
+  return status !== 'closed'
 }
 
 // ── Order lifecycle ───────────────────────────────────────────

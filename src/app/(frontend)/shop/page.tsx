@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { PageLayout } from '@/components/layout/PageLayout'
 import { PageHero } from '@/components/ui/PageHero'
 import { ShopGrid } from '@/components/shop/ShopGrid'
 import { getShopPageData } from '@/lib/cms/shop'
-import { CAMPUS_DELIVERY_FEE, formatMoney } from '@/lib/shop'
+import { CAMPUS_DELIVERY_FEE, formatMoney, isShopVisible } from '@/lib/shop'
 
 export const metadata: Metadata = {
   title: 'Merch Store',
@@ -22,6 +23,12 @@ export const revalidate = 60
 export default async function ShopPage() {
   const { config, products, categories } = await getShopPageData()
 
+  // The storefront is switched off in the CMS. 404 rather than render a
+  // "we're closed" page: there is no merch to show, no link left pointing
+  // here, and a real 404 is what search engines need to drop the page.
+  if (!isShopVisible(config.status)) notFound()
+
+  // Paused — the grid stays, the checkout does not.
   const closed = config.status !== 'open'
 
   return (
@@ -67,9 +74,7 @@ export default async function ShopPage() {
 
           {closed && (
             <div className="mb-8 border border-divider bg-surface-raised px-5 py-4">
-              <p className="hud-label text-text-faint">
-                {config.status === 'paused' ? 'Checkout paused' : 'Store closed'}
-              </p>
+              <p className="hud-label text-text-faint">Checkout paused</p>
               <p className="mt-2 text-sm leading-relaxed text-text-muted">
                 {config.closedMessage ||
                   'The store is not taking orders right now. Everything below is still here — check back soon.'}

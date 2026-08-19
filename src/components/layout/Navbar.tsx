@@ -8,7 +8,7 @@ import { useTheme } from 'next-themes'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { CartBadge } from '@/components/shop/CartBadge'
 
-const navLinks = [
+const baseNavLinks = [
   { href: '/about', label: 'About' },
   { href: '/rovers', label: 'Rovers' },
   { href: '/team', label: 'Team' },
@@ -17,10 +17,22 @@ const navLinks = [
   { href: '/news', label: 'News' },
   { href: '/sponsors', label: 'Sponsors' },
   { href: '/support', label: 'Support' },
-  { href: '/shop', label: 'Shop' },
 ]
 
-export function Navbar() {
+const shopLink = { href: '/shop', label: 'Shop' }
+
+interface NavbarProps {
+  /**
+   * Whether the storefront exists. Defaults to false so a caller that forgets
+   * to pass it hides the shop rather than advertising one that 404s — the same
+   * "unconfigured means closed" stance the CMS default takes.
+   *
+   * Comes from <NavbarServer />; this island never reads the CMS itself.
+   */
+  shopEnabled?: boolean
+}
+
+export function Navbar({ shopEnabled = false }: NavbarProps) {
   const pathname = usePathname()
   const { resolvedTheme } = useTheme()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -29,6 +41,11 @@ export function Navbar() {
   const progressRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => setMounted(true), [])
+
+  const navLinks = useMemo(
+    () => (shopEnabled ? [...baseNavLinks, shopLink] : baseNavLinks),
+    [shopEnabled]
+  )
 
   useEffect(() => {
     let raf = 0
@@ -142,7 +159,7 @@ export function Navbar() {
             </svg>
           </Link>
 
-          <CartBadge />
+          {shopEnabled && <CartBadge />}
 
           <ThemeToggle />
 

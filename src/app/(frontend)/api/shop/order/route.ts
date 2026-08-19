@@ -11,6 +11,7 @@ import {
   LIMITS,
   isBracuEmail,
   isDeliveryMethod,
+  isShopVisible,
   normalizePhone,
   type DeliveryMethod,
 } from '@/lib/shop'
@@ -84,11 +85,15 @@ export async function POST(req: Request) {
 
     // ── Shop gate ─────────────────────────────────────────────
     // Server-side so the endpoint holds even when posted to directly.
+    //
+    // `closedMessage` is the Paused copy — "back after the competition", and
+    // so on. A disabled shop has no such promise to make, so it gets the plain
+    // refusal rather than an invitation to come back.
     if (config.status !== 'open') {
-      return bad(
-        config.closedMessage || 'The shop is not accepting orders right now.',
-        403
-      )
+      const message = isShopVisible(config.status)
+        ? config.closedMessage || 'The shop is not accepting orders right now.'
+        : 'The shop is closed.'
+      return bad(message, 403)
     }
 
     const raw = body as Record<string, unknown>

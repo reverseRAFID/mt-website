@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { PageLayout } from '@/components/layout/PageLayout'
 import { PageHero } from '@/components/ui/PageHero'
 import { CartView } from '@/components/shop/CartView'
+import { isShopPublic } from '@/lib/cms/shop'
 
 export const metadata: Metadata = {
   title: 'Your Cart',
@@ -10,7 +12,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 }
 
-export default function CartPage() {
+export default async function CartPage() {
+  // No storefront, no cart. The badge that links here is already gone from the
+  // navbar; this catches a bookmark or a back button.
+  if (!(await isShopPublic())) notFound()
+
   return (
     <PageLayout>
       <PageHero

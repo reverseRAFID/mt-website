@@ -9,7 +9,7 @@ import {
 } from '@/lib/cms/content'
 
 import { AnnouncementBarServer } from '@/components/layout/AnnouncementBarServer'
-import { Navbar } from '@/components/layout/Navbar'
+import { NavbarServer } from '@/components/layout/NavbarServer'
 import { Footer } from '@/components/layout/Footer'
 import { SupportStickyCTAServer } from '@/components/support/SupportStickyCTAServer'
 import { Marquee } from '@/components/ui/Marquee'
@@ -67,7 +67,7 @@ export default async function HomePage() {
   return (
     <>
       <AnnouncementBarServer />
-      <Navbar />
+      <NavbarServer />
       <main>
         <Hero />
         <AchievementCallout competition={competition} />

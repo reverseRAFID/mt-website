@@ -4,6 +4,7 @@ import { GhostText } from '@/components/motion/GhostText'
 import { SponsorMarquee } from '@/components/sponsors/SponsorMarquee'
 import { getActiveSponsors } from '@/lib/cms/content'
 import { getSupportCtaData } from '@/lib/cms/donations'
+import { isShopPublic } from '@/lib/cms/shop'
 import { DONATE_HREF, urgencyLabel, socialProofLabel } from '@/lib/support-cta'
 
 const footerLinks = {
@@ -34,6 +35,24 @@ const footerLinks = {
     // for this has already ordered and just wants to know where it is.
     { href: '/shop/track', label: 'Track an Order' },
   ],
+}
+
+/**
+ * The footer with the storefront taken out.
+ *
+ * "Merch Store" goes, because /shop 404s while the shop is disabled and a
+ * footer full of dead links is worse than a shorter footer. "Track an Order"
+ * stays: orders placed before the switch was thrown still have to be findable,
+ * and the footer is the only place on the site that link lives. Turning the
+ * shop off is not the same as abandoning the people who already bought
+ * something.
+ */
+function linksFor(shopEnabled: boolean) {
+  if (shopEnabled) return footerLinks
+  return {
+    ...footerLinks,
+    Join: footerLinks.Join.filter((link) => link.href !== '/shop'),
+  }
 }
 
 const socials = [
@@ -118,7 +137,8 @@ async function FooterSupportStrip() {
 }
 
 export async function Footer() {
-  const sponsors = await getActiveSponsors()
+  const [sponsors, shopEnabled] = await Promise.all([getActiveSponsors(), isShopPublic()])
+  const groups = linksFor(shopEnabled)
 
   return (
     <footer className="relative overflow-hidden bg-surface border-t border-divider">
@@ -185,7 +205,7 @@ export async function Footer() {
           </div>
 
           {/* Link columns */}
-          {Object.entries(footerLinks).map(([group, links]) => (
+          {Object.entries(groups).map(([group, links]) => (
             <div key={group}>
               <h3 className="hud-label text-text-faint mb-4">{group}</h3>
               <ul className="space-y-2.5">
