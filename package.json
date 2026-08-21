@@ -18,6 +18,8 @@
     "check:shop": "node scripts/check-shop-privacy.mjs",
     "migrate:sanity": "npm run payload -- run scripts/migrate-from-sanity.ts",
     "migrate:sanity:dry": "MIGRATE_DRY=1 npm run payload -- run scripts/migrate-from-sanity.ts",
+    "seed:members": "npm run payload -- run scripts/seed-members.ts",
+    "seed:members:dry": "SEED_DRY=1 npm run payload -- run scripts/seed-members.ts",
     "test:shop": "node scripts/test-shop-flow.mjs",
     "test:cloudinary": "npm run payload -- run scripts/test-cloudinary-urls.ts",
     "reupload:media": "npm run payload -- run scripts/reupload-media.ts"
