@@ -19,7 +19,7 @@ export function SiteFx() {
     <>
       <Preloader />
       <SmoothScroll />
-      <Cursor />
+      {/* <Cursor /> */}
       <GrainOverlay />
     </>
   )

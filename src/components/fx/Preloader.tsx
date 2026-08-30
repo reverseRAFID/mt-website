@@ -88,7 +88,7 @@ export function Preloader() {
       <div data-boot-fade className="relative w-full max-w-md px-6">
         <div data-boot-brand className="mb-8 text-center">
           <div className="hud-label mb-3 text-primary">Mongol-Tori // Mission Control</div>
-          <div className="display-figure text-5xl text-white sm:text-6xl">RED PLANET</div>
+          <div className="display-figure text-5xl text-white sm:text-6xl">ORANGE PLANET</div>
         </div>
 
         <div className="mb-8 space-y-1.5 font-mono text-[11px] text-white/45">
