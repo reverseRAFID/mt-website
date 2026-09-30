@@ -20,6 +20,7 @@
     "migrate:sanity:dry": "MIGRATE_DRY=1 npm run payload -- run scripts/migrate-from-sanity.ts",
     "seed:members": "npm run payload -- run scripts/seed-members.ts",
     "seed:members:dry": "SEED_DRY=1 npm run payload -- run scripts/seed-members.ts",
+    "seed:sponsor": "npm run payload -- run scripts/seed-sponsor.ts",
     "test:shop": "node scripts/test-shop-flow.mjs",
     "test:cloudinary": "npm run payload -- run scripts/test-cloudinary-urls.ts",
     "reupload:media": "npm run payload -- run scripts/reupload-media.ts"
