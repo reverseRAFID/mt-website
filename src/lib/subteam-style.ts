@@ -8,15 +8,15 @@
 // ============================================================
 
 export const SUBTEAM_COLORS: Record<string, string> = {
-  management: 'bg-purple-100 text-purple-800 ring-1 ring-inset ring-purple-600/30 dark:bg-purple-950/50 dark:text-purple-400 dark:ring-purple-400/25',
-  controls: 'bg-blue-100 text-blue-800 ring-1 ring-inset ring-blue-600/30 dark:bg-blue-950/50 dark:text-blue-400 dark:ring-blue-400/25',
-  mechanical: 'bg-amber-100 text-amber-800 ring-1 ring-inset ring-amber-600/30 dark:bg-amber-950/50 dark:text-amber-400 dark:ring-amber-400/25',
-  electronics: 'bg-yellow-100 text-yellow-800 ring-1 ring-inset ring-yellow-600/30 dark:bg-yellow-950/50 dark:text-yellow-400 dark:ring-yellow-400/25',
-  science: 'bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-600/30 dark:bg-emerald-950/50 dark:text-emerald-400 dark:ring-emerald-400/25',
-  uav: 'bg-sky-100 text-sky-800 ring-1 ring-inset ring-sky-600/30 dark:bg-sky-950/50 dark:text-sky-400 dark:ring-sky-400/25',
-  network: 'bg-cyan-100 text-cyan-800 ring-1 ring-inset ring-cyan-600/30 dark:bg-cyan-950/50 dark:text-cyan-400 dark:ring-cyan-400/25',
-  autonomous: 'bg-green-100 text-green-800 ring-1 ring-inset ring-green-600/30 dark:bg-green-950/50 dark:text-green-400 dark:ring-green-400/25',
-  rnd: 'bg-violet-100 text-violet-800 ring-1 ring-inset ring-violet-600/30 dark:bg-violet-950/50 dark:text-violet-400 dark:ring-violet-400/25',
+  management: 'bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-600/20 dark:bg-purple-950/50 dark:text-purple-400 dark:ring-purple-400/25',
+  controls: 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20 dark:bg-blue-950/50 dark:text-blue-400 dark:ring-blue-400/25',
+  mechanical: 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20 dark:bg-amber-950/50 dark:text-amber-400 dark:ring-amber-400/25',
+  electronics: 'bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-950/50 dark:text-yellow-400 dark:ring-yellow-400/25',
+  science: 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-950/50 dark:text-emerald-400 dark:ring-emerald-400/25',
+  uav: 'bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20 dark:bg-sky-950/50 dark:text-sky-400 dark:ring-sky-400/25',
+  network: 'bg-cyan-50 text-cyan-700 ring-1 ring-inset ring-cyan-600/20 dark:bg-cyan-950/50 dark:text-cyan-400 dark:ring-cyan-400/25',
+  autonomous: 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-950/50 dark:text-green-400 dark:ring-green-400/25',
+  rnd: 'bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-600/20 dark:bg-violet-950/50 dark:text-violet-400 dark:ring-violet-400/25',
 }
 
 export const SUBTEAM_LABEL: Record<string, string> = {
