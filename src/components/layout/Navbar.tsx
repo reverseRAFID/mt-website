@@ -78,13 +78,8 @@ export function Navbar({ shopEnabled = false }: NavbarProps) {
     }
   }, [menuOpen])
 
-  const navbarSurfaceMode = useMemo<'transparent' | 'solid-dark' | 'solid-light'>(() => {
-    if (!mounted || !scrolled) return 'transparent'
-    return resolvedTheme === 'dark' ? 'solid-dark' : 'solid-light'
-  }, [mounted, scrolled, resolvedTheme])
-
-  // On a transparent (top-of-hero) bar we always want the light logo.
-  const logoSrc = navbarSurfaceMode === 'solid-light' ? '/logo.svg' : '/logo-dark.svg'
+  // The logo follows the theme only — it must not change with scroll position.
+  const logoSrc = mounted && resolvedTheme === 'dark' ? '/logo-dark.svg' : '/logo.svg'
   const navbarTop = 'var(--announcement-bar-offset, 0px)'
 
   useEffect(() => setMenuOpen(false), [pathname])
