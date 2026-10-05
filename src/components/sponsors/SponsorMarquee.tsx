@@ -5,7 +5,7 @@ import { ThemeLogo } from '@/components/ui/ThemeLogo'
 const TIER_ORDER: Sponsor['tier'][] = ['title', 'gold', 'silver', 'bronze', 'in-kind']
 
 function logoSources(sponsor: Sponsor) {
-  // The logo is rendered up to 56px tall; next/image inside ThemeLogo picks the
+  // The logo is rendered up to 80px tall; next/image inside ThemeLogo picks the
   // width the device needs, so the original is the right thing to hand it.
   const fallback = media(sponsor.logo)?.url ?? undefined
   return {
@@ -41,15 +41,15 @@ export function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
       aria-label={decorative ? undefined : sponsor.name}
       aria-hidden={decorative || undefined}
       tabIndex={decorative ? -1 : undefined}
-      className="flex h-11 shrink-0 items-center px-2 sm:h-14"
+      className="flex h-16 shrink-0 items-center px-2 sm:h-20"
     >
       {sponsor.logo || sponsor.logoLight || sponsor.logoDark ? (
         <ThemeLogo
           {...logoSources(sponsor)}
           alt={sponsor.name}
-          width={170}
-          height={56}
-          className="max-h-11 w-auto object-contain sm:max-h-14"
+          width={240}
+          height={80}
+          className="max-h-16 w-auto object-contain sm:max-h-20"
         />
       ) : (
         <span className="text-sm font-medium text-text-muted">{sponsor.name}</span>
