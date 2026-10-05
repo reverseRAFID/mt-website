@@ -19,7 +19,7 @@ function MemberCardView({ member, index }: { member: Member; index: number }) {
       <Link
         href={`/team/${member.slug}`}
         data-member-card
-        className="group relative flex h-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_22px_50px_-28px_rgba(var(--primary-rgb),0.6)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+        className="group relative flex h-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-[0_22px_50px_-28px_rgba(var(--primary-rgb),0.6)] focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
       >
         <div className="relative aspect-[4/5] overflow-hidden bg-surface-2 scanlines">
           {member.photo ? (
@@ -27,7 +27,7 @@ function MemberCardView({ member, index }: { member: Member; index: number }) {
               src={media(member.photo)?.url ?? ''}
               alt={member.name}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+              className="object-cover transition-transform! duration-700 ease-out group-hover:scale-[1.05]"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
             />
           ) : (
