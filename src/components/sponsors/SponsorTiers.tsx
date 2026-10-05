@@ -38,7 +38,7 @@ export function SponsorTiers() {
               className={cn(
                 'group relative flex h-full flex-col overflow-hidden rounded-card p-7 transition-all duration-300',
                 tier.highlight
-                  ? 'border border-primary/40 bg-surface-raised shadow-[0_24px_60px_-32px_rgba(var(--primary-rgb),0.6)] lg:-translate-y-2'
+                  ? 'border border-primary/40 bg-surface-raised'
                   : 'border border-divider bg-surface-raised hover:border-primary/40'
               )}
             >

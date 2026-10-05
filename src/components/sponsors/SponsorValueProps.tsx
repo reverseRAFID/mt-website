@@ -39,7 +39,7 @@ export function SponsorValueProps() {
                     'group relative flex h-full flex-col overflow-hidden rounded-card p-7 transition-all duration-300',
                     featured
                       ? 'border border-primary/30 bg-primary-highlight hover:border-primary/50'
-                      : 'border border-divider bg-surface-raised hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]'
+                      : 'border border-divider bg-surface-raised hover:border-primary/40'
                   )}
                 >
                   {featured ? (

@@ -76,7 +76,7 @@ export function SponsorShowcase({ sponsors }: { sponsors: Sponsor[] }) {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={sponsor.name}
-                          className="group relative flex h-full min-h-[128px] items-center justify-center rounded-card border border-divider bg-surface-raised p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                          className="group relative flex h-full min-h-[128px] items-center justify-center rounded-card border border-divider bg-surface-raised p-6 transition-colors duration-300 hover:border-primary/40"
                         >
                           <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />
                           {sponsor.logo || sponsor.logoLight || sponsor.logoDark ? (
