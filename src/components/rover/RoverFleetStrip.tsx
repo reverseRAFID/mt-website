@@ -38,7 +38,7 @@ export function RoverFleetStrip({ rovers }: { rovers?: Rover[] }) {
             <div key={r.id} className="block h-full">
               <Link
                 href={`/rovers/${r.slug}`}
-                className="group relative flex h-full w-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
+                className="group relative flex h-full w-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
               >
                 <div className="relative aspect-[16/10] overflow-hidden bg-surface-2">
                   {media(roverHeroImage(r))?.url ? (
@@ -46,7 +46,7 @@ export function RoverFleetStrip({ rovers }: { rovers?: Rover[] }) {
                       src={media(roverHeroImage(r))!.url!}
                       alt={r.name}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover transition-transform! duration-700 ease-out group-hover:scale-105"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   ) : (
