@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Reveal } from '@/components/motion/Reveal'
-import { Magnetic } from '@/components/motion/Magnetic'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SectionEyebrow } from '@/components/rover/SectionEyebrow'
 import { media } from '@/lib/cms/media'
@@ -36,7 +35,7 @@ export function RoverFleetStrip({ rovers }: { rovers?: Rover[] }) {
 
         <Reveal stagger={0.06} className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {rovers.slice(0, 6).map((r) => (
-            <Magnetic key={r.id} strength={0.2} className="block h-full">
+            <div key={r.id} className="block h-full">
               <Link
                 href={`/rovers/${r.slug}`}
                 className="group relative flex h-full w-full flex-col overflow-hidden rounded-card border border-divider bg-surface-raised transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgba(var(--primary-rgb),0.55)]"
@@ -65,7 +64,7 @@ export function RoverFleetStrip({ rovers }: { rovers?: Rover[] }) {
                   {r.tagline && <p className="mt-1.5 line-clamp-2 text-sm text-text-muted">{r.tagline}</p>}
                 </div>
               </Link>
-            </Magnetic>
+            </div>
           ))}
         </Reveal>
       </div>
