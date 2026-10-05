@@ -25,7 +25,7 @@ import { SarVideos } from './src/payload/collections/SarVideos'
 import { Sponsors } from './src/payload/collections/Sponsors'
 import { Testimonials } from './src/payload/collections/Testimonials'
 import { Users } from './src/payload/collections/Users'
-import { cloudinaryAdapter } from './src/payload/storage/cloudinary'
+import { cloudinaryAdapter, cloudinaryFileURL } from './src/payload/storage/cloudinary'
 import { Crowdfunding } from './src/payload/globals/Crowdfunding'
 import { Recruitment } from './src/payload/globals/Recruitment'
 import { Shop } from './src/payload/globals/Shop'
@@ -121,8 +121,14 @@ export default buildConfig({
     ? [
         cloudStoragePlugin({
           collections: {
-            media: { adapter: cloudinaryAdapter({ folder: 'mongol-tori/media' }) },
-            documents: { adapter: cloudinaryAdapter({ folder: 'mongol-tori/documents' }) },
+            media: {
+              adapter: cloudinaryAdapter({ folder: 'mongol-tori/media' }),
+              generateFileURL: cloudinaryFileURL({ folder: 'mongol-tori/media' }),
+            },
+            documents: {
+              adapter: cloudinaryAdapter({ folder: 'mongol-tori/documents' }),
+              generateFileURL: cloudinaryFileURL({ folder: 'mongol-tori/documents' }),
+            },
           },
         }),
       ]

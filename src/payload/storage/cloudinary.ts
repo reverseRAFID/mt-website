@@ -1,4 +1,4 @@
-import type { Adapter, GeneratedAdapter } from '@payloadcms/plugin-cloud-storage/types'
+import type { Adapter, GeneratedAdapter, GenerateFileURL } from '@payloadcms/plugin-cloud-storage/types'
 
 import { v2 as cloudinary } from 'cloudinary'
 
@@ -53,6 +53,36 @@ function configure(): void {
   }
   configured = true
 }
+
+/** The untransformed Cloudinary delivery URL for a stored file. */
+function deliveryURL(folder: string, filename: string): string {
+  configure()
+  const type = resourceTypeFor(filename)
+  return cloudinary.url(publicIdFor(folder, filename, type), {
+    resource_type: type,
+    secure: true,
+  })
+}
+
+/**
+ * `generateFileURL` for the cloud-storage plugin — makes `doc.url` the
+ * Cloudinary URL.
+ *
+ * Without it the plugin only uses the adapter's `generateURL` when
+ * `disablePayloadAccessControl` is set; otherwise every new upload's `url` is
+ * Payload's own `/payload-api/<collection>/file/<name>`. That route still works
+ * (it redirects, see `staticHandler`), but `cldTransform` and the next/image
+ * loader only rewrite res.cloudinary.com URLs, so those images reach the browser
+ * as full-size originals. On the team page that was ~30 phone photos at up to
+ * 3072×4080, enough decoded bitmap to crash a mobile tab.
+ *
+ * Passed here rather than via `disablePayloadAccessControl` so the redirect for
+ * old Payload-route links stays registered.
+ */
+export const cloudinaryFileURL =
+  ({ folder = '' }: CloudinaryAdapterArgs = {}): GenerateFileURL =>
+  ({ filename }) =>
+    deliveryURL(folder, filename)
 
 export const cloudinaryAdapter =
   ({ folder = '' }: CloudinaryAdapterArgs = {}): Adapter =>
@@ -127,14 +157,7 @@ export const cloudinaryAdapter =
      * one particular size somebody wanted in 2026". Sizes are applied at render
      * time by `src/lib/cms/media.ts`.
      */
-    generateURL: ({ filename }) => {
-      configure()
-      const type = resourceTypeFor(filename)
-      return cloudinary.url(publicIdFor(folder, filename, type), {
-        resource_type: type,
-        secure: true,
-      })
-    },
+    generateURL: ({ filename }) => deliveryURL(folder, filename),
 
     /**
      * Serve a file requested through Payload's own URL.
@@ -145,12 +168,6 @@ export const cloudinaryAdapter =
      * server for no benefit, while losing Cloudinary's CDN.
      */
     staticHandler: async (_req, { params }) => {
-      configure()
-      const type = resourceTypeFor(params.filename)
-      const url = cloudinary.url(publicIdFor(folder, params.filename, type), {
-        resource_type: type,
-        secure: true,
-      })
-      return Response.redirect(url, 302)
+      return Response.redirect(deliveryURL(folder, params.filename), 302)
     },
   })
