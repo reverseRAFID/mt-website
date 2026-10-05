@@ -48,7 +48,7 @@ function MemberCardView({ member, index }: { member: Member; index: number }) {
           {/* HUD: index (left) + status node (right) */}
           <span className="hud-label nums absolute left-3 top-3 text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.85)]">{idx}</span>
           <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 [text-shadow:0_1px_3px_rgba(0,0,0,0.85)]">
-            <span className={`h-1.5 w-1.5 rounded-none ${member.isAlumni ? 'bg-white/70' : 'bg-primary'}`} aria-hidden />
+            <span className={`h-1.5 w-1.5 rounded-none ${member.isAlumni ? 'bg-white/70' : 'bg-green-500'}`} aria-hidden />
             <span className="hud-label text-[9px] text-white">{member.isAlumni ? 'ALUM' : 'ACTV'}</span>
           </span>
           <CornerTicks className="text-primary/0 transition-colors duration-300 group-hover:text-primary/60" />
