@@ -119,7 +119,7 @@ export function OrderDetails({ order }: { order: PublicOrder }) {
           <span className="text-text-muted nums">{order.maskedPhone}</span>
         </div>
         <p className="mt-3 border-t border-divider pt-3 text-xs leading-relaxed text-text-faint">
-          Your full address and phone number are hidden here on purpose — anyone with this link
+          Your full address and phone number are hidden here on purpose, anyone with this link
           could otherwise read them. We hold the complete details.
         </p>
       </div>

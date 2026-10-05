@@ -322,7 +322,7 @@ export function ApplyForm() {
             id={f('experience')}
             rows={3}
             className={textareaCls}
-            placeholder="Prior robotics, programming, CAD, electronics — anything relevant."
+            placeholder="Prior robotics, programming, CAD, electronics, anything relevant."
             value={form.experience}
             onChange={set('experience')}
             maxLength={5000}

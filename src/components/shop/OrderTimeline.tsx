@@ -23,7 +23,7 @@ export function OrderTimeline({ order }: { order: PublicOrder }) {
         <p className="mt-3 text-sm leading-relaxed text-text-muted">
           {order.cancellationReason
             ? order.cancellationReason
-            : 'This order was cancelled. Nothing was charged — it was cash on delivery.'}
+            : 'This order was cancelled. Nothing was charged, it was cash on delivery.'}
         </p>
       </div>
     )

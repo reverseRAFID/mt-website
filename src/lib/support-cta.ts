@@ -52,7 +52,7 @@ export const SUPPORT_CTA_COPY: Record<SupportCtaKey, SupportCtaCopy> = {
   rovers: {
     kicker: 'Fund the build',
     headline: 'Every rover on this page was paid for by someone',
-    body: 'Actuators, machined parts, PCBs, cabling — the team designs it all, but none of it is free. Individual contributions are what turn a CAD file into hardware.',
+    body: 'Actuators, machined parts, PCBs, cabling, the team designs it all, but none of it is free. Individual contributions are what turn a CAD file into hardware.',
     action: 'Fund the next rover',
   },
   roverDetail: {
@@ -64,7 +64,7 @@ export const SUPPORT_CTA_COPY: Record<SupportCtaKey, SupportCtaCopy> = {
   competitions: {
     kicker: 'Get us there',
     headline: 'Building the rover is half the problem',
-    body: 'The other half is freight, visas and airfare to Utah or Poland. We can engineer our way around a lot of things — a plane ticket is not one of them.',
+    body: 'The other half is freight, visas and airfare to Utah or Poland. We can engineer our way around a lot of things, a plane ticket is not one of them.',
     action: 'Help us get there',
   },
   achievements: {
@@ -100,7 +100,7 @@ export const SUPPORT_CTA_COPY: Record<SupportCtaKey, SupportCtaCopy> = {
   newsDetail: {
     kicker: 'Keep it moving',
     headline: 'Enjoyed this? Help us write the next one',
-    body: 'Progress like this runs on components and competition entries. It takes a minute to chip in — and your amount is never published.',
+    body: 'Progress like this runs on components and competition entries. It takes a minute to chip in, and your amount is never published.',
     action: 'Support the mission',
   },
   gallery: {
@@ -132,14 +132,14 @@ export const SUPPORT_CTA_COPY: Record<SupportCtaKey, SupportCtaCopy> = {
     // get in. Catching them here is the single best-converting placement.
     kicker: 'Another way in',
     headline: 'Not a BRACU student? You can still back us',
-    body: 'Applications are only open to BRAC University students — but supporting the team is open to anyone, anywhere. Alumni, parents and fans all sit on the same roll.',
+    body: 'Applications are only open to BRAC University students, but supporting the team is open to anyone, anywhere. Alumni, parents and fans all sit on the same roll.',
     action: 'Back the team',
   },
   sponsors: {
     // Complements the corporate funnel rather than competing with it.
     kicker: 'For individuals',
     headline: 'Not representing a company?',
-    body: 'Sponsorship is built for organisations. If you want to back the team as a person, the crowdfunding roll is the way in — no invoices, no contracts.',
+    body: 'Sponsorship is built for organisations. If you want to back the team as a person, the crowdfunding roll is the way in, no invoices, no contracts.',
     action: 'Give as an individual',
   },
   contact: {

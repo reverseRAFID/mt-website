@@ -209,7 +209,7 @@ export default async function MemberPage({ params }: Props) {
                     <blockquote className="font-display text-xl italic text-text text-pretty sm:text-2xl">
                       “{member.quote}”
                     </blockquote>
-                    <figcaption className="mt-3 hud-label text-text-faint">— {member.name}</figcaption>
+                    <figcaption className="mt-3 hud-label text-text-faint">{member.name}</figcaption>
                   </figure>
                 )}
               </Reveal>

@@ -28,7 +28,7 @@ export async function getRecruitmentStatus(): Promise<RecruitmentStatus> {
     const config = await cms.findGlobal({ slug: 'recruitment', depth: 0 })
     return (config?.status as RecruitmentStatus) ?? 'closed'
   } catch (err) {
-    console.error('[recruitment] status read failed — treating as closed:', err)
+    console.error('[recruitment] status read failed, treating as closed:', err)
     return 'closed'
   }
 }

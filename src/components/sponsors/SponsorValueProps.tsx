@@ -21,7 +21,7 @@ export function SponsorValueProps() {
           index="01"
           kicker="Why partner with us"
           title="Your brand on Bangladesh’s rover to Mars"
-          description="Sponsoring Mongol-Tori is more than a logo. It’s reach, talent, and real-world STEM impact — on a stage few brands in the region can access."
+          description="Sponsoring Mongol-Tori is more than a logo. It’s reach, talent, and real-world STEM impact, on a stage few brands in the region can access."
           className="mb-12 lg:mb-16"
         />
 

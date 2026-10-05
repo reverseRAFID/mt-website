@@ -22,7 +22,7 @@ export const MILESTONES: Milestone[] = [
     year: '2017',
     tag: 'Origin',
     title: 'The team is founded',
-    detail: 'Mongol-Tori is founded at BRAC University, Dhaka — a student-run Mars rover team.',
+    detail: 'Mongol-Tori is founded at BRAC University, Dhaka, a student-run Mars rover team.',
   },
   {
     year: '2018',
@@ -34,7 +34,7 @@ export const MILESTONES: Milestone[] = [
     year: '2020',
     tag: 'First qualification',
     title: 'Onto the international stage',
-    detail: 'The team earns its first international qualification — the International Rover Challenge (IRC).',
+    detail: 'The team earns its first international qualification, the International Rover Challenge (IRC).',
   },
   {
     year: '2022',
@@ -52,6 +52,6 @@ export const MILESTONES: Milestone[] = [
     year: '2024',
     tag: 'Best result',
     title: 'Top of our game',
-    detail: '11th place at URC — our best world ranking to date, against the world’s leading teams.',
+    detail: '11th place at URC, our best world ranking to date, against the world’s leading teams.',
   },
 ]

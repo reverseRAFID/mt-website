@@ -84,7 +84,7 @@ export default async function HomePage() {
         {papers.length > 0 && <ResearchHighlights papers={papers} />}
         {testimonials?.length > 0 && <Testimonials testimonials={testimonials} />}
         {/* Nothing to say when the campaign is shut and nobody has been
-            verified yet — skip the section rather than show an empty board. */}
+            verified yet, skip the section rather than show an empty board. */}
         {(crowdfunding.status === 'open' || topSupporters.length > 0) && (
           <CrowdfundingSection
             supporters={topSupporters}

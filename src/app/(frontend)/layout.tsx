@@ -54,7 +54,7 @@ export default function RootLayout({
         <ThemeProvider>
           {/* Wraps everything because the cart badge lives in the shared
               Navbar, so any page can render it. State is localStorage-backed
-              and hydrates client-side — no data fetching happens here. */}
+              and hydrates client-side, no data fetching happens here. */}
           <CartProvider>
             <SiteFx />
             {children}

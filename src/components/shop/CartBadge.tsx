@@ -18,7 +18,7 @@ export function CartBadge({ className = '' }: { className?: string }) {
   return (
     <Link
       href="/shop/cart"
-      aria-label={showCount ? `Cart — ${count} item${count === 1 ? '' : 's'}` : 'Cart'}
+      aria-label={showCount ? `Cart, ${count} item${count === 1 ? '' : 's'}` : 'Cart'}
       className={`relative flex h-11 w-11 items-center justify-center rounded-none text-text-muted transition-colors duration-150 hover:bg-surface-offset hover:text-text ${className}`}
     >
       <svg

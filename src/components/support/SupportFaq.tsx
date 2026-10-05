@@ -14,7 +14,7 @@ export function SupportFaq({ items, index = '04' }: { items: FaqItem[]; index?: 
           index={index}
           kicker="Questions"
           title="What supporters ask"
-          description="Mostly about privacy — so here it is in plain terms."
+          description="Mostly about privacy, so here it is in plain terms."
           className="mb-12"
         />
         <Accordion items={items} className="mx-auto max-w-3xl" />

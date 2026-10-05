@@ -34,8 +34,8 @@ export const SPONSOR_EMAIL = 'mongol-tori@bracu.ac.bd'
 /** Pre-filled mailto for the "email us" CTAs. */
 export const sponsorMailto = (tierLabel?: string) => {
   const subject = tierLabel
-    ? `Sponsorship enquiry — ${tierLabel} tier`
-    : 'Sponsorship enquiry — BRACU Mongol-Tori'
+    ? `Sponsorship enquiry, ${tierLabel} tier`
+    : 'Sponsorship enquiry, BRACU Mongol-Tori'
   const body =
     'Hi Mongol-Tori team,\n\nWe are interested in sponsoring the team. ' +
     'Here is a little about us:\n\n• Organization:\n• What we can offer (funds / parts / services):\n• Goals for the partnership:\n\nLooking forward to talking.'
@@ -67,7 +67,7 @@ export const IMPACT_METRICS: ImpactMetric[] = [
   { value: 60, suffix: '+', label: 'Active members', note: 'Engineers, scientists & managers', icon: 'talent' },
   { value: 7, suffix: '+', label: 'Rovers built', note: 'Since the first prototype in 2018', icon: 'rover' },
   { value: 3, label: 'World competitions', note: 'URC · IRC · ERC', icon: 'globe' },
-  { value: 11, prefix: '#', label: 'Best world rank', note: 'URC 2024 — our best result to date', icon: 'trophy' },
+  { value: 11, prefix: '#', label: 'Best world rank', note: 'URC 2024, our best result to date', icon: 'trophy' },
   { value: 9, suffix: '+', label: 'Years competing', note: 'Founded at BRAC University in 2017', icon: 'calendar' },
   // TODO(team): replace the two figures below with real analytics numbers.
   { value: 50000, suffix: '+', grouping: true, label: 'Social reach', note: 'Followers across our channels', icon: 'broadcast', tbd: true },
@@ -75,7 +75,7 @@ export const IMPACT_METRICS: ImpactMetric[] = [
 ]
 
 /* ============================================================
-   WHY SPONSOR US — value propositions
+   WHY SPONSOR US, value propositions
    ============================================================ */
 export interface ValueProp {
   icon: SponsorIcon
@@ -90,7 +90,7 @@ export const VALUE_PROPS: ValueProp[] = [
     icon: 'globe',
     title: 'A global stage',
     description:
-      'Your brand travels with us to the University Rover Challenge in Utah, the European Rover Challenge in Poland, and the Indian Rover Challenge — in front of the world’s best engineering teams, judges from NASA & ESA, and international media.',
+      'Your brand travels with us to the University Rover Challenge in Utah, the European Rover Challenge in Poland, and the Indian Rover Challenge, in front of the world’s best engineering teams, judges from NASA & ESA, and international media.',
     proof: 'USA · Poland · India',
   },
   {
@@ -109,12 +109,12 @@ export const VALUE_PROPS: ValueProp[] = [
     icon: 'beaker',
     title: 'Real STEM impact',
     description:
-      'Every taka funds hands-on learning — components, machining, and travel that turn students into engineers — plus outreach that inspires the next generation across schools and universities.',
+      'Every taka funds hands-on learning, components, machining, and travel that turn students into engineers, plus outreach that inspires the next generation across schools and universities.',
   },
 ]
 
 /* ============================================================
-   SPONSORSHIP TIERS — benefits only (pricing handled 1:1)
+   SPONSORSHIP TIERS, benefits only (pricing handled 1:1)
    ============================================================ */
 export interface SponsorTier {
   /** Matches the `sponsors.tier` option list. */
@@ -132,7 +132,7 @@ export const TIERS: SponsorTier[] = [
   {
     id: 'title',
     label: 'Title Partner',
-    tagline: 'Our flagship partnership — your name leads the mission.',
+    tagline: 'Our flagship partnership, your name leads the mission.',
     badge: 'Lead partner',
     benefits: [
       '"Powered by" co-branding across the team & season',
@@ -189,7 +189,7 @@ export const TIERS: SponsorTier[] = [
       'Recognition for component, service or material support',
       'Logo on the sponsors page',
       'Social thank-you for your contribution',
-      'Flexible — give what fits your organization',
+      'Flexible, give what fits your organization',
     ],
   },
 ]
@@ -228,7 +228,7 @@ export const BENEFITS_MATRIX: BenefitRow[] = [
 ]
 
 /* ============================================================
-   WHERE YOUR SPONSORSHIP GOES — transparency
+   WHERE YOUR SPONSORSHIP GOES, transparency
    TODO(team): confirm this split with the management team. Illustrative.
    ============================================================ */
 export interface FundSlice {
@@ -245,7 +245,7 @@ export const FUND_ALLOCATION: FundSlice[] = [
 ]
 
 /* ============================================================
-   HOW IT WORKS — partnership process
+   HOW IT WORKS, partnership process
    ============================================================ */
 export interface ProcessStep {
   title: string
@@ -261,7 +261,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
   {
     title: 'Scope the package',
     description:
-      'We tailor a tier and a set of deliverables — branding, demos, recruitment access — around your goals and budget.',
+      'We tailor a tier and a set of deliverables, branding, demos, recruitment access, around your goals and budget.',
   },
   {
     title: 'Agreement',
@@ -287,17 +287,17 @@ export const SPONSOR_FAQ: SponsorFaqItem[] = [
   {
     question: 'Where exactly does the money go?',
     answer:
-      'Straight into the mission: rover components and the science payload, travel to international competitions, manufacturing and tools, and STEM outreach. See the "Where your sponsorship goes" breakdown above — we’re happy to share a detailed budget on request.',
+      'Straight into the mission: rover components and the science payload, travel to international competitions, manufacturing and tools, and STEM outreach. See the "Where your sponsorship goes" breakdown above, we’re happy to share a detailed budget on request.',
   },
   {
-    question: 'We’re a small company — can we still help?',
+    question: 'We’re a small company, can we still help?',
     answer:
       'Absolutely. There is no minimum to back the team. Bronze and In-Kind partnerships are designed for smaller organizations, and even a single component or service makes a real difference.',
   },
   {
     question: 'Can we sponsor something specific, like travel or a subsystem?',
     answer:
-      'Yes. Targeted and in-kind sponsorships — funding a flight, donating parts, or backing a particular subsystem — are very welcome and come with their own recognition.',
+      'Yes. Targeted and in-kind sponsorships, funding a flight, donating parts, or backing a particular subsystem, are very welcome and come with their own recognition.',
   },
   {
     question: 'How long does a sponsorship last?',
@@ -307,7 +307,7 @@ export const SPONSOR_FAQ: SponsorFaqItem[] = [
   {
     question: 'What do we get in return?',
     answer:
-      'Brand visibility on the rover, jersey, website and at events; social campaigns; lab visits and demos; and access to recruit our engineers — scaled to your tier. See the comparison table for the full breakdown.',
+      'Brand visibility on the rover, jersey, website and at events; social campaigns; lab visits and demos; and access to recruit our engineers, scaled to your tier. See the comparison table for the full breakdown.',
   },
   {
     // TODO(team): confirm the exact payment route & whether receipts are tax-deductible.

@@ -144,7 +144,7 @@ export const DEFAULT_STEPS = [
   },
   {
     title: 'We verify and list you',
-    body: 'A team member checks the transfer by hand. Once confirmed you appear on the supporters roll — anonymously if you asked for that.',
+    body: 'A team member checks the transfer by hand. Once confirmed you appear on the supporters roll, anonymously if you asked for that.',
   },
 ] as const
 
@@ -167,12 +167,12 @@ export const DEFAULT_FAQ = [
   {
     question: 'How long does verification take?',
     answer:
-      'Usually within a couple of days. If we cannot find a matching transfer we will reach out on the email or phone number you leave — so double-check them before submitting.',
+      'Usually within a couple of days. If we cannot find a matching transfer we will reach out on the email or phone number you leave, so double-check them before submitting.',
   },
   {
     question: 'Will you ever ask for my PIN or OTP?',
     answer:
-      'Never. Nobody from Mongol-Tori will ask for your PIN, OTP or password. If someone does, it is not us — please report it.',
+      'Never. Nobody from Mongol-Tori will ask for your PIN, OTP or password. If someone does, it is not us, please report it.',
   },
 ] as const
 

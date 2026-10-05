@@ -36,7 +36,7 @@ export default async function TrackPage() {
             <div className="mt-8 flex flex-col gap-4 text-sm leading-relaxed text-text-muted">
               <p>
                 <span className="font-semibold text-text">Cannot find the email?</span> Check your
-                spam folder — it comes from our store address and arrives within a minute of
+                spam folder, it comes from our store address and arrives within a minute of
                 ordering.
               </p>
               <p>

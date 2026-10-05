@@ -38,7 +38,7 @@ export default async function AchievementsPage() {
       <PageHero
         kicker="Milestones"
         title="Achievements"
-        description="Our track record on the international stage — rankings, milestones, and moments that define who we are."
+        description="Our track record on the international stage, rankings, milestones, and moments that define who we are."
         watermark="PODIUM"
         stat={bestRank ? { value: bestRank, label: 'Best world rank' } : undefined}
       />
@@ -86,7 +86,7 @@ export default async function AchievementsPage() {
         <div className="section-container relative">
           {!competitions?.length ? (
             <div className="py-12 text-center text-text-muted">
-              No competitions yet — add them in the CMS → Competitions.
+              No competitions yet, add them in the CMS → Competitions.
             </div>
           ) : (
             <>

@@ -19,7 +19,7 @@ export function Milestones() {
           index="01"
           kicker="Our journey"
           title="From a campus club to the world stage"
-          description="Seven years of building, breaking, and winning — here's how we got here."
+          description="Seven years of building, breaking, and winning, here's how we got here."
         />
 
         <ol className="relative mt-14 lg:mt-20">

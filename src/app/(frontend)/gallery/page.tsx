@@ -59,7 +59,7 @@ export default async function GalleryPage() {
                   </h2>
                   <p className="mx-auto mt-3 max-w-md text-pretty leading-relaxed text-text-muted">
                     No frames have been logged yet. Gallery images are pulled from each rover&apos;s
-                    record in the CMS — once photos are attached, they surface here automatically.
+                    record in the CMS, once photos are attached, they surface here automatically.
                   </p>
                   <Link
                     href="/rovers"

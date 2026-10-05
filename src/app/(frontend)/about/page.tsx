@@ -22,11 +22,11 @@ const STATS = [
 
 const TIMELINE = [
   { year: '2017', event: 'Team founded at BRAC University, Dhaka' },
-  { year: '2018', event: 'First rover prototype — Mongol-Tori I' },
-  { year: '2020', event: 'First international qualification — IRC' },
+  { year: '2018', event: 'First rover prototype, Mongol-Tori I' },
+  { year: '2020', event: 'First international qualification, IRC' },
   { year: '2022', event: 'Debut at University Rover Challenge (URC), Utah' },
   { year: '2023', event: 'Competed at ERC in Poland alongside URC' },
-  { year: '2024', event: 'URC 11th place — best result to date' },
+  { year: '2024', event: 'URC 11th place, best result to date' },
 ]
 
 export default async function AboutPage() {
@@ -38,7 +38,7 @@ export default async function AboutPage() {
         index="00"
         kicker="Who We Are"
         title="About Us"
-        description="Mongol-Tori is BRAC University's competitive Mars rover team — a student-run engineering club that designs, builds, and races rovers at international competitions."
+        description="Mongol-Tori is BRAC University's competitive Mars rover team, a student-run engineering club that designs, builds, and races rovers at international competitions."
         watermark="MISSION"
       >
         <Reveal>
@@ -105,7 +105,7 @@ export default async function AboutPage() {
               </h2>
               <p className="mb-4 text-pretty leading-relaxed text-text-muted">
                 We exist to push the boundaries of what student engineers in Bangladesh can build.
-                Through the rigor of international rover competitions — URC, IRC, and ERC — we train
+                Through the rigor of international rover competitions, URC, IRC, and ERC, we train
                 the next generation of roboticists, aerospace engineers, and system designers.
               </p>
               <p className="text-pretty leading-relaxed text-text-muted">

@@ -143,7 +143,7 @@ function ClosedNotice({ status, message }: { status: string; message?: string })
       </h2>
       <p className="mx-auto mb-8 max-w-md leading-relaxed text-text-muted">
         {message ||
-          'Thank you to everyone who has backed the team. The supporters roll stays up — every verified contributor keeps their place on it.'}
+          'Thank you to everyone who has backed the team. The supporters roll stays up, every verified contributor keeps their place on it.'}
       </p>
       <Link
         href={SUPPORTERS_HREF}

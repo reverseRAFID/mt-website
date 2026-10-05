@@ -50,7 +50,7 @@ export function ShopGrid({
       <div className="border border-divider bg-surface-raised px-6 py-16 text-center">
         <p className="hud-label text-text-faint">Nothing here yet</p>
         <p className="mt-3 text-text-muted">
-          There is no merchandise listed at the moment. Check back before the next competition —
+          There is no merchandise listed at the moment. Check back before the next competition,
           that is usually when a new drop lands.
         </p>
       </div>

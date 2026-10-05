@@ -183,7 +183,7 @@ export function Hero() {
             data-hero-sub
             className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/60 sm:text-xl"
           >
-            BRACU Mongol-Tori designs and builds Mars rovers to compete at URC, IRC, and ERC —
+            BRACU Mongol-Tori designs and builds Mars rovers to compete at URC, IRC, and ERC,
             pushing the boundaries of engineering, autonomy, and science at the undergraduate level.
           </p>
 

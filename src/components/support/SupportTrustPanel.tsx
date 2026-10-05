@@ -69,7 +69,7 @@ export function SupportTrustPanel({
           <span className="text-sm leading-relaxed text-text-muted">
             <strong className="font-semibold text-text">We never ask for your PIN or OTP.</strong>{' '}
             You send the money yourself, from your own app. Nobody from Mongol-Tori will call you
-            asking for a code — if someone does, it is not us.
+            asking for a code, if someone does, it is not us.
           </span>
         </li>
         <li className="flex gap-3">

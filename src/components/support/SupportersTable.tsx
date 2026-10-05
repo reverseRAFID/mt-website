@@ -18,9 +18,9 @@ interface SupportersTableProps {
 const PAGE = 25
 
 function VerifiedDate({ value }: { value?: string | null }) {
-  if (!value) return <span className="text-text-faint">—</span>
+  if (!value) return <span className="text-text-faint">-</span>
   const d = new Date(value)
-  if (Number.isNaN(d.getTime())) return <span className="text-text-faint">—</span>
+  if (Number.isNaN(d.getTime())) return <span className="text-text-faint">-</span>
   return (
     <time dateTime={d.toISOString()} className="nums">
       {d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -177,7 +177,7 @@ export function SupportersTable({
                         “{s.message}”
                       </span>
                     ) : (
-                      <span className="text-text-faint">—</span>
+                      <span className="text-text-faint">-</span>
                     )}
                   </td>
                   <td className="hidden whitespace-nowrap px-5 py-4 align-top text-sm text-text-muted md:table-cell">

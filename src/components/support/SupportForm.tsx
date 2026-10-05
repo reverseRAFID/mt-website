@@ -290,7 +290,7 @@ export function SupportForm({ verificationHours }: { verificationHours: number }
             <Field
               label="Transaction ID"
               htmlFor={f('transactionId')}
-              hint="optional — speeds up verification a lot"
+              hint="optional, speeds up verification a lot"
             >
               <input
                 id={f('transactionId')}
@@ -304,7 +304,7 @@ export function SupportForm({ verificationHours }: { verificationHours: number }
             </Field>
             <p className="text-xs leading-relaxed text-text-muted">
               We use these only to find your transfer in our statement. There is no amount field
-              here — we read that off the record ourselves.
+              here, we read that off the record ourselves.
             </p>
           </div>
 
@@ -336,7 +336,7 @@ export function SupportForm({ verificationHours }: { verificationHours: number }
                 <span className="block text-sm font-semibold text-text">List me as Anonymous</span>
                 <span className="mt-0.5 block text-xs leading-relaxed text-text-muted">
                   The roll will show “Anonymous” instead of your name. We still need your real name
-                  above to match the payment — it is never published.
+                  above to match the payment, it is never published.
                 </span>
               </span>
             </label>
@@ -376,7 +376,7 @@ export function SupportForm({ verificationHours }: { verificationHours: number }
           <div className="flex flex-col gap-6">
             <SectionTitle index="03">Reaching You</SectionTitle>
             <div className="grid gap-6 sm:grid-cols-2">
-              <Field label="Email" htmlFor={f('contactEmail')} hint="optional — never published">
+              <Field label="Email" htmlFor={f('contactEmail')} hint="optional, never published">
                 <input
                   id={f('contactEmail')}
                   type="email"
@@ -388,7 +388,7 @@ export function SupportForm({ verificationHours }: { verificationHours: number }
                   maxLength={LIMITS.email}
                 />
               </Field>
-              <Field label="Phone" htmlFor={f('contactPhone')} hint="optional — never published">
+              <Field label="Phone" htmlFor={f('contactPhone')} hint="optional, never published">
                 <input
                   id={f('contactPhone')}
                   type="tel"
@@ -402,7 +402,7 @@ export function SupportForm({ verificationHours }: { verificationHours: number }
               </Field>
             </div>
             <p className="text-xs leading-relaxed text-text-muted">
-              Leave at least one if you can — it&apos;s how we reach you if the transfer
+              Leave at least one if you can, it&apos;s how we reach you if the transfer
               doesn&apos;t match.
             </p>
           </div>

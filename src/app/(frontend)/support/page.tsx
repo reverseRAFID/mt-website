@@ -64,7 +64,7 @@ export default async function SupportPage() {
         title={config.headline || 'Support the Mission'}
         description={
           config.pitch ||
-          'Mongol-Tori runs on parts, travel and late nights — funded by people who want to see a Bangladeshi rover on the world stage. Chip in what you can and take your place on the supporters roll.'
+          'Mongol-Tori runs on parts, travel and late nights, funded by people who want to see a Bangladeshi rover on the world stage. Chip in what you can and take your place on the supporters roll.'
         }
         watermark="SUPPORT"
         stat={
@@ -105,7 +105,7 @@ export default async function SupportPage() {
             index="01"
             kicker="Where it goes"
             title="What your contribution pays for"
-            description="We are a student team, not a company. Contributions go into hardware and logistics — the things that decide whether a rover makes it to the start line."
+            description="We are a student team, not a company. Contributions go into hardware and logistics, the things that decide whether a rover makes it to the start line."
             className="mb-12 lg:mb-16"
           />
           <Reveal stagger className="grid gap-5 sm:grid-cols-3">
@@ -142,7 +142,7 @@ export default async function SupportPage() {
                 title={isOpen ? 'Two minutes, from your own app' : 'Not collecting right now'}
                 description={
                   isOpen
-                    ? 'You send the money yourself through bKash, Nagad, Rocket or a bank transfer — then tell us about it in one short form so we can match it to our statement. There is no amount field: we read that off our own record.'
+                    ? 'You send the money yourself through bKash, Nagad, Rocket or a bank transfer, then tell us about it in one short form so we can match it to our statement. There is no amount field: we read that off our own record.'
                     : config.closedMessage ||
                       'Thank you to everyone who has backed the team. Every verified contributor keeps their place on the roll below.'
                 }

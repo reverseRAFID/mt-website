@@ -27,7 +27,7 @@ export function SponsorTiers() {
           index="04"
           kicker="Ways to partner"
           title="Choose how you ride with us"
-          description="Every partnership is tailored to your goals and budget — these tiers are a starting point. Tell us what you have in mind and we’ll shape a package around it."
+          description="Every partnership is tailored to your goals and budget, these tiers are a starting point. Tell us what you have in mind and we’ll shape a package around it."
           className="mb-12 lg:mb-16"
         />
 

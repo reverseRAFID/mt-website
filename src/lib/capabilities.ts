@@ -28,7 +28,7 @@ export const CAPABILITIES: Capability[] = [
     icon: 'arm',
     title: 'Dexterous robotic arm',
     description:
-      'A multi-jointed manipulator that types on keyboards, flips switches, and services equipment with sub-centimetre precision — the same tasks astronauts perform on a real mission.',
+      'A multi-jointed manipulator that types on keyboards, flips switches, and services equipment with sub-centimetre precision, the same tasks astronauts perform on a real mission.',
     specKey: 'dof',
     specLabel: 'Arm',
   },
@@ -36,13 +36,13 @@ export const CAPABILITIES: Capability[] = [
     icon: 'cpu',
     title: 'Autonomous navigation',
     description:
-      'Fusing GPS, vision, and odometry, the rover drives itself across unmarked terrain to distant targets — no driver, no line of sight, just code and sensors.',
+      'Fusing GPS, vision, and odometry, the rover drives itself across unmarked terrain to distant targets, no driver, no line of sight, just code and sensors.',
   },
   {
     icon: 'beaker',
     title: 'On-board science lab',
     description:
-      'A self-contained payload collects soil, runs assays, and analyses samples for signs of life — turning the rover into a field laboratory on wheels.',
+      'A self-contained payload collects soil, runs assays, and analyses samples for signs of life, turning the rover into a field laboratory on wheels.',
   },
   {
     icon: 'wheel',
@@ -62,6 +62,6 @@ export const CAPABILITIES: Capability[] = [
     icon: 'bolt',
     title: 'Custom power & electronics',
     description:
-      'In-house PCBs and a managed power system keep every subsystem running through a full competition run — designed, etched, and debugged by the team.',
+      'In-house PCBs and a managed power system keep every subsystem running through a full competition run, designed, etched, and debugged by the team.',
   },
 ]

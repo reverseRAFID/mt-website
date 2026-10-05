@@ -231,7 +231,7 @@ export async function getCampaignStatus(): Promise<'open' | 'paused' | 'closed'>
     const config = await cms.findGlobal({ slug: 'crowdfunding', depth: 0 })
     return (config?.status as 'open' | 'paused' | 'closed') ?? 'closed'
   } catch (err) {
-    console.error('[crowdfunding] status read failed — treating as closed:', err)
+    console.error('[crowdfunding] status read failed, treating as closed:', err)
     return 'closed'
   }
 }

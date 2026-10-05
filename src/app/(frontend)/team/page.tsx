@@ -17,7 +17,7 @@ export default async function TeamPage() {
         index="03"
         kicker="Crew Manifest"
         title="The Team"
-        description="Current members and alumni — the engineers, scientists, and leaders who built Mongol-Tori. Filter by sub-team to explore the crew."
+        description="Current members and alumni, the engineers, scientists, and leaders who built Mongol-Tori. Filter by sub-team to explore the crew."
         watermark="CREW"
         stat={{ value: members.length, label: 'On Record' }}
       />

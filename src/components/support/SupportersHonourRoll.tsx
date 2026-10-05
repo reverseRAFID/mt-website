@@ -37,7 +37,7 @@ export function SupportersHonourRoll({
           description={
             <>
               Every supporter below sent money and had it verified by hand. They&apos;re ordered by
-              how much they contributed —{' '}
+              how much they contributed,{' '}
               <strong className="font-semibold text-text">
                 but the amounts themselves are never published
               </strong>
@@ -67,7 +67,7 @@ export function SupportersHonourRoll({
             <CornerTicks className="text-primary/20" size="md" />
             <p className="hud-label mb-3 text-primary">Awaiting first supporter</p>
             <h3 className="mb-3 font-display text-2xl font-bold tracking-tight text-text">
-              This roll is empty — for now
+              This roll is empty, for now
             </h3>
             <p className="mx-auto max-w-md text-sm leading-relaxed text-text-muted">
               Nobody has been verified yet. Be the first, and you&apos;ll sit at the top of the

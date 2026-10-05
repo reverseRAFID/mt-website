@@ -196,13 +196,13 @@ function textVersion(order: OrderInternal, heading: string, intro: string): stri
   const items = (order.items ?? [])
     .map(
       (item) =>
-        `  ${item.quantity ?? 0} x ${item.productTitle}${item.variantLabel ? ` (${item.variantLabel})` : ''} — ${formatMoney(item.lineTotal ?? 0)}`
+        `  ${item.quantity ?? 0} x ${item.productTitle}${item.variantLabel ? ` (${item.variantLabel})` : ''}, ${formatMoney(item.lineTotal ?? 0)}`
     )
     .join('\n')
 
   const address =
     order.deliveryMethod === 'campus'
-      ? `Campus handover${order.campusDetails?.handoverPoint ? ` — ${order.campusDetails.handoverPoint}` : ''}`
+      ? `Campus handover${order.campusDetails?.handoverPoint ? `, ${order.campusDetails.handoverPoint}` : ''}`
       : [
           order.deliveryAddress?.line1,
           order.deliveryAddress?.line2,
@@ -229,7 +229,7 @@ function textVersion(order: OrderInternal, heading: string, intro: string): stri
     '',
     `Deliver to: ${order.customerName}, ${address}, ${order.customerPhone}`,
     '',
-    'BRACU Mongol-Tori — BRAC University, Dhaka',
+    'BRACU Mongol-Tori, BRAC University, Dhaka',
   ].join('\n')
 }
 
@@ -240,7 +240,7 @@ export function orderConfirmationEmail(
   config: ShopConfigInternal
 ): MailMessage {
   const heading = 'Order confirmed'
-  const intro = `Thanks ${order.customerName.split(' ')[0] ?? 'there'} — we have your order and will start getting it ready.`
+  const intro = `Thanks ${order.customerName.split(' ')[0] ?? 'there'}, we have your order and will start getting it ready.`
 
   // COD is the only payment method, so the single most useful thing this email
   // can do is tell the customer exactly what cash to have ready at the door.
@@ -270,7 +270,7 @@ export function orderConfirmationEmail(
 
   return {
     to: order.customerEmail,
-    subject: `Order ${order.trackId} confirmed — ${formatMoney(order.total)}`,
+    subject: `Order ${order.trackId} confirmed, ${formatMoney(order.total)}`,
     html: layout({ preheader: `${intro} Total ${formatMoney(order.total)}.`, heading, body }),
     text: `${textVersion(order, heading, intro)}\n\nPay ${formatMoney(order.total)} in cash on delivery.`,
     replyTo: config.supportEmail,
@@ -299,7 +299,7 @@ function statusCopy(order: OrderInternal, config: ShopConfigInternal): StatusCop
       return {
         subject: `Order ${order.trackId} confirmed`,
         heading: 'Your order is confirmed',
-        intro: `Thanks ${first} — we have checked your order and it is going into the queue.`,
+        intro: `Thanks ${first}, we have checked your order and it is going into the queue.`,
       }
     case 'processing':
       return {
@@ -322,8 +322,8 @@ function statusCopy(order: OrderInternal, config: ShopConfigInternal): StatusCop
     case 'delivered':
       return {
         subject: `Order ${order.trackId} delivered`,
-        heading: order.deliveryMethod === 'campus' ? 'Collected — thank you' : 'Delivered — thank you',
-        intro: `That is your order complete, ${first}. Thank you for backing the team — wear it well.`,
+        heading: order.deliveryMethod === 'campus' ? 'Collected, thank you' : 'Delivered, thank you',
+        intro: `That is your order complete, ${first}. Thank you for backing the team, wear it well.`,
       }
     case 'cancelled':
       return {
@@ -331,7 +331,7 @@ function statusCopy(order: OrderInternal, config: ShopConfigInternal): StatusCop
         heading: 'Your order has been cancelled',
         intro: order.cancellationReason
           ? `We have cancelled this order. Reason: ${order.cancellationReason}`
-          : 'We have cancelled this order. Nothing has been charged — it was cash on delivery.',
+          : 'We have cancelled this order. Nothing has been charged, it was cash on delivery.',
       }
     default:
       return null
@@ -403,7 +403,7 @@ export function adminNewOrderEmail(
 
   return {
     to: recipients,
-    subject: `🆕 ${order.trackId} — ${formatMoney(order.total)} — ${order.customerName}`,
+    subject: `🆕 ${order.trackId}, ${formatMoney(order.total)}, ${order.customerName}`,
     html: layout({
       preheader: `${summary} · ${formatMoney(order.total)}`,
       heading: 'New order',
@@ -412,7 +412,7 @@ export function adminNewOrderEmail(
     text: [
       'NEW ORDER',
       '',
-      `${order.trackId} — ${formatMoney(order.total)}`,
+      `${order.trackId}, ${formatMoney(order.total)}`,
       `${order.customerName} · ${order.customerEmail} · ${order.customerPhone}`,
       `${order.deliveryMethod === 'campus' ? 'Campus handover' : 'Home delivery'}`,
       '',

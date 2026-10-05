@@ -171,7 +171,7 @@ export const PAYMENT_STATUSES = ['unpaid', 'paid', 'refunded'] as const
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number]
 
 export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
-  unpaid: '💵 Unpaid — collect on delivery',
+  unpaid: '💵 Unpaid, collect on delivery',
   paid: '✅ Paid',
   refunded: '↩️ Refunded',
 }

@@ -8,7 +8,7 @@ const BOOT_LINES = [
   'INITIALIZING TELEMETRY LINK',
   'CALIBRATING IMU · GNSS · LIDAR',
   'LOADING TERRAIN MESH',
-  'ESTABLISHING UPLINK — MONGOL-TORI',
+  'ESTABLISHING UPLINK, MONGOL-TORI',
 ]
 
 /** Marks the intro gate open so the Hero can play its entrance after the wipe. */

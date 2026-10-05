@@ -60,7 +60,7 @@ export function CrowdfundingSection({
           index="08"
           kicker="Crowdfunding"
           title="Backed by people, not just brands"
-          description="Individuals who chipped in to keep the rover moving. Ranked by contribution — the amounts themselves stay private."
+          description="Individuals who chipped in to keep the rover moving. Ranked by contribution, the amounts themselves stay private."
           action={
             <Link
               href="/support"
@@ -170,7 +170,7 @@ export function CrowdfundingSection({
             </h3>
             <p className="mb-6 flex-1 text-sm leading-relaxed text-text-muted">
               {isOpen
-                ? 'Send through bKash, Nagad, Rocket or bank transfer, then declare it in one short form. We verify every transfer by hand — and never publish what anyone gave.'
+                ? 'Send through bKash, Nagad, Rocket or bank transfer, then declare it in one short form. We verify every transfer by hand, and never publish what anyone gave.'
                 : 'We are not collecting right now, but every verified supporter keeps their place on the roll.'}
             </p>
 

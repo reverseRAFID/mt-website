@@ -206,7 +206,7 @@ export function RoverBlueprint({
           </div>
           {interactive && (
             <p className="mt-4 max-w-2xl text-pretty text-base leading-relaxed text-text-muted">
-              Probe the annotated build —{' '}
+              Probe the annotated build,{' '}
               <span className="text-text">hover, tap, or arrow-key</span> between nodes to read out
               each system.
             </p>

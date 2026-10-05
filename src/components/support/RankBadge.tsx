@@ -52,7 +52,7 @@ export function RankBadge({ rank, className }: { rank: number; className?: strin
       {tier.label}
       {/* The visible label repeats across ranks 4 and 5; the ordinal keeps
           each badge distinguishable to a screen reader. */}
-      <span className="sr-only"> — {tier.description}</span>
+      <span className="sr-only">, {tier.description}</span>
     </span>
   )
 }

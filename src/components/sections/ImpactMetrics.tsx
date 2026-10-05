@@ -76,7 +76,7 @@ export function ImpactMetrics({
                 {m.tbd && (
                   <span
                     className="hud-label rounded-none border border-divider px-1 py-px text-[0.5rem] text-text-muted"
-                    title="Estimate — to be confirmed by the team"
+                    title="Estimate, to be confirmed by the team"
                   >
                     Est.
                   </span>

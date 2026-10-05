@@ -40,7 +40,7 @@ export function AchievementCallout({ competition }: AchievementCalloutProps) {
                 <span className="hud-label text-primary">Latest Achievement</span>
               </div>
               <h2 className="font-display text-xl font-bold tracking-tight text-text text-balance">
-                {getOrdinalSuffix(competition.rank)} Place — {competition.shortName} {competition.year}
+                {getOrdinalSuffix(competition.rank)} Place, {competition.shortName} {competition.year}
               </h2>
               <p className="mt-1 text-sm text-text-muted leading-relaxed">
                 {competition.name} · {competition.location}

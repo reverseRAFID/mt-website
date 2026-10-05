@@ -43,7 +43,7 @@ export function FundAllocation() {
           index="06"
           kicker="Full transparency"
           title="Where your sponsorship goes"
-          description="No hidden costs. Every contribution feeds directly into building rovers and getting them to the start line — here’s the breakdown."
+          description="No hidden costs. Every contribution feeds directly into building rovers and getting them to the start line, here’s the breakdown."
           className="mb-12 lg:mb-16"
         />
 

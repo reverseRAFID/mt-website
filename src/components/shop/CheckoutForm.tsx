@@ -457,7 +457,7 @@ export function CheckoutForm() {
                   />
                 )}
               </Field>
-              <Field id={`${ids}-bracuId`} label="BRACU ID" hint="optional — speeds up handover" className="sm:col-span-2">
+              <Field id={`${ids}-bracuId`} label="BRACU ID" hint="optional, speeds up handover" className="sm:col-span-2">
                 <input
                   id={`${ids}-bracuId`}
                   className={inputCls}

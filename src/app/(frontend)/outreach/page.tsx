@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: 'STEM Outreach' }
 const PROGRAMS: { name: string; description: string; icon: ReactNode }[] = [
   {
     name: 'Rover Demo Days',
-    description: 'We bring our rovers to schools and universities across Dhaka for live demonstrations — sparking interest in robotics and space exploration among young students.',
+    description: 'We bring our rovers to schools and universities across Dhaka for live demonstrations, sparking interest in robotics and space exploration among young students.',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M12 8V4H8" />
@@ -36,7 +36,7 @@ const PROGRAMS: { name: string; description: string; icon: ReactNode }[] = [
   },
   {
     name: 'RoboClub Workshops',
-    description: 'Free workshops for BRACU students on ROS2, SolidWorks, PCB design, and embedded systems — skills that are core to our rover development pipeline.',
+    description: 'Free workshops for BRACU students on ROS2, SolidWorks, PCB design, and embedded systems, skills that are core to our rover development pipeline.',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
@@ -45,7 +45,7 @@ const PROGRAMS: { name: string; description: string; icon: ReactNode }[] = [
   },
   {
     name: 'Space & Robotics Competition Guidance',
-    description: 'We mentor student teams applying to FIRST, WRO, and local robotics competitions — sharing lessons learned from competing internationally.',
+    description: 'We mentor student teams applying to FIRST, WRO, and local robotics competitions, sharing lessons learned from competing internationally.',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
@@ -75,7 +75,7 @@ export default function OutreachPage() {
       <PageHero
         kicker="Community"
         title="STEM Outreach"
-        description="Beyond competitions, we're committed to growing a culture of engineering and science in Bangladesh — one workshop, demo, and conversation at a time."
+        description="Beyond competitions, we're committed to growing a culture of engineering and science in Bangladesh, one workshop, demo, and conversation at a time."
         watermark="OUTREACH"
       />
 
@@ -93,7 +93,7 @@ export default function OutreachPage() {
               index="01"
               kicker="Programs"
               title="Where the lab meets the public"
-              description="Outreach runs year-round — live rover demonstrations, open labs, free technical workshops, and the science communication that carries engineering culture across Bangladesh."
+              description="Outreach runs year-round, live rover demonstrations, open labs, free technical workshops, and the science communication that carries engineering culture across Bangladesh."
               className="mb-12 lg:mb-16"
             />
           </Reveal>
@@ -139,7 +139,7 @@ export default function OutreachPage() {
                   Want us at your school or event?
                 </h2>
                 <p className="text-text-muted leading-relaxed mb-6 text-pretty">
-                  We love bringing our rovers out to inspire the next generation of engineers. If you&apos;d like to host a demo day, workshop, or talk — get in touch.
+                  We love bringing our rovers out to inspire the next generation of engineers. If you&apos;d like to host a demo day, workshop, or talk, get in touch.
                 </p>
                 <Link
                   href="/contact"

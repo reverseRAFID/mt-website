@@ -263,8 +263,8 @@ export function priceCartFrom(
         available: maxQuantity,
         message:
           available < item.quantity
-            ? `Only ${maxQuantity} left of “${product.title}” (${variant.label}) — your quantity was reduced.`
-            : `You can order at most ${maxQuantity} of “${product.title}” (${variant.label}) — your quantity was reduced.`,
+            ? `Only ${maxQuantity} left of “${product.title}” (${variant.label}), your quantity was reduced.`
+            : `You can order at most ${maxQuantity} of “${product.title}” (${variant.label}), your quantity was reduced.`,
       })
       quantity = maxQuantity
     }

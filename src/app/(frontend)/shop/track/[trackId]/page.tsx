@@ -72,7 +72,7 @@ export default async function TrackDetailPage({ params, searchParams }: Props) {
           ) : !order ? (
             <NotFoundPanel
               title="We could not find that order"
-              body="Check the reference against your confirmation email — it is easy to mistype. It looks like MT-7K4QX2ZP."
+              body="Check the reference against your confirmation email, it is easy to mistype. It looks like MT-7K4QX2ZP."
               showForm
             />
           ) : (
@@ -83,7 +83,7 @@ export default async function TrackDetailPage({ params, searchParams }: Props) {
                   className="mb-8 border-2 border-primary/50 bg-primary-highlight px-5 py-4"
                 >
                   <p className="font-display text-lg font-bold uppercase tracking-tight text-primary">
-                    Order placed — thank you
+                    Order placed, thank you
                   </p>
                   <p className="mt-1 text-sm leading-relaxed text-text">
                     We have emailed your receipt and this tracking link. Save the reference below;

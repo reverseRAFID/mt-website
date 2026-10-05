@@ -53,7 +53,7 @@ export function RankTrend({ points }: { points: RankPoint[] }) {
           index="02"
           kicker="Trajectory"
           title="Climbing the world rankings"
-          description="Our placement at international competitions over the years. Taller bars are better results — a lower rank number means a higher finish."
+          description="Our placement at international competitions over the years. Taller bars are better results, a lower rank number means a higher finish."
           className="mb-12 lg:mb-16"
         />
 

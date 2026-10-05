@@ -121,7 +121,7 @@ export async function safeSend(message: MailMessage): Promise<SendOutcome> {
     const resend = getClient()
     if (!resend) {
       console.warn(
-        '[shop:email] RESEND_API_KEY is not set — skipping:',
+        '[shop:email] RESEND_API_KEY is not set, skipping:',
         cleanSubject(message.subject)
       )
       return 'skipped'

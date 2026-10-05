@@ -98,7 +98,7 @@ export function Navbar({ shopEnabled = false }: NavbarProps) {
     >
       <nav className="section-container h-16 flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0 group" aria-label="BRACU Mongol-Tori — home">
+        <Link href="/" className="flex items-center gap-2 shrink-0 group" aria-label="BRACU Mongol-Tori, home">
           <Image
             src={logoSrc}
             alt="BRACU Mongol-Tori"

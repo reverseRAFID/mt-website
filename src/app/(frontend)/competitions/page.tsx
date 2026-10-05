@@ -21,7 +21,7 @@ export default async function CompetitionsPage() {
       <PageHero
         kicker="Track Record"
         title="Competitions"
-        description="Our history at URC, IRC, and ERC — rosters, results, and SAR videos from every year."
+        description="Our history at URC, IRC, and ERC, rosters, results, and SAR videos from every year."
         watermark="ARENA"
       />
 

@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     // Writes need an Editor token. Fail clearly here rather than 401-ing deep
     // inside the Sanity client with a message nobody can act on.
     if (!process.env.SANITY_API_TOKEN) {
-      console.error('[shop:order] SANITY_API_TOKEN is not set — cannot accept orders')
+      console.error('[shop:order] SANITY_API_TOKEN is not set, cannot accept orders')
       return bad('The shop is temporarily unavailable. Please try again later.', 503)
     }
 
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
     if (!customerName) return bad('Please enter your name.')
     if (customerName.length > LIMITS.name) return bad('That name is too long.')
 
-    if (!customerEmail) return bad('Please enter your email — it is where your receipt goes.')
+    if (!customerEmail) return bad('Please enter your email, it is where your receipt goes.')
     if (customerEmail.length > LIMITS.email || !EMAIL_RE.test(customerEmail)) {
       return bad('Please enter a valid email address.')
     }

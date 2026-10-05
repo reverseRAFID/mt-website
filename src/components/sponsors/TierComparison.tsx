@@ -13,7 +13,7 @@ function CellMark({ value }: { value: MatrixValue }) {
   if (value === false)
     return (
       <span className="block text-center text-text-faint" aria-label="Not included">
-        <span aria-hidden>—</span>
+        <span aria-hidden>-</span>
       </span>
     )
   return <span className="block text-center text-xs font-medium leading-tight text-text">{value}</span>

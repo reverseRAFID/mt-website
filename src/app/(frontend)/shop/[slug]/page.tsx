@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: product.title,
     description:
-      product.tagline ?? `${product.title} — official BRACU Mongol-Tori merchandise.`,
+      product.tagline ?? `${product.title}, official BRACU Mongol-Tori merchandise.`,
     openGraph: {
       title: `${product.title} · BRACU Mongol-Tori`,
       description: product.tagline ?? undefined,
@@ -136,7 +136,7 @@ export default async function ProductPage({ params }: Props) {
                 <div className="border border-divider bg-surface px-4 py-4">
                   <p className="hud-label text-text-faint">Sold out</p>
                   <p className="mt-2 text-sm leading-relaxed text-text-muted">
-                    Every option has gone. We restock between competitions — the store announcement
+                    Every option has gone. We restock between competitions, the store announcement
                     is where a new drop gets called.
                   </p>
                   <p className="mt-3 font-display text-2xl font-bold text-text nums">

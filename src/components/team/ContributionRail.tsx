@@ -86,7 +86,7 @@ export function ContributionRail({ joinedYear, graduationYear, yearsContributed,
             </h2>
           </div>
           <p className="hud-label nums text-text-faint">
-            {nodes[0].year} — {isAlumni || graduationYear ? nodes[nodes.length - 1].year : 'PRESENT'}
+            {nodes[0].year}–{isAlumni || graduationYear ? nodes[nodes.length - 1].year : 'PRESENT'}
           </p>
         </div>
 
@@ -120,7 +120,7 @@ export function ContributionRail({ joinedYear, graduationYear, yearsContributed,
                         className={`hud-label nums mt-3 ${n.contributed ? 'text-text' : 'text-text-faint'}`}
                       >
                         {String(n.year).slice(-2)}
-                        <span className="sr-only">{n.year}{n.contributed ? ' — active' : ' — inactive'}</span>
+                        <span className="sr-only">{n.year}{n.contributed ? ', active' : ', inactive'}</span>
                       </span>
                     </li>
                   )

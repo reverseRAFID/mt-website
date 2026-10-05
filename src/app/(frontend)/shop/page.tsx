@@ -10,7 +10,7 @@ import { CAMPUS_DELIVERY_FEE, formatMoney, isShopVisible } from '@/lib/shop'
 export const metadata: Metadata = {
   title: 'Merch Store',
   description:
-    'Official BRACU Mongol-Tori merchandise — tees, hoodies, caps and workshop kit. Every order funds the rover build. Cash on delivery across Bangladesh, free handover on BRAC University campus.',
+    'Official BRACU Mongol-Tori merchandise, tees, hoodies, caps and workshop kit. Every order funds the rover build. Cash on delivery across Bangladesh, free handover on BRAC University campus.',
 }
 
 /**
@@ -37,7 +37,7 @@ export default async function ShopPage() {
         index="00"
         kicker="Merch Store"
         title="Wear the Mission"
-        description="Everything here is made for the team and sold to fund the build — parts, fabrication, and getting a Bangladeshi rover onto the field. Cash on delivery, anywhere in Bangladesh."
+        description="Everything here is made for the team and sold to fund the build, parts, fabrication, and getting a Bangladeshi rover onto the field. Cash on delivery, anywhere in Bangladesh."
         watermark="STORE"
         stat={products.length > 0 ? { value: products.length, label: 'Products' } : undefined}
       >
@@ -77,7 +77,7 @@ export default async function ShopPage() {
               <p className="hud-label text-text-faint">Checkout paused</p>
               <p className="mt-2 text-sm leading-relaxed text-text-muted">
                 {config.closedMessage ||
-                  'The store is not taking orders right now. Everything below is still here — check back soon.'}
+                  'The store is not taking orders right now. Everything below is still here, check back soon.'}
               </p>
             </div>
           )}

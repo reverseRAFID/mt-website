@@ -30,7 +30,7 @@ export function HowItWorks({
           index={index}
           kicker="How it works"
           title="Four steps, verified by a human"
-          description={`You send the money yourself, then tell us about it. A team member matches every declaration against our statement by hand — usually within ${verificationHours} hours — before anyone appears on the roll.`}
+          description={`You send the money yourself, then tell us about it. A team member matches every declaration against our statement by hand, usually within ${verificationHours} hours, before anyone appears on the roll.`}
           className="mb-12 lg:mb-16"
         />
 

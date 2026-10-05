@@ -153,7 +153,7 @@ export async function Footer() {
       <div className="border-b border-divider">
         <div className="section-container flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3">
           <span className="hud-label text-text-faint">
-            <span className="text-primary">●</span>&nbsp; Dhaka, Bangladesh — 23.7806° N, 90.4074° E
+            <span className="text-primary">●</span>&nbsp; Dhaka, Bangladesh, 23.7806° N, 90.4074° E
           </span>
           <span className="hud-label text-text-faint">URC · IRC · ERC</span>
         </div>
@@ -183,7 +183,7 @@ export async function Footer() {
               />
             </Link>
             <p className="text-text-muted text-sm leading-relaxed max-w-xs">
-              BRAC University&apos;s competitive Mars rover team — engineering for the red planet,
+              BRAC University&apos;s competitive Mars rover team, engineering for the red planet,
               one competition at a time.
             </p>
             <div className="flex items-center gap-2.5 mt-6">

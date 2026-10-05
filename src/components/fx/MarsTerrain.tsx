@@ -29,7 +29,7 @@ export function MarsTerrain({ className }: { className?: string }) {
     try {
       renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' })
     } catch {
-      return // no WebGL — leave the canvas empty, CSS fallback remains
+      return // no WebGL, leave the canvas empty, CSS fallback remains
     }
 
     const parent = canvas.parentElement ?? canvas

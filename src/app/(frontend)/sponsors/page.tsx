@@ -18,7 +18,7 @@ import { SupportCTA } from '@/components/support/SupportCTA'
 export const metadata: Metadata = {
   title: 'Sponsor Us',
   description:
-    'Sponsor BRACU Mongol-Tori — put your brand on Bangladesh’s top Mars rover team. Reach, talent, and STEM impact on a global stage.',
+    'Sponsor BRACU Mongol-Tori, put your brand on Bangladesh’s top Mars rover team. Reach, talent, and STEM impact on a global stage.',
 }
 
 export default async function SponsorsPage() {
@@ -30,7 +30,7 @@ export default async function SponsorsPage() {
         index="00"
         kicker="Partnership"
         title="Sponsor the Mission"
-        description="Fuel Bangladesh’s top Mars rover team as we compete on the world stage — and put your brand on the rover, the jersey, and the journey."
+        description="Fuel Bangladesh’s top Mars rover team as we compete on the world stage, and put your brand on the rover, the jersey, and the journey."
         watermark="SPONSOR"
         stat={{ value: 60, suffix: '+', label: 'Engineers to back' }}
       >
@@ -59,7 +59,7 @@ export default async function SponsorsPage() {
         index="02"
         tone="bg"
         title="Why it’s worth it"
-        description="The reach and credibility your brand gets behind — backed by real numbers."
+        description="The reach and credibility your brand gets behind, backed by real numbers."
       />
 
       <SponsorShowcase sponsors={sponsors} />

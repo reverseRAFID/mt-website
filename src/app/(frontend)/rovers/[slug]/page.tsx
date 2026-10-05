@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // optimiser and has no idea what origin a relative path was relative to.
   const og = ogImageUrl(roverHeroImage(rover))
   return {
-    title: `${rover.name} — Rover`,
+    title: `${rover.name}, Rover`,
     description: rover.tagline ?? rover.overview ?? undefined,
     openGraph: {
       title: `${rover.name} · BRACU Mongol-Tori`,

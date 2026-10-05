@@ -29,7 +29,7 @@ export default async function RoversPage() {
         <GhostText text="HANGAR" drift="right" />
         <div className="section-container relative">
           {rovers?.length === 0 ? (
-            <EmptyState message="No rovers yet — add one in the CMS under Rovers." />
+            <EmptyState message="No rovers yet, add one in the CMS under Rovers." />
           ) : (
             <Reveal stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {rovers?.map((rover) => {

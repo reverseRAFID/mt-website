@@ -81,7 +81,7 @@ export async function POST(req: Request) {
 
     // ── Validation ────────────────────────────────────────────
     if (!donorName) {
-      return bad('Please enter your name — we need it to match your payment.')
+      return bad('Please enter your name, we need it to match your payment.')
     }
     if (!paymentMethod) return bad('Please tell us which payment channel you used.')
     if (!isPaymentMethod(paymentMethod)) return bad('Unsupported payment channel.')
