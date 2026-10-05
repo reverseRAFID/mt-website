@@ -114,8 +114,12 @@ export function TeamDirectory({ members }: { members: Member[] }) {
   }, [members])
 
   const matches = (m: Member) => filter === 'all' || m.subTeam === filter
-  const active = members.filter((m) => !m.isAlumni && matches(m))
-  const alumni = members.filter((m) => m.isAlumni && matches(m))
+  // Members with a photo come first; Array.sort is stable, so the existing
+  // order is preserved within each group.
+  const hasPhoto = (m: Member) => (media(m.photo)?.url ? 1 : 0)
+  const byPhoto = (a: Member, b: Member) => hasPhoto(b) - hasPhoto(a)
+  const active = members.filter((m) => !m.isAlumni && matches(m)).sort(byPhoto)
+  const alumni = members.filter((m) => m.isAlumni && matches(m)).sort(byPhoto)
 
   if (members.length === 0) {
     return (
