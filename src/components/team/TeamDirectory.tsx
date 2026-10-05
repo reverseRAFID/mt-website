@@ -7,7 +7,6 @@ import { useGSAP } from '@gsap/react'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
 import { media } from '@/lib/cms/media'
 import type { Member } from '@/lib/cms/types'
-import { TiltCard } from '@/components/motion/TiltCard'
 import { Reveal } from '@/components/motion/Reveal'
 import { CornerTicks } from '@/components/ui/CornerTicks'
 import { SUBTEAM_COLORS, labelFor } from '@/lib/subteam-style'
@@ -16,7 +15,7 @@ function MemberCardView({ member, index }: { member: Member; index: number }) {
   const idx = String(index + 1).padStart(2, '0')
   const subtitle = member.isAlumni && member.currentOrg ? `Now @ ${member.currentOrg}` : member.role
   return (
-    <TiltCard className="h-full">
+    <div className="h-full">
       <Link
         href={`/team/${member.slug}`}
         data-member-card
@@ -76,7 +75,7 @@ function MemberCardView({ member, index }: { member: Member; index: number }) {
           </span>
         </div>
       </Link>
-    </TiltCard>
+    </div>
   )
 }
 
