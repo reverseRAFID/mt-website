@@ -62,7 +62,7 @@ function MemberCardView({ member, index }: { member: Member; index: number }) {
 
         <div className="flex items-center justify-between gap-2 px-3.5 py-3">
           {member.subTeam ? (
-            <span className={`inline-flex items-center rounded-none px-2.5 py-1 text-[10px] font-bold uppercase leading-none tracking-wider ${SUBTEAM_COLORS[member.subTeam] ?? 'bg-surface-2 text-text-muted ring-1 ring-inset ring-divider'}`}>
+            <span className={`inline-flex items-center rounded-none px-2.5 py-1 text-[11px] font-extrabold uppercase leading-none tracking-wider ${SUBTEAM_COLORS[member.subTeam] ?? 'bg-surface-2 text-text-muted ring-1 ring-inset ring-divider'}`}>
               {labelFor(member.subTeam)}
             </span>
           ) : (
