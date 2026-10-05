@@ -11,11 +11,11 @@ import { sponsorMailto } from '@/lib/sponsorship'
 const TIER_ORDER: Sponsor['tier'][] = ['title', 'gold', 'silver', 'bronze', 'in-kind']
 
 const TIER_CONFIG: Record<Sponsor['tier'], { label: string; logo: string; cols: string }> = {
-  title: { label: 'Title Partner', logo: 'h-24', cols: 'grid-cols-1 sm:grid-cols-2' },
-  gold: { label: 'Gold', logo: 'h-20', cols: 'grid-cols-2 sm:grid-cols-3' },
-  silver: { label: 'Silver', logo: 'h-16', cols: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' },
-  bronze: { label: 'Bronze', logo: 'h-12', cols: 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-5' },
-  'in-kind': { label: 'In-Kind', logo: 'h-10', cols: 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-6' },
+  title: { label: 'Title Partner', logo: 'h-32', cols: 'grid-cols-1 sm:grid-cols-2' },
+  gold: { label: 'Gold', logo: 'h-28', cols: 'grid-cols-2 sm:grid-cols-3' },
+  silver: { label: 'Silver', logo: 'h-24', cols: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' },
+  bronze: { label: 'Bronze', logo: 'h-20', cols: 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-5' },
+  'in-kind': { label: 'In-Kind', logo: 'h-16', cols: 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-6' },
 }
 
 function logoSources(sponsor: Sponsor) {
@@ -76,15 +76,15 @@ export function SponsorShowcase({ sponsors }: { sponsors: Sponsor[] }) {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={sponsor.name}
-                          className="group relative flex h-full min-h-[128px] items-center justify-center rounded-card border border-divider bg-surface-raised p-6 transition-colors duration-300 hover:border-primary/40"
+                          className="group relative flex h-full min-h-[176px] items-center justify-center rounded-card border border-divider bg-surface-raised p-5 transition-colors duration-300 hover:border-primary/40"
                         >
                           <CornerTicks className="text-primary/0 transition-colors group-hover:text-primary/40" />
                           {sponsor.logo || sponsor.logoLight || sponsor.logoDark ? (
                             <ThemeLogo
                               {...logoSources(sponsor)}
                               alt={sponsor.name}
-                              width={240}
-                              height={96}
+                              width={320}
+                              height={128}
                               className={`${cfg.logo} w-auto max-w-full object-contain`}
                             />
                           ) : (
