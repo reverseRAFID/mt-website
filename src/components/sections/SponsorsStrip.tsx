@@ -49,15 +49,15 @@ export function SponsorsStrip({ sponsors }: SponsorsStripProps) {
       rel="noopener noreferrer"
       aria-label={sponsor.name}
       tabIndex={duplicate ? -1 : undefined}
-      className="flex h-11 shrink-0 items-center px-2"
+      className="flex h-16 shrink-0 items-center px-2 sm:h-20"
     >
       {sponsor.logo || sponsor.logoLight || sponsor.logoDark ? (
         <ThemeLogo
           {...getSponsorLogoSources(sponsor)}
           alt={sponsor.name}
-          width={120}
-          height={40}
-          className="max-h-10 object-contain"
+          width={240}
+          height={80}
+          className="max-h-16 w-auto object-contain sm:max-h-20"
         />
       ) : (
         <span className="text-sm font-medium text-text-muted">{sponsor.name}</span>
@@ -95,7 +95,7 @@ export function SponsorsStrip({ sponsors }: SponsorsStripProps) {
           </Reveal>
         ) : useMarquee ? (
           <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-            <div className="animate-marquee pause-on-hover flex w-max items-center gap-12 pr-12 lg:gap-16 lg:pr-16">
+            <div className="animate-marquee pause-on-hover flex w-max items-center gap-14 pr-14 lg:gap-20 lg:pr-20">
               {sorted.map((sponsor) => renderSponsor(sponsor))}
               {sorted.map((sponsor) => (
                 <div key={`dup-${sponsor.id}`} aria-hidden>
