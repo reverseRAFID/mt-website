@@ -11,10 +11,11 @@
  */
 
 // Payload exports no public entry point for this (and its package `exports`
-// block the subpath); it is the function every
-// authenticated request goes through, which is exactly what this checks.
-// @ts-expect-error untyped deep import
+// block the subpath); it is the function every authenticated request goes
+// through, which is exactly what this checks.
 import { extractJWT } from '../node_modules/payload/dist/auth/extractJWT.js'
+
+import type { Payload } from 'payload'
 
 import configPromise from '../payload.config'
 
@@ -26,7 +27,8 @@ async function main() {
     Boolean(
       extractJWT({
         headers: new Headers({ cookie: `${config.cookiePrefix}-token=t`, Origin: origin }),
-        payload: { config },
+        // The cookie extractor reads nothing but `config`.
+        payload: { config } as Payload,
       })
     )
 
