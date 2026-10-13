@@ -3,7 +3,7 @@
  * those, using Payload's real cookie extractor against the real config.
  *
  *   npm run check:origins
- *   NEXT_PUBLIC_SITE_URL=https://bracumongoltori.com npm run check:origins
+ *   NEXT_PUBLIC_SITE_URL=https://bracu-mongoltori.com npm run check:origins
  *
  * Regression check for the "Unauthorized, you must be logged in" 401 that broke
  * every admin action (adding a sponsor logo first) when the browser's Origin did

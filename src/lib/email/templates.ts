@@ -37,7 +37,7 @@ const FONT =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
 
 function siteUrl(): string {
-  return (process.env.NEXT_PUBLIC_SITE_URL || 'https://bracumongoltori.com').replace(/\/$/, '')
+  return (process.env.NEXT_PUBLIC_SITE_URL || 'https://bracu-mongoltori.com').replace(/\/$/, '')
 }
 
 export function trackUrl(trackId: string): string {

@@ -20,7 +20,7 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bracumongoltori.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bracu-mongoltori.com'),
   title: {
     default: 'BRACU Mongol-Tori | Mars Rover Team',
     template: '%s | BRACU Mongol-Tori',

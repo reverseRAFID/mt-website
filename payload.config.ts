@@ -82,7 +82,7 @@ export default buildConfig({
     importMap: { baseDir: path.resolve(dirname) },
     meta: {
       titleSuffix: ' — BRACU Mongol-Tori',
-      description: 'Content management for bracumongoltori.com',
+      description: 'Content management for bracu-mongoltori.com',
     },
   },
 
