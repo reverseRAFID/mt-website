@@ -167,7 +167,7 @@ Queried by `POSTS_QUERY`, `POST_BY_SLUG_QUERY`, `LATEST_POSTS_QUERY` (newest 3).
 | `logoDark` | image | Logo for **dark** theme (light-mark on dark) |
 | `logo` | image *(hidden)* | Legacy single-logo fallback |
 | `website` | url | |
-| `tier` | string (enum) *(required)* | title, gold, silver, bronze, in-kind |
+| `tier` | string (enum) *(required)* | title, gold, tech-partner, in-kind (stored `silver`/`bronze` read as tech-partner/in-kind; `npm run migrate:sponsor-tiers` rewrites them) |
 | `isActive` | boolean (default true) | |
 | `startYear` | number | |
 

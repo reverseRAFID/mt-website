@@ -100,7 +100,7 @@ To add something: click the section → the **pencil/＋** to create → fill fi
 3. Pick an **Author** (a Team Member) → **Publish**.
 
 ### Add a sponsor
-1. **Sponsors → ＋**: Company Name, **Tier** (Title/Gold/Silver/Bronze/In-Kind), Website.
+1. **Sponsors → ＋**: Company Name, **Tier** (Title/Gold/Tech Partner/In-Kind), Website.
 2. Upload **both** logos: **Logo for Light Theme** (dark mark) and **Logo for Dark Theme** (light mark) so it looks right in both modes.
 3. Keep **Active** on → **Publish**.
 
