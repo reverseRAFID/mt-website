@@ -61,6 +61,7 @@ prerender against the database.
 | `DATABASE_URI` | all envs | **Build and runtime.** A MongoDB Atlas URI. Must be a replica set — every Atlas tier is. |
 | `PAYLOAD_SECRET` | all envs | Signs admin sessions. Different value per environment. |
 | `NEXT_PUBLIC_SITE_URL` | all envs | Canonical URLs, OG images, **and the URL of every uploaded file**. Must be the origin *that environment* answers on — a preview deploy pointing at the production URL serves production's images. |
+| `PAYLOAD_ALLOWED_ORIGINS` | optional | Extra origins the admin is used from (comma-separated), beyond the site URL and its www/apex and http/https twins. Read at runtime. |
 | `CLOUDINARY_URL` | all envs | **File storage and image delivery. Not optional.** See below. |
 | `RESEND_API_KEY` | production | Order and status emails. Optional by design. |
 | `SHOP_FROM_EMAIL` | production | The From address; its domain must be verified in Resend. |
@@ -166,6 +167,7 @@ These were hit during initial deployment. If a build fails, check here first.
 | `projectId can only contain a-z, 0-9 and dashes` | Env value had a trailing `\r` from PowerShell piping | Re-add via git-bash `printf '%s\n'` |
 | Images 404 after a deploy that changed nothing | Cloudinary is unconfigured, so uploads went to the ephemeral filesystem and the deploy replaced it | Set the credentials, then `npm run reupload:media` |
 | Images load but are never resized (full-size originals over the wire) | `cldTransform` is not matching the URL — check it really is a `res.cloudinary.com` URL with an `/upload/` segment | `npm run test:cloudinary` |
+| Admin pages load, but adding a sponsor logo (or any drawer or save) logs `Unauthorized, you must be logged in to make this request.` with status 401 | The browser's `Origin` is not on Payload's `csrf` list, so the login cookie is ignored. Usually `NEXT_PUBLIC_SITE_URL` does not match the address bar, or the build inlined a localhost value (`NEXT_PUBLIC_*` is fixed at build time) | Set `NEXT_PUBLIC_SITE_URL` to the public origin and **rebuild**, or add the origin to `PAYLOAD_ALLOWED_ORIGINS`. Verify with `NEXT_PUBLIC_SITE_URL=<url> npm run check:origins` |
 | Every checkout fails with "could not confirm stock" while pages load fine | `DATABASE_URI` points at a standalone `mongod`, which cannot start the reservation transaction | Use a replica set (Atlas always is) |
 | `No Output Directory named "dist" found` after a successful build | Vercel project's framework preset was wrong | `vercel.json` pins `"framework": "nextjs"` |
 | Redeploy "succeeds" instantly with no build, still broken | Build cache reused after only env (not source) changed | Redeploy with `--force` |
