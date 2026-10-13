@@ -25,12 +25,24 @@ import { SarVideos } from './src/payload/collections/SarVideos'
 import { Sponsors } from './src/payload/collections/Sponsors'
 import { Testimonials } from './src/payload/collections/Testimonials'
 import { Users } from './src/payload/collections/Users'
+import { allowedOrigins, isLocalhostInProduction, toOrigin } from './src/payload/origins'
 import { cloudinaryAdapter, cloudinaryFileURL } from './src/payload/storage/cloudinary'
 import { Crowdfunding } from './src/payload/globals/Crowdfunding'
 import { Recruitment } from './src/payload/globals/Recruitment'
 import { Shop } from './src/payload/globals/Shop'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
+
+/**
+ * The site URL twice over, on purpose. Next inlines `process.env.NEXT_PUBLIC_*`
+ * at BUILD time, so the first is whatever the build machine had; the indirect
+ * read is not inlined, so the second is what the running server was started
+ * with. When they differ (a build made with the localhost .env, then started
+ * with the production one) the admin must still accept the real origin.
+ */
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL
+const SITE_URL_KEY = 'NEXT_PUBLIC_SITE_URL'
+const RUNTIME_SITE_URL = process.env[SITE_URL_KEY]
 
 /** Cloudinary accepts either a single URL or the three-part credential set. */
 const hasCloudinary = () =>
@@ -57,7 +69,9 @@ const hasCloudinary = () =>
  * An API surface nobody uses is an API surface nobody is checking.
  */
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_SITE_URL,
+  // Origin only: Payload joins paths onto this, and pushes it onto `csrf`
+  // verbatim, where a trailing slash would make it match nothing.
+  serverURL: toOrigin(SITE_URL) ?? undefined,
 
   routes: {
     admin: '/admin',
@@ -180,5 +194,18 @@ export default buildConfig({
   // No cross-origin browser access. Everything that reads this data is either
   // the site itself (server-side, in-process) or the admin UI on the same origin.
   cors: [],
-  csrf: process.env.NEXT_PUBLIC_SITE_URL ? [process.env.NEXT_PUBLIC_SITE_URL] : [],
+  // Which origins may use the admin login cookie. A mismatch here does not show
+  // as a login failure: pages load, and then every admin action 401s. See
+  // src/payload/origins.ts for why this is more than the one URL.
+  csrf: allowedOrigins(SITE_URL, RUNTIME_SITE_URL, process.env.PAYLOAD_ALLOWED_ORIGINS),
+
+  onInit: (payload) => {
+    if (isLocalhostInProduction(SITE_URL) || isLocalhostInProduction(RUNTIME_SITE_URL)) {
+      payload.logger.warn(
+        `NEXT_PUBLIC_SITE_URL is a localhost URL in production (build: ${SITE_URL}, runtime: ${RUNTIME_SITE_URL}). ` +
+          'Upload URLs will be wrong and the admin will reject actions from the real domain. ' +
+          'Set it to the public origin and rebuild.'
+      )
+    }
+  },
 })
