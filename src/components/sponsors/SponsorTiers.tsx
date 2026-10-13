@@ -31,7 +31,7 @@ export function SponsorTiers() {
           className="mb-12 lg:mb-16"
         />
 
-        <Reveal stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:items-start">
+        <Reveal stagger className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:items-start">
           {TIERS.map((tier) => (
             <div
               key={tier.id}

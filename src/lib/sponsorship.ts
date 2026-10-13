@@ -172,35 +172,27 @@ export const TIERS: SponsorTier[] = [
     ],
   },
   {
-    id: 'silver',
-    label: 'Silver',
-    tagline: 'Solid brand presence across our channels.',
+    id: 'tech-partner',
+    label: 'Tech Partner',
+    tagline: 'Put your technology on the rover and on the world stage.',
     benefits: [
+      'Named technology partner for your domain on the rover',
       'Medium logo on the rover and website',
       'Social shout-outs on key milestones',
-      'Group lab visit',
-      'Certificate of partnership',
-    ],
-  },
-  {
-    id: 'bronze',
-    label: 'Bronze',
-    tagline: 'A great way to back the team and get seen.',
-    benefits: [
-      'Logo on the sponsors page',
-      'Logo on our competition banner',
-      'Thank-you post on social media',
+      'Group lab visit to see your tech in the field',
       'Certificate of partnership',
     ],
   },
   {
     id: 'in-kind',
     label: 'In-Kind',
-    tagline: 'Donate parts, tools, services or expertise.',
+    tagline: 'Back the team with parts, tools, services, expertise or funds.',
     benefits: [
       'Recognition for component, service or material support',
       'Logo on the sponsors page',
+      'Logo on our competition banner',
       'Social thank-you for your contribution',
+      'Certificate of partnership',
       'Flexible, give what fits your organization',
     ],
   },
@@ -215,28 +207,26 @@ export interface BenefitRow {
   feature: string
   title: MatrixValue
   gold: MatrixValue
-  silver: MatrixValue
-  bronze: MatrixValue
+  'tech-partner': MatrixValue
   'in-kind': MatrixValue
 }
 
 export const COMPARISON_TIERS: { id: Sponsor['tier']; label: string }[] = [
   { id: 'title', label: 'Title' },
   { id: 'gold', label: 'Gold' },
-  { id: 'silver', label: 'Silver' },
-  { id: 'bronze', label: 'Bronze' },
+  { id: 'tech-partner', label: 'Tech Partner' },
   { id: 'in-kind', label: 'In-Kind' },
 ]
 
 export const BENEFITS_MATRIX: BenefitRow[] = [
-  { feature: 'Logo on rover & team jersey', title: 'Largest', gold: 'Large', silver: 'Medium', bronze: false, 'in-kind': false },
-  { feature: 'Logo on website (sponsors page)', title: 'Top', gold: 'Prominent', silver: true, bronze: true, 'in-kind': true },
-  { feature: 'Logo on competition banner', title: true, gold: true, silver: true, bronze: true, 'in-kind': false },
-  { feature: 'Social media shout-outs', title: 'Dedicated campaign', gold: 'Quarterly', silver: 'Milestones', bronze: 'Thank-you post', 'in-kind': 'Thank-you post' },
-  { feature: 'Press release / media mention', title: true, gold: false, silver: false, bronze: false, 'in-kind': false },
-  { feature: 'Lab visit & rover demo', title: 'Private', gold: true, silver: 'Group', bronze: false, 'in-kind': false },
-  { feature: 'Recruitment / talent access', title: 'First access', gold: true, silver: false, bronze: false, 'in-kind': false },
-  { feature: 'Title co-branding & speaking slot', title: true, gold: false, silver: false, bronze: false, 'in-kind': false },
+  { feature: 'Logo on rover & team jersey', title: 'Largest', gold: 'Large', 'tech-partner': 'Medium', 'in-kind': false },
+  { feature: 'Logo on website (sponsors page)', title: 'Top', gold: 'Prominent', 'tech-partner': true, 'in-kind': true },
+  { feature: 'Logo on competition banner', title: true, gold: true, 'tech-partner': true, 'in-kind': true },
+  { feature: 'Social media shout-outs', title: 'Dedicated campaign', gold: 'Quarterly', 'tech-partner': 'Milestones', 'in-kind': 'Thank-you post' },
+  { feature: 'Press release / media mention', title: true, gold: false, 'tech-partner': false, 'in-kind': false },
+  { feature: 'Lab visit & rover demo', title: 'Private', gold: true, 'tech-partner': 'Group', 'in-kind': false },
+  { feature: 'Recruitment / talent access', title: 'First access', gold: true, 'tech-partner': false, 'in-kind': false },
+  { feature: 'Title co-branding & speaking slot', title: true, gold: false, 'tech-partner': false, 'in-kind': false },
 ]
 
 /* ============================================================
@@ -304,7 +294,7 @@ export const SPONSOR_FAQ: SponsorFaqItem[] = [
   {
     question: 'We’re a small company, can we still help?',
     answer:
-      'Absolutely. There is no minimum to back the team. Bronze and In-Kind partnerships are designed for smaller organizations, and even a single component or service makes a real difference.',
+      'Absolutely. There is no minimum to back the team. In-Kind partnerships are designed for smaller organizations, and even a single component or service makes a real difference.',
   },
   {
     question: 'Can we sponsor something specific, like travel or a subsystem?',
