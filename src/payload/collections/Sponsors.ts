@@ -5,6 +5,23 @@ import { legacySanityId } from '../fields/slug'
 import { revalidateCollection } from '../hooks/revalidate'
 
 /**
+ * Retired tiers and where their sponsors went: Silver became Tech Partner and
+ * Bronze merged into In-Kind.
+ *
+ * Applied on read and before validation, so a document saved under an old tier
+ * shows the new one in the admin and is rewritten on its next save, instead of
+ * failing validation against an option that no longer exists.
+ * `npm run migrate:sponsor-tiers` rewrites them all at once.
+ */
+export const LEGACY_TIERS: Record<string, string> = {
+  silver: 'tech-partner',
+  bronze: 'in-kind',
+}
+
+const renameLegacyTier = ({ value }: { value?: unknown }) =>
+  typeof value === 'string' ? (LEGACY_TIERS[value] ?? value) : value
+
+/**
  * A sponsor or partner.
  *
  * Two logos, not one: a wordmark that reads on white and one that reads on
@@ -32,10 +49,10 @@ export const Sponsors: CollectionConfig = {
       options: [
         { label: '🏆 Title', value: 'title' },
         { label: '🥇 Gold', value: 'gold' },
-        { label: '🥈 Silver', value: 'silver' },
-        { label: '🥉 Bronze', value: 'bronze' },
+        { label: '🛠️ Tech Partner', value: 'tech-partner' },
         { label: '📦 In-Kind', value: 'in-kind' },
       ],
+      hooks: { afterRead: [renameLegacyTier], beforeValidate: [renameLegacyTier] },
     },
     {
       name: 'logoLight',

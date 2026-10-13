@@ -417,7 +417,7 @@ export interface Document {
 export interface Sponsor {
   id: string;
   name: string;
-  tier: 'title' | 'gold' | 'silver' | 'bronze' | 'in-kind';
+  tier: 'title' | 'gold' | 'tech-partner' | 'in-kind';
   /**
    * The dark-mark version, which reads on white backgrounds.
    */
