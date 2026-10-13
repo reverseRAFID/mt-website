@@ -3,12 +3,11 @@ import type { Sponsor } from '@/lib/cms/types'
 import { media } from '@/lib/cms/media'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
 import { Reveal } from '@/components/motion/Reveal'
+import { tierRank } from '@/lib/sponsorship'
 
 interface SponsorsStripProps {
   sponsors: Sponsor[]
 }
-
-const TIER_ORDER = ['title', 'gold', 'silver', 'bronze', 'in-kind']
 
 function ArrowLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -30,9 +29,7 @@ function ArrowLink({ href, children }: { href: string; children: React.ReactNode
  * — so the home page always pitches sponsorship, even before the first logo.
  */
 export function SponsorsStrip({ sponsors }: SponsorsStripProps) {
-  const sorted = [...sponsors].sort(
-    (a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier)
-  )
+  const sorted = [...sponsors].sort((a, b) => tierRank(a.tier) - tierRank(b.tier))
 
   const getSponsorLogoSources = (sponsor: Sponsor) => {
     const fallback = media(sponsor.logo)?.url ?? undefined

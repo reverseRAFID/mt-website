@@ -23,6 +23,7 @@ import type { Competition, Member, Post, Rover, SarVideo, Sponsor, Testimonial }
 
 import { cachedRead } from './cache'
 import { getCms } from './client'
+import { tierRank } from '@/lib/sponsorship'
 
 // ── Announcements ─────────────────────────────────────────────
 
@@ -424,16 +425,9 @@ export const getLatestPosts = cachedRead(
  * Active sponsors, in tier order.
  *
  * Sorted in application code rather than by MongoDB: `tier` is a string, and a
- * lexical sort puts bronze above gold. The tier order is editorial, so it comes
+ * lexical sort puts in-kind above gold. The tier order is editorial, so it comes
  * from an explicit list.
  */
-const TIER_ORDER: Record<string, number> = {
-  title: 0,
-  gold: 1,
-  silver: 2,
-  bronze: 3,
-  'in-kind': 4,
-}
 
 export const getActiveSponsors = cachedRead(
   'sponsors:active',
@@ -448,7 +442,7 @@ export const getActiveSponsors = cachedRead(
     })
     return docs.sort(
       (a, b) =>
-        (TIER_ORDER[a.tier] ?? 99) - (TIER_ORDER[b.tier] ?? 99) || a.name.localeCompare(b.name)
+        tierRank(a.tier) - tierRank(b.tier) || a.name.localeCompare(b.name)
     )
   }
 )

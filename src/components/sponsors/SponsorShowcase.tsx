@@ -6,16 +6,13 @@ import { Reveal } from '@/components/motion/Reveal'
 import { TiltCard } from '@/components/motion/TiltCard'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CornerTicks } from '@/components/ui/CornerTicks'
-import { sponsorMailto } from '@/lib/sponsorship'
-
-const TIER_ORDER: Sponsor['tier'][] = ['title', 'gold', 'silver', 'bronze', 'in-kind']
+import { SPONSOR_TIER_ORDER, sponsorMailto } from '@/lib/sponsorship'
 
 const TIER_CONFIG: Record<Sponsor['tier'], { label: string; logo: string; cols: string }> = {
   title: { label: 'Title Partner', logo: 'h-32', cols: 'grid-cols-1 sm:grid-cols-2' },
   gold: { label: 'Gold', logo: 'h-28', cols: 'grid-cols-2 sm:grid-cols-3' },
-  silver: { label: 'Silver', logo: 'h-24', cols: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' },
-  bronze: { label: 'Bronze', logo: 'h-20', cols: 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-5' },
-  'in-kind': { label: 'In-Kind', logo: 'h-16', cols: 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-6' },
+  'tech-partner': { label: 'Tech Partner', logo: 'h-24', cols: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' },
+  'in-kind': { label: 'In-Kind', logo: 'h-20', cols: 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-5' },
 }
 
 function logoSources(sponsor: Sponsor) {
@@ -32,7 +29,7 @@ function logoSources(sponsor: Sponsor) {
  * "founding sponsor" invitation when there are no sponsors yet.
  */
 export function SponsorShowcase({ sponsors }: { sponsors: Sponsor[] }) {
-  const grouped = TIER_ORDER.reduce<Record<string, Sponsor[]>>((acc, tier) => {
+  const grouped = SPONSOR_TIER_ORDER.reduce<Record<string, Sponsor[]>>((acc, tier) => {
     acc[tier] = sponsors.filter((s) => s.tier === tier)
     return acc
   }, {})
@@ -57,7 +54,7 @@ export function SponsorShowcase({ sponsors }: { sponsors: Sponsor[] }) {
 
         {hasSponsors ? (
           <div className="flex flex-col gap-14">
-            {TIER_ORDER.filter((t) => grouped[t]?.length > 0).map((tier) => {
+            {SPONSOR_TIER_ORDER.filter((t) => grouped[t]?.length > 0).map((tier) => {
               const cfg = TIER_CONFIG[tier]
               return (
                 <div key={tier}>

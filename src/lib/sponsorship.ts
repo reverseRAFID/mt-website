@@ -28,6 +28,18 @@ export type SponsorIcon =
   | 'rocket'
   | 'graduation'
 
+/**
+ * Display order of the sponsor tiers, highest first. Shared by every place
+ * that lists sponsors, so the order cannot drift between them.
+ */
+export const SPONSOR_TIER_ORDER: readonly Sponsor['tier'][] = ['title', 'gold', 'tech-partner', 'in-kind']
+
+/** Sort key for a tier; anything unrecognised sorts last. */
+export const tierRank = (tier: string): number => {
+  const i = (SPONSOR_TIER_ORDER as readonly string[]).indexOf(tier)
+  return i === -1 ? SPONSOR_TIER_ORDER.length : i
+}
+
 /** Where to route every sponsorship enquiry. */
 export const SPONSOR_EMAIL = 'mongol-tori@bracu.ac.bd'
 

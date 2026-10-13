@@ -1,8 +1,7 @@
 import type { Sponsor } from '@/payload-types'
 import { media } from '@/lib/cms/media'
 import { ThemeLogo } from '@/components/ui/ThemeLogo'
-
-const TIER_ORDER: Sponsor['tier'][] = ['title', 'gold', 'silver', 'bronze', 'in-kind']
+import { tierRank } from '@/lib/sponsorship'
 
 function logoSources(sponsor: Sponsor) {
   // The logo is rendered up to 80px tall; next/image inside ThemeLogo picks the
@@ -23,9 +22,7 @@ function logoSources(sponsor: Sponsor) {
 export function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
   if (sponsors.length === 0) return null
 
-  const sorted = [...sponsors].sort(
-    (a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier)
-  )
+  const sorted = [...sponsors].sort((a, b) => tierRank(a.tier) - tierRank(b.tier))
 
   // Repeat a short list so a single marquee half always overflows the viewport;
   // otherwise the seamless -50% loop would reveal an empty gap between cycles.
