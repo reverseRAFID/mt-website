@@ -23,6 +23,17 @@
  * else, e.g. reaching the admin on the server's IP and port.
  */
 
+/**
+ * Read an environment variable when the server starts, not when it is built.
+ *
+ * The name arrives as a parameter because the bundler inlines every
+ * `process.env.NEXT_PUBLIC_*` it can resolve, including `process.env[KEY]`
+ * with a constant `KEY` (checked: Turbopack folded exactly that).
+ */
+export function runtimeEnv(name: string): string | undefined {
+  return process.env[name]
+}
+
 /** `https://example.com/` → `https://example.com`, or null if not a URL. */
 export function toOrigin(value: string | undefined | null): string | null {
   const trimmed = value?.trim()

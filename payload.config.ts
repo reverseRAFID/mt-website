@@ -25,7 +25,7 @@ import { SarVideos } from './src/payload/collections/SarVideos'
 import { Sponsors } from './src/payload/collections/Sponsors'
 import { Testimonials } from './src/payload/collections/Testimonials'
 import { Users } from './src/payload/collections/Users'
-import { allowedOrigins, isLocalhostInProduction, toOrigin } from './src/payload/origins'
+import { allowedOrigins, isLocalhostInProduction, runtimeEnv, toOrigin } from './src/payload/origins'
 import { cloudinaryAdapter, cloudinaryFileURL } from './src/payload/storage/cloudinary'
 import { Crowdfunding } from './src/payload/globals/Crowdfunding'
 import { Recruitment } from './src/payload/globals/Recruitment'
@@ -35,14 +35,13 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /**
  * The site URL twice over, on purpose. Next inlines `process.env.NEXT_PUBLIC_*`
- * at BUILD time, so the first is whatever the build machine had; the indirect
- * read is not inlined, so the second is what the running server was started
- * with. When they differ (a build made with the localhost .env, then started
- * with the production one) the admin must still accept the real origin.
+ * at BUILD time, so the first is whatever the build machine had; `runtimeEnv`
+ * is not inlined, so the second is what the running server was started with.
+ * When they differ (a build made with the localhost .env, then started with the
+ * production one) the admin must still accept the real origin.
  */
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL
-const SITE_URL_KEY = 'NEXT_PUBLIC_SITE_URL'
-const RUNTIME_SITE_URL = process.env[SITE_URL_KEY]
+const RUNTIME_SITE_URL = runtimeEnv('NEXT_PUBLIC_SITE_URL')
 
 /** Cloudinary accepts either a single URL or the three-part credential set. */
 const hasCloudinary = () =>
